@@ -93,5 +93,31 @@ namespace FPLibrary {
 
         public static Either<L, R> ToEither<L, R>(this Maybe<R> self, L defaultLeftVal)
             => self.Match<Either<L, R>>(() => defaultLeftVal, r => r);
+
+        //apply a Maybe<T> to a Maybe<Func<T, R>> if both are Just
+        public static Maybe<R> Apply<T, R>(this Maybe<Func<T, R>> self, Maybe<T> arg)
+            => self.Match(
+                () => Nothing,
+                (f) => arg.Match(
+                    () => Nothing,
+                    (val) => Just(f(val))));
+
+        public static Maybe<Func<T2, R>> Apply<T1, T2, R>(this Maybe<Func<T1, T2, R>> self, Maybe<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Maybe<Func<T2, T3, R>> Apply<T1, T2, T3, R>(this Maybe<Func<T1, T2, T3, R>> self, Maybe<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Maybe<Func<T2, T3, T4, R>> Apply<T1, T2, T3, T4, R>(this Maybe<Func<T1, T2, T3, T4, R>> self, Maybe<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Maybe<Func<T2, T3, T4, T5, R>> Apply<T1, T2, T3, T4, T5, R>(this Maybe<Func<T1, T2, T3, T4, T5, R>> self, Maybe<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Maybe<Func<T2, T3, T4, T5, T6, R>> Apply<T1, T2, T3, T4, T5, T6, R>(this Maybe<Func<T1, T2, T3, T4, T5, T6, R>> self, Maybe<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Maybe<Func<T2, T3, T4, T5, T6, T7, R>> Apply<T1, T2, T3, T4, T5, T6, T7, R>(this Maybe<Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Maybe<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
     }
 }
