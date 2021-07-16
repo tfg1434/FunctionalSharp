@@ -67,7 +67,7 @@ namespace FPLibrary {
             => self.Match<Either<L, RR>>(l => Left(l), r => Right(f(r)));
 
         //modify both Left and Right
-        //called bifunctor or biMap
+        //called biftor or biMap
         public static Either<LL, RR> Map<L, LL, R, RR>(this Either<L, R> self, Func<L, LL> left, Func<R, RR> right)
             => self.Match<Either<LL, RR>>(l => Left(left(l)), r => Right(right(r)));
 
@@ -77,5 +77,8 @@ namespace FPLibrary {
         public static Either<L, RR> Bind<L, R, RR>(this Either<L, R> either, Func<R, Either<L, RR>> f)
             // ReSharper disable once ConvertClosureToMethodGroup
             => either.Match(l => Left(l), f);
+
+        public static Maybe<R> ToMaybe<L, R>(this Either<L, R> self)
+            => self.Match(_ => Nothing, r => Just(r));
     }
 }

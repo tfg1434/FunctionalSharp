@@ -87,5 +87,11 @@ namespace FPLibrary {
 
         public static Maybe<T> Where<T>(this Maybe<T> maybeT, Predicate<T> predicate)
             => maybeT.Match(() => Nothing, t => predicate(t) ? maybeT : Nothing);
+
+        public static Either<L, R> ToEither<L, R>(this Maybe<R> self, Func<L> left)
+            => self.Match<Either<L, R>>(() => left(), r => r);
+
+        public static Either<L, R> ToEither<L, R>(this Maybe<R> self, L defaultLeftVal)
+            => self.Match<Either<L, R>>(() => defaultLeftVal, r => r);
     }
 }

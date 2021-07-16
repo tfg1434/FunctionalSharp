@@ -8,10 +8,6 @@ using Unit = System.ValueTuple;
 namespace FPLibrary {
     using static F;
 
-    public static partial class F {
-        public static IEnumerable<T> List<T>(params T[] items) => items.ToImmutableList();
-    }
-
     public static class EnumberableExt {
         public static IEnumerable<R> Map<T, R>(this IEnumerable<T> enumerable, Func<T, R> f)
             => enumerable.Select(f);
