@@ -106,5 +106,16 @@ namespace FPLibrary {
 
         public static Either<L, Func<T2, T3, T4, T5, T6, T7, R>> Apply<L, T1, T2, T3, T4, T5, T6, T7, R>(this Either<L, Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Either<L, T1> arg)
             => Apply(self.Map(F.CurryFirst), arg);
+
+        //query syntax
+        public static Either<L, RR> Select<L, R, RR>(this Either<L, R> self, Func<R, RR> f)
+            => self.Map(f);
+
+        public static Either<L, RRR> SelectMany<L, R, RR, RRR>(this Either<L, R> self, Func<R, Either<L, RR>> bind, Func<R, RR, RRR> proj)
+            => self.Match(
+                l => Left(l),
+                t => bind(t).Match<Either<L, RRR>>(
+                    l => Left(l),
+                    r => proj(t, r)));
     }
 }

@@ -120,5 +120,15 @@ namespace FPLibrary {
 
         public static Maybe<Func<T2, T3, T4, T5, T6, T7, R>> Apply<T1, T2, T3, T4, T5, T6, T7, R>(this Maybe<Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Maybe<T1> arg)
             => Apply(self.Map(F.CurryFirst), arg);
+
+        //query syntax
+        public static Maybe<R> Select<T, R>(this Maybe<T> self, Func<T, R> f) => self.Map(f);
+
+        public static Maybe<RR> SelectMany<T, R, RR>(this Maybe<T> maybe, Func<T, Maybe<R>> bind, Func<T, R, RR> proj)
+            => maybe.Match(
+                () => Nothing,
+                (t) => bind(t).Match(
+                    () => Nothing,
+                    (r) => Just(proj(t, r))));
     }
 }
