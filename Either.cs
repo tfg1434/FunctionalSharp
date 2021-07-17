@@ -80,5 +80,31 @@ namespace FPLibrary {
 
         public static Maybe<R> ToMaybe<L, R>(this Either<L, R> self)
             => self.Match(_ => Nothing, r => Just(r));
+
+        //function application
+        public static Either<L, RR> Apply<L, R, RR>(this Either<L, Func<R, RR>> @this, Either<L, R> arg)
+            => @this.Match(
+                 left: (errF) => Left(errF),
+                 right: (f) => arg.Match<Either<L, RR>>(
+                    right: (t) => Right(f(t)),
+                    left: (err) => Left(err)));
+
+        public static Either<L, Func<T2, R>> Apply<L, T1, T2, R>(this Either<L, Func<T1, T2, R>> self, Either<L, T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Either<L, Func<T2, T3, R>> Apply<L, T1, T2, T3, R>(this Either<L, Func<T1, T2, T3, R>> self, Either<L, T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Either<L, Func<T2, T3, T4, R>> Apply<L, T1, T2, T3, T4, R>(this Either<L, Func<T1, T2, T3, T4, R>> self, Either<L, T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Either<L, Func<T2, T3, T4, T5, R>> Apply<L, T1, T2, T3, T4, T5, R>(this Either<L, Func<T1, T2, T3, T4, T5, R>> self, Either<L, T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Either<L, Func<T2, T3, T4, T5, T6, R>> Apply<L, T1, T2, T3, T4, T5, T6, R>(this Either<L, Func<T1, T2, T3, T4, T5, T6, R>> self, Either<L, T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
+
+        public static Either<L, Func<T2, T3, T4, T5, T6, T7, R>> Apply<L, T1, T2, T3, T4, T5, T6, T7, R>(this Either<L, Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Either<L, T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
     }
 }

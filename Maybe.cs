@@ -94,6 +94,7 @@ namespace FPLibrary {
         public static Either<L, R> ToEither<L, R>(this Maybe<R> self, L defaultLeftVal)
             => self.Match<Either<L, R>>(() => defaultLeftVal, r => r);
 
+        //function application
         //apply a Maybe<T> to a Maybe<Func<T, R>> if both are Just
         public static Maybe<R> Apply<T, R>(this Maybe<Func<T, R>> self, Maybe<T> arg)
             => self.Match(
