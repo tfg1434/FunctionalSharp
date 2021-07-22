@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace FPLibrary.Lst {
+namespace FPLibrary {
     public partial struct Lst<T> {
         [DebuggerDisplay("Value = {Value}")]
         internal sealed class Node {
@@ -9,6 +9,7 @@ namespace FPLibrary.Lst {
             internal readonly T Value;
 
             internal Node(T value) => Value = value;
+            internal Node(T value, Node next) => (Value, Next) = (value, next);
         }
     }
 }

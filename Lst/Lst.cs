@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace FPLibrary.Lst {
+namespace FPLibrary {
     using static F;
 
     //immutable singly linked list
@@ -27,10 +28,33 @@ namespace FPLibrary.Lst {
             }
         }
 
+        internal static Lst<T> Create(params T[] items) {
+            if (items is null) throw new ArgumentNullException(nameof(items));
+            return createRange(items);
+        }
+
+        internal static Lst<T> CreateRange(IEnumerable<T> items) {
+            if (items is null) throw new ArgumentNullException(nameof(items));
+            return createRange(items);
+        }
+
         private static void ThrowEmpty() => throw new InvalidOperationException("The list is empty");
 
-        private static Lst<T> create(IEnumerable<T> items) {
+        private static Lst<T> createRange(IEnumerable<T> items) {
+            if (items is Lst<T> list) { return list; }
+            if (!items.Any()) return Empty;
 
+            int count = 0;
+            return new Lst<T>(
+                items
+                    .Reverse()
+                    .Aggregate(
+                        default(Node), 
+                        (acc, t) => {
+                            count++;
+                            return new(t, acc);
+                        }
+                    ), count);
         }
     }
 }
