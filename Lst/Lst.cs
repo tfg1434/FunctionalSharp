@@ -5,6 +5,14 @@ using System.Linq;
 namespace FPLibrary {
     using static F;
 
+    public static partial class F {
+        public static Lst<T> List<T>(params T[] items) => Lst<T>.Create(items);
+
+        public static Lst<T> List<T>(IEnumerable<T> items) => Lst<T>.CreateRange(items);
+
+        public static Lst<T> ToLst<T>(this IEnumerable<T> src) => List(src);
+    }
+
     //immutable singly linked list
     public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T>> {
         public static Lst<T> Empty => default;

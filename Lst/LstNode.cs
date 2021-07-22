@@ -2,7 +2,7 @@
 using System.Diagnostics;
 
 namespace FPLibrary {
-    public partial struct Lst<T> {
+    public readonly partial struct Lst<T> {
         [DebuggerDisplay("Value = {Value}")]
         internal sealed class Node {
             internal Node Next { get; }
