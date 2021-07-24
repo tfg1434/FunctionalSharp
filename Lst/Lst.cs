@@ -75,5 +75,7 @@ namespace FPLibrary {
         bool IEquatable<Lst<T>>.Equals(Lst<T> other) => _head == other._head;
 
         public override bool Equals(object obj) => obj is Lst<T> list && ((IEquatable<Lst<T>>)this).Equals(list);
+
+        public override int GetHashCode() => _head.GetHashCode();
     }
 }
