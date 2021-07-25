@@ -13,33 +13,33 @@ namespace FPLibrary {
     }
     
     public readonly struct Either<L, R> {
-        internal readonly L Left;
-        internal readonly R Right;
+        private readonly L? left;
+        private readonly R? right;
 
-        private readonly bool IsRight;
-        private bool IsLeft => !IsRight;
+        private readonly bool isRight;
+        private bool isLeft => !isRight;
 
-        internal Either(L left)
-            => (IsRight, Left, Right)
-                = (false, left ?? throw new ArgumentNullException(nameof(left)), default);
+        internal Either(L l)
+            => (isRight, left, right)
+                = (false, l ?? throw new ArgumentNullException(nameof(l)), default);
 
-        internal Either(R right)
-            => (IsRight, Left, Right)
-                = (true, default, right ?? throw new ArgumentNullException(nameof(right)));
+        internal Either(R r)
+            => (isRight, left, right)
+                = (true, default, r ?? throw new ArgumentNullException(nameof(r)));
 
         public static implicit operator Either<L, R>(L left) => new(left);
         public static implicit operator Either<L, R>(R right) => new(right);
         public static implicit operator Either<L, R>(Either.Left<L> left) => new(left.Value);
         public static implicit operator Either<L, R>(Either.Right<R> right) => new(right.Value);
 
-        public TR Match<TR>(Func<L, TR> left, Func<R, TR> right)
-            => IsRight ? right(Right) : left(Left);
+        public TR Match<TR>(Func<L, TR> l, Func<R, TR> r)
+            => isRight ? r(right!) : l(left!);
 
         public Unit Match(Action<L> left, Action<R> right) 
             => Match(left.ToFunc(), right.ToFunc());
 
         public IEnumerable<R> AsEnumerable() {
-            if (IsRight) yield return Right;
+            if (isRight) yield return right;
         }
 
         public override string ToString() => Match(l => $"Left({l})", r => $"Right({r})");
@@ -79,15 +79,15 @@ namespace FPLibrary {
             => either.Match(l => Left(l), f);
 
         public static Maybe<R> ToMaybe<L, R>(this Either<L, R> self)
-            => self.Match(_ => Nothing, r => Just(r));
+            => self.Match(_ => Nothing, Just);
 
         //function application
         public static Either<L, RR> Apply<L, R, RR>(this Either<L, Func<R, RR>> @this, Either<L, R> arg)
             => @this.Match(
-                 left: (errF) => Left(errF),
-                 right: (f) => arg.Match<Either<L, RR>>(
-                    right: (t) => Right(f(t)),
-                    left: (err) => Left(err)));
+                l: (errF) => Left(errF),
+                r: (f) => arg.Match<Either<L, RR>>(
+                    l: (err) => Left(err),
+                    r: (t) => Right(f(t))));
 
         public static Either<L, Func<T2, R>> Apply<L, T1, T2, R>(this Either<L, Func<T1, T2, R>> self, Either<L, T1> arg)
             => Apply(self.Map(F.CurryFirst), arg);
