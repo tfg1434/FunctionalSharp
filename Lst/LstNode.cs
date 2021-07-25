@@ -8,7 +8,6 @@ namespace FPLibrary {
             internal Node Next { get; }
             internal readonly T Value;
 
-            internal Node(T value) => Value = value;
             internal Node(T value, Node next) => (Value, Next) = (value, next);
         }
     }

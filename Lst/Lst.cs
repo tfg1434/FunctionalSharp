@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace FPLibrary {
@@ -56,20 +57,25 @@ namespace FPLibrary {
         private static void ThrowEmpty() => throw new InvalidOperationException("The list is empty");
 
         private static Lst<T> CreateRange(IEnumerable<T> items) {
-            if (items is Lst<T> list) { return list; }
-            if (!items.Any()) return Empty;
+            if (items is Lst<T> list) return list;
 
             int count = 0;
-            return new Lst<T>(
-                items
-                    .Reverse()
-                    .Aggregate(
-                        default(Node), 
-                        (acc, t) => {
-                            count++;
-                            return new Node(t, acc);
-                        }
-                    ), count);
+            Node head = items
+                .Reverse()
+                .Aggregate(
+                    default(Node),
+                    (acc, t) => {
+                        count++;
+                        return new Node(t, acc);
+                    }
+                );
+
+            return count == 0 ? Empty : new Lst<T>(head, count);
+        }
+
+        private static (Node newHead, Node newLast) CopyNonEmptyRange(Node head, Node last) {
+            if (head is null) throw new InvalidOperationException("head cannot be null");
+            if (head == last) throw new InvalidOperationException("range was empty");
         }
 
         bool IEquatable<Lst<T>>.Equals(Lst<T> other) => _head == other._head;
@@ -77,5 +83,9 @@ namespace FPLibrary {
         public override bool Equals(object obj) => obj is Lst<T> list && ((IEquatable<Lst<T>>)this).Equals(list);
 
         public override int GetHashCode() => _head.GetHashCode();
+
+        public static bool operator ==(Lst<T> self, Lst<T> other) => self.Equals(other);
+
+        public static bool operator !=(Lst<T> self, Lst<T> other) => self != other;
     }
 }
