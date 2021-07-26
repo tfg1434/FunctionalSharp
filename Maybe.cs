@@ -117,7 +117,7 @@ namespace FPLibrary {
             => Apply(self.Map(F.CurryFirst), arg);
 
         //utilities
-        public static Unit Match(this Maybe<T> self, Action nothing, Action<T> just)
+        public static Unit Match<T>(this Maybe<T> self, Action nothing, Action<T> just)
             => self.Match(nothing.ToFunc(), just.ToFunc());
 
         internal static bool IsSome<T>(this Maybe<T> self)
