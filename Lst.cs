@@ -41,8 +41,13 @@ namespace FPLibrary {
                 .Aggregate<T, Node?>(
                     default,
                     (acc, t) 
-                        => new Node(t) { 
-                            Next = acc == default ? Nothing : acc }
+                        => {
+                            count++;
+
+                            return new Node(t) {
+                                Next = acc == default ? Nothing : acc
+                            };
+                        }
                 );
 
             return head == default ? Empty : new Lst<T>(head, count);
