@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FPLibrary {
     public readonly partial struct Lst<T> {
-        sealed class Node {
+        internal sealed class Node {
             internal Maybe<Node> Next { get; init; }
             internal readonly T Value;
 

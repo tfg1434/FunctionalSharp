@@ -38,12 +38,6 @@ namespace FPLibrary {
         public R Match<R>(Func<R> nothing, Func<T, R> just)
             => isJust ? just(value!) : nothing();
 
-        public T IfNothing(Func<T> f)
-            => isJust ? value! : f();
-
-        public T IfNothing(T noneVal)
-            => isJust ? value! : noneVal;
-
         public IEnumerable<T> AsEnumerable() {
             if (isJust) yield return value!;
         }
