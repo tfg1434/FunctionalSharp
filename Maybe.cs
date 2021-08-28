@@ -21,6 +21,10 @@ namespace FPLibrary {
         private bool isNothing => !isJust;
         private readonly T? value;
 
+        public bool IsJust => isJust;
+        public bool IsNothing => isNothing;
+
+
         internal Maybe(T t) {
             isJust = true;
             value = t;
@@ -33,6 +37,12 @@ namespace FPLibrary {
 
         public R Match<R>(Func<R> nothing, Func<T, R> just)
             => isJust ? just(value!) : nothing();
+
+        public T IfNothing(Func<T> f)
+            => isJust ? value! : f();
+
+        public T IfNothing(T noneVal)
+            => isJust ? value! : noneVal;
 
         public IEnumerable<T> AsEnumerable() {
             if (isJust) yield return value!;
@@ -119,9 +129,6 @@ namespace FPLibrary {
         //utilities
         public static Unit Match<T>(this Maybe<T> self, Action nothing, Action<T> just)
             => self.Match(nothing.ToFunc(), just.ToFunc());
-
-        internal static bool IsSome<T>(this Maybe<T> self)
-            => self.Match(() => false, (_) => true);
 
         public static T GetOrElse<T>(this Maybe<T> maybeT, T defaultVal)
             => maybeT.Match(() => defaultVal, (t) => t);

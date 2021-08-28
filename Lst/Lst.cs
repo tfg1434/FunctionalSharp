@@ -11,6 +11,8 @@ namespace FPLibrary {
 
         public static Lst<T> List<T>(params T[] items) => Lst<T>.Create(items);
 
+        public static Lst<T> List<T>(T t, Lst<T> ts) => new(new Lst<T>.Node(t, ts.HeadNode), ts.Count + 1);
+
         public static Lst<T> ToLst<T>(this IEnumerable<T> src) => List(src);
     }
 
@@ -18,17 +20,20 @@ namespace FPLibrary {
     public readonly partial struct Lst<T> : IEquatable<Lst<T>> {
         public static Lst<T> Empty => default;
 
-        private Lst(Node? head, int count) => (_head, Count) = (head, count);
+        internal Lst(Maybe<Node> head, int count) => (_head, Count) = (head, count);
 
         public int Count { get; }
 
-        private readonly Node? _head;
+        private readonly Maybe<Node> _head;
         public T Head {
             get {
-                if (Count == 0) ThrowEmpty();
-                return _head!.Value;
+                _head.Match(() => ThrowEmpty(), node => return node.Value);
             }
         }
+        public Maybe<T> HeadSafe {
+            get => _head.Match(() => Nothing, () => _head.Value);
+        }
+
         public Lst<T> Tail {
             get {
                 if (Count == 0) ThrowEmpty();
@@ -78,7 +83,7 @@ namespace FPLibrary {
 
         public override bool Equals(object? obj) => obj is Lst<T> list && ((IEquatable<Lst<T>>)this).Equals(list);
 
-        public override int GetHashCode() => _head is null ? 0 : _head.GetHashCode();
+        public override int GetHashCode() => _head.IsSome ? _head.GetHashCode() : 0;
 
         public static bool operator ==(Lst<T> self, Lst<T> other) => self.Equals(other);
 

@@ -12,8 +12,6 @@ namespace FPLibrary {
 
         void ICollection<T>.Clear() => throw ReadOnly();
 
-        bool ICollection<T>.Contains(T _) => throw new NotImplementedException();
-
         public void CopyTo(T[] arr, int index) {
             if (arr is null) throw new ArgumentNullException(nameof(arr));
             if (index < 0 || index > arr.Length) throw new ArgumentOutOfRangeException(nameof(arr), index, "must be positive and less than or equal to array length");
@@ -22,6 +20,11 @@ namespace FPLibrary {
             int i = 0;
             for (Node? curr = _head; curr is not null; curr = curr.Next)
                 arr[i++] = curr.Value;
+        }
+
+        public bool Contains(T value) {
+            //var comparer = EqualityComparer<T>.Default;
+            throw new NotImplementedException();
         }
 
         bool ICollection<T>.Remove(T item) => throw ReadOnly();
