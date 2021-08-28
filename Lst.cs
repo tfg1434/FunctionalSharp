@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static FPLibrary.F;
+using System.Diagnostics;
 
 namespace FPLibrary {
     using static F;
@@ -16,6 +17,8 @@ namespace FPLibrary {
         public static Lst<T> ToLst<T>(this IEnumerable<T> src) => List(src);
     }
 
+    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(ImmutableEnumerableDebuggerProxy<>))]
     public readonly partial struct Lst<T> {
         public static Lst<T> Empty => default;
 
