@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static FPLibrary.F;
 using System.Diagnostics;
+using OneOf;
 
 namespace FPLibrary {
     using static F;
@@ -32,19 +33,31 @@ namespace FPLibrary {
 
         internal static Lst<T> Create(IEnumerable<T> items) {
             if (items is Lst<T> list) return list;
+            if (!items.Any()) return Empty;
 
-            //TODO: Replace nullable with OneOf<>
-            (Node? Node, int Count) head = items
+            (Node Node, int Count) head = items
                 .Reverse()
-                .Aggregate<T, (Node? Node, int Count)>(
-                    (default /* null */, 0),
+                .Aggregate<T, (Node Node, int Count)>(
+                    (default!, 0),
                     (acc, t)
                         => (new Node(t) {
-                            Next = acc.Node == default ? Nothing : acc.Node
+                            Next = acc.Node
                         }, acc.Count + 1)
                 );
 
-            return head.Node == default ? Empty : new Lst<T>(head.Node, head.Count);
+            return new Lst<T>(head.Node, head.Count);
+
+            //(Node? Node, int Count) head = items
+            //    .Reverse()
+            //    .Aggregate<T, (Node? Node, int Count)>(
+            //        (default /* null */, 0),
+            //        (acc, t)
+            //            => (new Node(t) {
+            //                Next = acc.Node == default ? Nothing : acc.Node
+            //            }, acc.Count + 1)
+            //    );
+
+            //return head.Node == default ? Empty : new Lst<T>(head.Node, head.Count);
         }
     }
 }
