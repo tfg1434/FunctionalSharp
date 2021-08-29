@@ -103,24 +103,9 @@ namespace FPLibrary {
 
         public static Exceptional<RR> SelectMany<T, R, RR>(this Exceptional<T> self, Func<T, Exceptional<R>> bind, Func<T, R, RR> project)
             => self.Match(
-
-                );
-
-        /*
-        public static Exceptional<RR> SelectMany<T, R, RR>
-        (
-            this Exceptional<T> @this,
-            Func<T, Exceptional<R>> bind,
-            Func<T, R, RR> project
-        )
-            => @this.Match
-            (
-                Exception: ex => new Exceptional<RR>(ex),
-                Success: t => bind(t).Match
-                (
-                    Exception: ex => new Exceptional<RR>(ex),
-                    Success: r => project(t, r)
-                )
-            );*/
+                ex => new Exceptional<RR>(ex),
+                t => bind(t).Match(
+                    ex => new Exceptional<RR>(ex),
+                    r => project(t, r)));
     }
 }
