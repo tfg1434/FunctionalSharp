@@ -35,11 +35,11 @@ namespace FPLibrary {
         public TR Match<TR>(Func<L, TR> l, Func<R, TR> r)
             => isRight ? r(right!) : l(left!);
 
-        public Unit Match(Action<L> left, Action<R> right) 
-            => Match(left.ToFunc(), right.ToFunc());
+        public Unit Match(Action<L> l, Action<R> r) 
+            => Match(l.ToFunc(), r.ToFunc());
 
         public IEnumerable<R> AsEnumerable() {
-            if (isRight) yield return right;
+            if (isRight) yield return right!;
         }
 
         public override string ToString() => Match(l => $"Left({l})", r => $"Right({r})");
