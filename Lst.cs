@@ -80,7 +80,7 @@ namespace FPLibrary {
             //return head.Node == default ? Empty : new Lst<T>(head.Node, head.Count);
         }
 
-        //public R Match<R>(Func<R> empty, Func<T, List<T>, R> cons)
-        //    => isEmpty ? empty : cons(head, tail);
+        public R Match<R>(Func<R> empty, Func<T, Lst<T>, R> cons)
+            => isEmpty ? empty() : cons(Head, Tail);
     }
 }
