@@ -82,8 +82,8 @@ namespace FPLibrary {
             => self.Match(_ => Nothing, Just);
 
         //function application
-        public static Either<L, RR> Apply<L, R, RR>(this Either<L, Func<R, RR>> @this, Either<L, R> arg)
-            => @this.Match(
+        public static Either<L, RR> Apply<L, R, RR>(this Either<L, Func<R, RR>> self, Either<L, R> arg)
+            => self.Match(
                 l: (errF) => Left(errF),
                 r: (f) => arg.Match<Either<L, RR>>(
                     l: (err) => Left(err),
