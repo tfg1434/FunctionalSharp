@@ -41,7 +41,7 @@ namespace FPLibrary {
                     (acc, t)
                         => (new Node(t) {
                             Next = acc.Node == default ? Nothing : acc.Node
-                        }, ++acc.Count)
+                        }, acc.Count + 1)
                 );
 
             return head.Node == default ? Empty : new Lst<T>(head.Node, head.Count);
