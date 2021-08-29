@@ -24,12 +24,32 @@ namespace FPLibrary {
         public static Lst<T> Empty => default;
 
         private readonly Maybe<Node> head;
-        private readonly int count;
+        public T Head {
+            get => head.GetOrElse(
+                () => throw new InvalidOperationException()
+            ).Value;
+        }
+        public Maybe<T> HeadSafe {
+            get => head.Map(node => node.Value);
+        }
+
+        public Lst<T> Tail {
+            get => new(head.GetOrElse(
+                () => throw new InvalidOperationException()
+            ).Next, Count - 1);
+        }
+        public Maybe<Lst<T>> TailSafe {
+            get {
+                int count = Count;
+                return head.Map<Node, Lst<T>>(head => new(head.Next, count - 1));
+            }
+        }
+
+        public int Count { get; }
+        private bool isEmpty => Count == 0;
 
         private Lst(Maybe<Node> head, int count)
-            => (this.head, this.count) = (head, count);
-
-        public int Count => count;
+            => (this.head, Count) = (head, count);
 
         internal static Lst<T> Create(IEnumerable<T> items) {
             if (items is Lst<T> list) return list;
@@ -59,5 +79,8 @@ namespace FPLibrary {
 
             //return head.Node == default ? Empty : new Lst<T>(head.Node, head.Count);
         }
+
+        //public R Match<R>(Func<R> empty, Func<T, List<T>, R> cons)
+        //    => isEmpty ? empty : cons(head, tail);
     }
 }
