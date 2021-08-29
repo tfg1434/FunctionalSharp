@@ -11,4 +11,8 @@
     <None Remove="Lst\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="OneOf" Version="3.0.190" />
+  </ItemGroup>
+
 </Project>

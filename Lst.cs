@@ -33,24 +33,18 @@ namespace FPLibrary {
         internal static Lst<T> Create(IEnumerable<T> items) {
             if (items is Lst<T> list) return list;
 
-            int count = 0;
             //TODO: Replace nullable with OneOf<>
-            Node? head = items
-
+            (Node? Node, int Count) head = items
                 .Reverse()
-                .Aggregate<T, Node?>(
-                    default,
-                    (acc, t) 
-                        => {
-                            count++;
-
-                            return new Node(t) {
-                                Next = acc == default ? Nothing : acc
-                            };
-                        }
+                .Aggregate<T, (Node? Node, int Count)>(
+                    (default /* null */, 0),
+                    (acc, t)
+                        => (new Node(t) {
+                            Next = acc.Node == default ? Nothing : acc.Node
+                        }, ++acc.Count)
                 );
 
-            return head == default ? Empty : new Lst<T>(head, count);
+            return head.Node == default ? Empty : new Lst<T>(head.Node, head.Count);
         }
     }
 }
