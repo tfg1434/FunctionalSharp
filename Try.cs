@@ -29,5 +29,17 @@ namespace FPLibrary {
 
         public static Try<Func<T2, R>> Map<T1, T2, R>(this Try<T1> self, Func<T1, T2, R> f)
             => self.Map(f.CurryFirst());
+
+        //query pattern
+        public static Try<R> Select<T, R>(this Try<T> self, Func<T, R> f)
+            => self.Map(f);
+
+        public static Try<RR> SelectMany<T, R, RR>(this Try<T> self, Func<T, Try<R>> f, Func<T, R, RR> project)
+            => ()
+                => self.Run()
+                    .Match(ex => ex, t => f(t).Run()
+                        .Match<Exceptional<RR>>(
+                            ex => ex,
+                            r => project(t, r)));
     }
 }
