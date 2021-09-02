@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using Unit = System.ValueTuple;
@@ -10,8 +11,8 @@ namespace FPLibrary {
     public static partial class F {
         public static NothingType Nothing => default;
 
-        public static Maybe<T> Just<T>(T value) 
-            => new(value);
+        public static Maybe<T> Just<T>([NotNull] T? value) 
+            => new(value ?? throw new ArgumentNullException(nameof(value)));
     }
 
     public readonly struct NothingType { }
