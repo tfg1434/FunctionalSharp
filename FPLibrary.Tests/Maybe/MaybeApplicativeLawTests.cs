@@ -37,6 +37,13 @@ namespace FPLibrary.Tests.Maybe {
             Assert.Equal(expected, actual);
         }
 
-        
+        //Return f <*> Return x == Return $ f x
+        [Property]
+        public void HomomorphismHolds(int x) {
+            Maybe<int> expected = Just(times2).Apply(Just(x));
+            Maybe<int> actual = Just(times2(x));
+
+            Assert.Equal(expected, actual);
+        }
     }
 }
