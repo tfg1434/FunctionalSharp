@@ -4,6 +4,7 @@ using FsCheck;
 using FsCheck.Experimental;
 using FsCheck.Xunit;
 using static FPLibrary.F;
+using static FPLibrary.Tests.Utils;
 
 namespace FPLibrary.Tests.Maybe {
     public class MaybeMonadLawTests {
@@ -31,8 +32,8 @@ namespace FPLibrary.Tests.Maybe {
         [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
         public void AssociativeHolds(Maybe<int> m) {
 
-            Func<int, Maybe<int>> f = x => Just(x * 2);
-            Func<int, Maybe<int>> g = x => Just(x + 5);
+            Func<int, Maybe<int>> f = x => Just(times2(x));
+            Func<int, Maybe<int>> g = x => Just(plus5(x));
 
             Maybe<int> expected = m.Bind(f).Bind(g);
             Maybe<int> actual = m.Bind(x => f(x).Bind(g));
