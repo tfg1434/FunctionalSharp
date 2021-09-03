@@ -5,17 +5,7 @@ using FsCheck;
 using FsCheck.Xunit;
 using static FPLibrary.F;
 
-namespace FPLibrary.Tests {
-    static class ArbitraryMaybe {
-        public static Arbitrary<Maybe<T>> Maybe<T>() {
-            var gen = from isJust in Arb.Generate<bool>()
-                      from val in Arb.Generate<T>()
-                      select isJust && val is not null ? Just(val) : Nothing;
-
-            return gen.ToArbitrary();
-        }
-    }
-    
+namespace FPLibrary.Tests.Maybe {
     public class MaybeApplicativeLawTests {
         [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
         public void ApplicativeIdentityHolds(Maybe<object> v) {
