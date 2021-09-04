@@ -6,11 +6,12 @@ using FsCheck;
 using FsCheck.Xunit;
 using static FPLibrary.F;
 using static FPLibrary.Tests.Utils;
+using FPLibrary;
 
 namespace FPLibrary.Tests.Maybe {
     public class MaybeApplicativeLawTests {
         //Return x <*> v == v
-        [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
+        [Property(Arbitrary = new[] {typeof(ArbitraryMaybe)})]
         public void ApplicativeIdentityHolds(Maybe<object> v) {
             Func<object, object> ident = x => x;
             Maybe<object> actual = Just(ident).Apply(v);
@@ -20,7 +21,7 @@ namespace FPLibrary.Tests.Maybe {
         }
 
         //Return x <*> u <*> v <*> w == u <*> (v <*> w)
-        [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
+        [Property(Arbitrary = new[] {typeof(ArbitraryMaybe)})]
         public void CompositionHolds(Maybe<int> w, bool uIsJust, bool vIsJust) {
             Func<Func<int, int>, Func<int, int>, Func<int, int>> compose
                 = (f, g) => x => f(g(x));
@@ -42,6 +43,21 @@ namespace FPLibrary.Tests.Maybe {
         public void HomomorphismHolds(int x) {
             Maybe<int> expected = Just(times2).Apply(Just(x));
             Maybe<int> actual = Just(times2(x));
+
+            Assert.Equal(expected, actual);
+        }
+
+        //u <*> Return y == Return ($ y) <*> u
+        //($ y) takes a function and applies it to y like (+4)
+        //($ y) == \f -> f $ y
+        [Property]
+        public void InterchangeHolds(bool uIsJust, int y) {
+            Maybe<Func<int, int>> u = uIsJust ? Just(times2) : Nothing;
+
+            Maybe<int> expected = u.Apply(Just(y));
+            Maybe<int> actual = 
+                Just<Func<Func<int, int>, int>>(f => f(y))
+                .Apply(u);
 
             Assert.Equal(expected, actual);
         }
