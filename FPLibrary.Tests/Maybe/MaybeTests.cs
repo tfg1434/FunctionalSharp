@@ -37,12 +37,34 @@ namespace FPLibrary.Tests.Maybe {
         }
 
         [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
-        public void LinqQuery_SingleClause_Just(Maybe<int> m) {
+        public void LinqQuery_SingleClause(Maybe<int> m) {
             Maybe<int> expected = m.Map(times2);
             Maybe<int> actual = from x in m 
                                 select times2(x);
             
             Assert.Equal(expected, actual);
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
+        public void LinqQuery_TwoClause(Maybe<int> mA, Maybe<int> mB) {
+            Maybe<int> expected = mA.Bind(a => mB.Map(b => a + b));
+            Maybe<int> actual = from a in mA
+                                from b in mB
+                                select a + b;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Property(Arbitrary = new[] {typeof(ArbitraryMaybe)})]
+        public void LinqQuery_ThreeClause(Maybe<int> mA, Maybe<int> mB, Maybe<int> mC) {
+            Maybe<int> expected = 
+                mA.Bind(a => mB.Bind(
+                            b => mC.Map(
+                                c => a + b + c)));
+            Maybe<int> actual = from a in mA
+                                from b in mB
+                                from c in mC
+                                select a + b + c;
         }
 
         private Maybe<int> GetValue(bool select)
