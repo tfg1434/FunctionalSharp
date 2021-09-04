@@ -9,10 +9,11 @@ using static System.Diagnostics.Debug;
 
 #nullable enable
 
-Try<Uri> CreateUri(string uri) => Try(() => new Uri(uri));
+Func<int, int> times2 = x => x * 2;
+Func<int, int> plus5 = x => x + 5;
 
-Try<Uri> uri = CreateUri("http://github.com");
+Maybe<int> m = Just(5);
 
-var b = uri.Run();
+Maybe<int> expected = m.Map(times2).Map(plus5);
+Maybe<int> actual = m.Map(x => times2(plus5(x)));
 
-int a = 5;

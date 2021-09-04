@@ -7,7 +7,7 @@ using static FPLibrary.F;
 using static FPLibrary.Tests.Utils;
 
 namespace FPLibrary.Tests.Maybe {
-    public class MaybeMonadLawTests {
+    public class MonadLawTests {
         //m == m >>= Return
         [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
         public void RightIdentityHolds(Maybe<object> m) {

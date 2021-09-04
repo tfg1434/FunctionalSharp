@@ -9,10 +9,10 @@ using static FPLibrary.Tests.Utils;
 using FPLibrary;
 
 namespace FPLibrary.Tests.Maybe {
-    public class MaybeApplicativeLawTests {
+    public class ApplicativeLawTests {
         //Return x <*> v == v
         [Property(Arbitrary = new[] {typeof(ArbitraryMaybe)})]
-        public void ApplicativeIdentityHolds(Maybe<object> v) {
+        public void IdentityHolds(Maybe<object> v) {
             Func<object, object> ident = x => x;
             Maybe<object> actual = Just(ident).Apply(v);
             Maybe<object> expected = v;
