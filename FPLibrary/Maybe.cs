@@ -33,7 +33,7 @@ namespace FPLibrary {
 
         public static implicit operator Maybe<T>(NothingType _) => default;
 
-        public static implicit operator Maybe<T>(T t)
+        public static implicit operator Maybe<T>(T? t)
             => t is null ? Nothing : Just(t);
 
         public R Match<R>(Func<R> nothing, Func<T, R> just)
