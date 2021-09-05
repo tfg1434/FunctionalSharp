@@ -39,7 +39,7 @@ namespace FPLibrary.Tests.Maybe {
         [Property]
         public void Map_Int_Just(int x) {
             Maybe<int> m = Just(x);
-            m.Map(times2);
+            m.Map(Times2);
 
             Assert.True(m.IsJust);
         }
@@ -47,7 +47,7 @@ namespace FPLibrary.Tests.Maybe {
         [Fact]
         public void Map_Int_Nothing() {
             Maybe<int> m = Nothing;
-            m.Map(times2);
+            m.Map(Times2);
 
             Assert.True(m.IsNothing);
         }
@@ -55,9 +55,9 @@ namespace FPLibrary.Tests.Maybe {
 
         [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
         public void LinqQuery_SingleClause(Maybe<int> m) {
-            Maybe<int> expected = m.Map(times2);
+            Maybe<int> expected = m.Map(Times2);
             Maybe<int> actual = from x in m 
-                                select times2(x);
+                                select Times2(x);
             
             Assert.Equal(expected, actual);
         }

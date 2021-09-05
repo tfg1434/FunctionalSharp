@@ -9,11 +9,11 @@ using static System.Diagnostics.Debug;
 
 #nullable enable
 
-Func<int, int> times2 = x => x * 2;
-Func<int, int> plus5 = x => x + 5;
+Func<int, int> Times2 = x => x * 2;
+Func<int, int> Plus5 = x => x + 5;
 
 Maybe<int> m = Just(5);
 
-Maybe<int> expected = m.Map(times2).Map(plus5);
-Maybe<int> actual = m.Map(x => times2(plus5(x)));
+Maybe<int> expected = m.Map(Times2).Map(Plus5);
+Maybe<int> actual = m.Map(x => Times2(Plus5(x)));
 

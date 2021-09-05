@@ -32,8 +32,8 @@ namespace FPLibrary.Tests.Maybe {
         [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
         public void AssociativeHolds(Maybe<int> m) {
 
-            Func<int, Maybe<int>> f = x => Just(times2(x));
-            Func<int, Maybe<int>> g = x => Just(plus5(x));
+            Func<int, Maybe<int>> f = x => Just(Times2(x));
+            Func<int, Maybe<int>> g = x => Just(Plus5(x));
 
             Maybe<int> expected = m.Bind(f).Bind(g);
             Maybe<int> actual = m.Bind(x => f(x).Bind(g));

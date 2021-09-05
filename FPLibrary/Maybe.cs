@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using Unit = System.ValueTuple;
@@ -77,6 +78,24 @@ namespace FPLibrary {
 
         public static Maybe<R> Map<T, R>(this Maybe<T> maybeT, Func<T, R> f)
             => maybeT.Match(() => Nothing, (t) => Just(f(t)));
+
+        public static Maybe<Func<T2, R>> Map<T1, T2, R>(this Maybe<T1> self, Func<T1, T2, R> f)
+            => self.Map(f.CurryFirst());
+
+        public static Maybe<Func<T2, T3, R>> Map<T1, T2, T3, R>(this Maybe<T1> self, Func<T1, T2, T3, R> f)
+            => self.Map(f.CurryFirst());
+
+        public static Maybe<Func<T2, T3, T4, R>> Map<T1, T2, T3, T4, R>(this Maybe<T1> self, Func<T1, T2, T3, T4, R> f)
+            => self.Map(f.CurryFirst());
+
+        public static Maybe<Func<T2, T3, T4, T5, R>> Map<T1, T2, T3, T4, T5, R>(this Maybe<T1> self, Func<T1, T2, T3, T4, T5, R> f)
+            => self.Map(f.CurryFirst());
+
+        public static Maybe<Func<T2, T3, T4, T5, T6, R>> Map<T1, T2, T3, T4, T5, T6, R>(this Maybe<T1> self, Func<T1, T2, T3, T4, T5, T6, R> f)
+            => self.Map(f.CurryFirst());
+
+        public static Maybe<Func<T2, T3, T4, T5, T6, T7, R>> Map<T1, T2, T3, T4, T5, T6, T7, R>(this Maybe<T1> self, Func<T1, T2, T3, T4, T5, T6, T7, R> f)
+            => self.Map(f.CurryFirst());
 
         public static Maybe<Unit> ForEach<T>(this Maybe<T> maybe, Action<T> act)
             => Map(maybe, act.ToFunc());

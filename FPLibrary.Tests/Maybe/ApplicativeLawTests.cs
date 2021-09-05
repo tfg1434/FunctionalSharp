@@ -26,8 +26,8 @@ namespace FPLibrary.Tests.Maybe {
             Func<Func<int, int>, Func<int, int>, Func<int, int>> compose
                 = (f, g) => x => f(g(x));
 
-            Maybe<Func<int, int>> u = uIsJust ? Just(times2) : Nothing;
-            Maybe<Func<int, int>> v = vIsJust ? Just(plus5) : Nothing;
+            Maybe<Func<int, int>> u = uIsJust ? Just(Times2) : Nothing;
+            Maybe<Func<int, int>> v = vIsJust ? Just(Plus5) : Nothing;
 
             Maybe<int> expected = Just(compose)
                 .Apply(u)
@@ -41,8 +41,8 @@ namespace FPLibrary.Tests.Maybe {
         //Return f <*> Return x == Return $ f x
         [Property]
         public void HomomorphismHolds(int x) {
-            Maybe<int> expected = Just(times2).Apply(Just(x));
-            Maybe<int> actual = Just(times2(x));
+            Maybe<int> expected = Just(Times2).Apply(Just(x));
+            Maybe<int> actual = Just(Times2(x));
 
             Assert.Equal(expected, actual);
         }
@@ -52,7 +52,7 @@ namespace FPLibrary.Tests.Maybe {
         //($ y) == \f -> f $ y
         [Property]
         public void InterchangeHolds(bool uIsJust, int y) {
-            Maybe<Func<int, int>> u = uIsJust ? Just(times2) : Nothing;
+            Maybe<Func<int, int>> u = uIsJust ? Just(Times2) : Nothing;
 
             Maybe<int> expected = u.Apply(Just(y));
             Maybe<int> actual = 
