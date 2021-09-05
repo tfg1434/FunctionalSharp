@@ -6,8 +6,11 @@ namespace FPLibrary.Tests {
         public static void Fail() => Assert.True(false);
         public static void Succeed() => Assert.True(true);
 
-        public static readonly Func<int, int> Plus5 = x => x + 5;
+        //just random numbers
         public static readonly Func<int, int> Times2 = x => x * 2;
+        public static readonly Func<int, int> Plus5 = x => x + 5;
+        public static readonly Func<int, int> Plus7 = x => x + 7;
+
         public static readonly Func<int, int, int> Add = (i, j) => i + j;
         public static readonly Func<int, int, int, int> Add3 =
             (a, b, c) => a + b + c;

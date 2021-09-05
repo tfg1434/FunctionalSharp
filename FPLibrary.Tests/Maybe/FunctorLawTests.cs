@@ -19,7 +19,7 @@ namespace FPLibrary.Tests.Maybe {
 
         //fmap (f . g) == fmap f . fmap g
         [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
-        public static void CompositionHolds(Maybe<int> m) {
+        public void CompositionHolds(Maybe<int> m) {
             Maybe<int> expected = m.Map(Times2).Map(Plus5);
             Maybe<int> actual = m.Map(x => Plus5(Times2(x)));
 
