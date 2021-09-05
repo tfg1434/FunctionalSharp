@@ -36,6 +36,23 @@ namespace FPLibrary.Tests.Maybe {
                     _ => Fail());
         }
 
+        [Property]
+        public void Map_Int_Just(int x) {
+            Maybe<int> m = Just(x);
+            m.Map(times2);
+
+            Assert.True(m.IsJust);
+        }
+
+        [Fact]
+        public void Map_Int_Nothing() {
+            Maybe<int> m = Nothing;
+            m.Map(times2);
+
+            Assert.True(m.IsNothing);
+        }
+
+
         [Property(Arbitrary = new[] { typeof(ArbitraryMaybe) })]
         public void LinqQuery_SingleClause(Maybe<int> m) {
             Maybe<int> expected = m.Map(times2);
