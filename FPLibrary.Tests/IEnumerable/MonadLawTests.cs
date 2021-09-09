@@ -9,22 +9,18 @@ using static FPLibrary.Tests.Utils;
 
 namespace FPLibrary.Tests.IEnumerable {
     public class MonadLawTests {
-        //m == m >>= Return
-        [Property]
-        public void RightIdentityHolds(IEnumerable<object> x) {
-            
-        }
-
-        //Return t >== f == f t
-        [Property]
-        public void LeftIdentityHolds(NonNull<object> x) {
-            
-        }
+        //sorta a monad, but no implementation of Return
 
         //(m >>= f) >>= g == m >>= (x => f(x) >>= g)
-        [Property]
-        public void AssociativeHolds(Maybe<int> m) {
-            
+        [Property(Arbitrary = new[] { typeof(ArbitraryIEnumerable) })]
+        public void AssociativeHolds(IEnumerable<int> m) {
+            Func<int, IEnumerable<int>> f = x => new[] { Times2(x) };
+            Func<int, IEnumerable<int>> g = x => new[] {Plus5(x)};
+
+            IEnumerable<int> expected = m.Bind(f).Bind(g);
+            IEnumerable<int> actual = m.Bind(x => f(x).Bind(g));
+
+            Assert.Equal(expected, actual);
         }
     }
 }
