@@ -22,5 +22,14 @@ namespace FPLibrary {
         //give IEnumerable<R> instead of IEnumerable<Maybe<R>> (Map)
         public static IEnumerable<R> Bind<T, R>(this IEnumerable<T> ts, Func<T, Maybe<R>> f)
             => ts.Bind(t => f(t).AsEnumerable());
+
+
+        public static Maybe<T> Find<T>(this IEnumerable<T> ts, Func<T, bool> p) {
+            foreach (T t in ts)
+                if (p(t))
+                    return t;
+
+            return Nothing;
+        }
     }
 }
