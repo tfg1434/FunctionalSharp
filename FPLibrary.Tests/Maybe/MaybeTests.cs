@@ -11,9 +11,9 @@ using FsCheck.Xunit;
 namespace FPLibrary.Tests.Maybe {
     static class ArbitraryMaybe {
         public static Arbitrary<Maybe<T>> Maybe<T>() {
-            var gen = from isJust in Arb.Generate<bool>()
-                from val in Arb.Generate<T>()
-                select isJust && val is not null ? Just(val) : Nothing;
+            Gen<Maybe<T>> gen = from isJust in Arb.Generate<bool>() 
+                                from val in Arb.Generate<T>() 
+                                select isJust && val is not null ? Just(val) : Nothing;
 
             return gen.ToArbitrary();
         }
