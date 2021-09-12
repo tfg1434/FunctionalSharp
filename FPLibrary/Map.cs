@@ -3,17 +3,39 @@ using System.Collections.Generic;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> where K : IComparable<K> {
+        public static readonly Map<K, V> Empty = new();
         private readonly int count;
         private readonly Node root;
 
-        private Map(Node root, int count) {
-            this.root = root;
-            this.count = count;
-            root.Freeze();
+        private readonly IComparer<K> keyComparer;
+        private readonly IEqualityComparer<V> valComparer;
+
+        #region Ctors
+
+        private Map() {
+            root = Node.Empty;
+            keyComparer = Comparer<K>.Default;
+            valComparer = EqualityComparer<V>.Default;
         }
 
-        private Map() => root = Node.Empty;
+        internal Map(IComparer<K> keyComparer, IEqualityComparer<V> valComparer) : this() {
+            this.keyComparer = keyComparer;
+            this.valComparer = valComparer;
+        }
 
+        private Map(Node root, int count, IComparer<K> keyComparer, 
+            IEqualityComparer<V> valComparer) : this(keyComparer, valComparer) {
+
+            root.Freeze();
+            this.root = root;
+            this.count = count;
+        }
+
+        #endregion
+
+        #region Properties
+                
+        #endregion
 
 
         internal enum KeyCollisionBehaviour {
