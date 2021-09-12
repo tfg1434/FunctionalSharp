@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices.ComTypes;
 using FPLibrary;
 using static FPLibrary.F;
 
@@ -38,11 +39,27 @@ namespace FPLibrary {
             #endregion
 
             internal void Freeze() {
-                if (!frozen) {
-                    left!.Freeze();
-                    right!.Freeze();
-                    frozen = true;
-                }
+                if (frozen) return;
+
+                left!.Freeze();
+                right!.Freeze();
+                frozen = true;
+            }
+
+            internal (Node Node, bool Mutated) Add(IComparer<K> keyComparer,
+                IEqualityComparer<V> valComparer, K _key, V val) {
+
+                (Node node, _, bool mutated) = SetOrAdd(keyComparer, valComparer, false, _key, val);
+
+                return (node, mutated);
+            }
+
+            internal (Node Node, bool Mutated) Set(IComparer<K> keyComparer, 
+                IEqualityComparer<V> valComparer, K _key, V val) {
+
+                (Node node, _, bool mutated) = SetOrAdd(keyComparer, valComparer, true, _key, val);
+
+                return (node, mutated);
             }
 
             #region Balancing methods
@@ -84,9 +101,9 @@ namespace FPLibrary {
                 if (frozen)
                     return new(key, value, _left ?? left, _right ?? right);
 
-                if (left is not null)
+                if (_left is not null)
                     left = _left;
-                if (right is not null)
+                if (_right is not null)
                     right = _right;
                 height = checked((byte) (1 + Math.Max(left.height, right.height)));
 
@@ -94,7 +111,7 @@ namespace FPLibrary {
             }
 
             private (Node Node, bool Replaced, bool Mutated) SetOrAdd(IComparer<K> keyComparer,
-                IEqualityComparer<V> valComparer, bool overwrite, K key, V val) {
+                IEqualityComparer<V> valComparer, bool overwrite, K _key, V val) {
 
                 //no arg validation because recursive
 
@@ -106,7 +123,7 @@ namespace FPLibrary {
                     (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
                         => node.SetOrAdd(keyComparer, valComparer, overwrite, key, val);
 
-                    switch (keyComparer.Compare(key, this.key)) {
+                    switch (keyComparer.Compare(_key, key)) {
                         case > 0:
                             (Node newRight, bool replaced, bool mutated) = setOrAdd(right!);
 
@@ -134,11 +151,11 @@ namespace FPLibrary {
                 }
             }
 
-            private Node Search(IComparer<K> keyComparer, K key) {
+            private Node Search(IComparer<K> keyComparer, K _key) {
                 if (IsEmpty) 
                     return this;
 
-                return keyComparer.Compare(key, this.key) switch {
+                return keyComparer.Compare(_key, key) switch {
                     0 => this,
                     > 0 => right!.Search(keyComparer, key),
                     _ => left!.Search(keyComparer, key),
