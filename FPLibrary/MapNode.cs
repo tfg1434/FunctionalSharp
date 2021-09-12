@@ -133,6 +133,17 @@ namespace FPLibrary {
                     }
                 }
             }
+
+            private Node Search(IComparer<K> keyComparer, K key) {
+                if (IsEmpty) 
+                    return this;
+
+                return keyComparer.Compare(key, this.key) switch {
+                    0 => this,
+                    > 0 => right!.Search(keyComparer, key),
+                    _ => left!.Search(keyComparer, key),
+                };
+            }
         }
     }
 }
