@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
+using System.Linq;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> where K : IComparable<K> {
@@ -46,15 +46,56 @@ namespace FPLibrary {
                 ? this
                 : Empty.WithComparers(keyComparer, valComparer);
 
+        public Map<K, V> SetItem(K key, V value) {
+            (Node newRoot, bool replaced, _) = root.Set(keyComparer, valComparer, key, value);
+
+            return Wrap(newRoot, replaced ? count : count + 1);
+        }
+
         public Map<K, V> WithComparers(IComparer<K> _keyComparer,
             IEqualityComparer<V> _valComparer) {
 
             if (_keyComparer == keyComparer) {
-                //if keyComparer is same but val is not
+                //structure doesn't depend on valComparer, so just one new node
                 return _valComparer == valComparer
                     ? this
                     : new(root, count, keyComparer, _valComparer);
+            } else {
+                //structure does depend on keyComparer
+                return new(Node.Empty, 0, keyComparer, valComparer)
+                    .AddRange(this, overwrite: false);
             }
+        }
+
+        public Map<K, V> WithDefaultComparers()
+            => WithComparers(Comparer<K>.Default, EqualityComparer<V>.Default);
+
+        private Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items, bool overwrite, bool avoidMap) {
+            //not in terms of Add so no need for new wrapper per item
+            //var result = _root;
+            //var count = _count;
+            //foreach (var item in items) {
+            //    bool mutated;
+            //    bool replacedExistingValue = false;
+            //    var newResult = overwriteOnCollision
+            //        ? result.SetItem(item.Key, item.Value, _keyComparer, _valueComparer, out replacedExistingValue, out mutated)
+            //        : result.Add(item.Key, item.Value, _keyComparer, _valueComparer, out mutated);
+            //    if (mutated) {
+            //        result = newResult;
+            //        if (!replacedExistingValue) {
+            //            count++;
+            //        }
+            //    }
+            //}
+
+            //return this.Wrap(result, count);
+
+            int count = 0;
+            items.Aggregate((root, count), (acc, item) => {
+                var newAcc = overwrite
+                    ? acc.root.Set(keyComparer, valComparer, item.Key, item.Value)
+                    : acc.root.Add(keyComparer, valComparer, item.Key, item.Value)
+            });
         }
 
         private Map<K, V> Wrap(Node _root, int adjustedCount) =>

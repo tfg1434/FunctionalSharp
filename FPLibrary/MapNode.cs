@@ -54,12 +54,12 @@ namespace FPLibrary {
                 return (node, mutated);
             }
 
-            internal (Node Node, bool Mutated) Set(IComparer<K> keyComparer, 
+            internal (Node Node, bool replaced, bool Mutated) Set(IComparer<K> keyComparer, 
                 IEqualityComparer<V> valComparer, K _key, V val) {
 
-                (Node node, _, bool mutated) = SetOrAdd(keyComparer, valComparer, true, _key, val);
+                (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valComparer, true, _key, val);
 
-                return (node, mutated);
+                return (node, replaced, mutated);
             }
 
             #region Balancing methods
