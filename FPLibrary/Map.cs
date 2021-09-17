@@ -90,16 +90,23 @@ namespace FPLibrary {
 
             //return this.Wrap(result, count);
 
-            int count = 0;
-            items.Aggregate((root, count), (acc, item) => {
-                var newAcc = overwrite
-                    ? acc.root.Set(keyComparer, valComparer, item.Key, item.Value)
-                    : acc.root.Add(keyComparer, valComparer, item.Key, item.Value)
+            //TODO: mix definition and setting
+
+            (Node Root, int Count) seed = (root, count);
+            (Node Root, int Count) res = items.Aggregate(seed, (acc, item) => {
+                Node node;
+                bool replaced = false, mutated;
+                if (overwrite)
+                    (node, replaced, mutated) = acc.Root.Set(keyComparer, valComparer, item.Key, item.Value);
+                else
+                    (node, mutated) = acc.Root.Add(keyComparer, valComparer, item.Key, item.Value);
+
+                return (node, replaced ? acc.Count : acc.Count + 1);
             });
         }
 
-        private Map<K, V> Wrap(Node _root, int adjustedCount) =>
-            _root == root
+        private Map<K, V> Wrap(Node _root, int adjustedCount)
+            => _root == root 
                 ? this
                 : _root.IsEmpty
                     ? Clear()

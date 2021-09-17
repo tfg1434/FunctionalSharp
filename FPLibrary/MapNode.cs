@@ -54,7 +54,7 @@ namespace FPLibrary {
                 return (node, mutated);
             }
 
-            internal (Node Node, bool replaced, bool Mutated) Set(IComparer<K> keyComparer, 
+            internal (Node Node, bool Replaced, bool Mutated) Set(IComparer<K> keyComparer, 
                 IEqualityComparer<V> valComparer, K _key, V val) {
 
                 (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valComparer, true, _key, val);
