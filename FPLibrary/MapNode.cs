@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
 using FPLibrary;
 using static FPLibrary.F;
 
@@ -64,7 +65,30 @@ namespace FPLibrary {
 
             #region Balancing methods
 
+            /*
+            a
+             \
+              b
+               \
+                c
+            
+            b becomes the new root
+            a takes b's left node (null)
+            b takes a as left
+            */
             private static Node RotateLeft(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
+                Debug.Assert(!tree.IsEmpty);
+
+                if (tree.right!.IsEmpty)
+                    return tree;
+
+                Node right = tree.right;
+                return right.Mutate(
+                    //right.left = tree
+                    _left: tree.Mutate(
+                        //tree.left = right.left
+                        _right : right.left));
 
             }
 
@@ -81,7 +105,7 @@ namespace FPLibrary {
             }
 
             private static int Balance(Node tree)
-                => tree.right.height - tree.left.height;
+                => tree.right!.height - tree.left!.height;
 
             private static bool IsRightHeavy(Node tree)
                 => Balance(tree) >= 2;
