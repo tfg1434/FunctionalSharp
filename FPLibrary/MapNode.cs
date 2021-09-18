@@ -88,12 +88,36 @@ namespace FPLibrary {
                     //right.left = tree
                     _left: tree.Mutate(
                         //tree.left = right.left
-                        _right : right.left));
-
+                        _right: right.left));
             }
 
-            private static Node RotateRight(Node tree) {
+            /*
+                c
+               /
+              b
+             /
+            a
 
+            b becomes the new root
+            c takes b's right child (null) as its left child
+            b takes c as it's right child
+            */
+            private static Node RotateRight(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
+                Debug.Assert(!tree.IsEmpty);
+
+                if (tree.left!.IsEmpty)
+                    return tree;
+
+                Node left = tree.left;
+                return left.Mutate(
+                    //left.right = tree
+                    _right: tree.Mutate(
+                        //tree.left = left.right
+                        _left: left.right));
+
+                //tree.left = left.right;
+                //left.right = tree;
             }
 
             private static Node DoubleLeft(Node tree) {
