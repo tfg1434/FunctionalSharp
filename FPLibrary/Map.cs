@@ -62,47 +62,33 @@ namespace FPLibrary {
                     : new(root, count, keyComparer, _valComparer);
             } else {
                 //structure does depend on keyComparer
-                return new(Node.Empty, 0, keyComparer, valComparer)
-                    .AddRange(this, overwrite: false);
+                return new Map<K, V>(Node.Empty, 0, keyComparer, valComparer)
+                    .AddRange(this, false, false);
             }
         }
 
         public Map<K, V> WithDefaultComparers()
             => WithComparers(Comparer<K>.Default, EqualityComparer<V>.Default);
 
+        public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items)
+            => AddRange(items, false, false);
+
         private Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items, bool overwrite, bool avoidMap) {
             //not in terms of Add so no need for new wrapper per item
-            //var result = _root;
-            //var count = _count;
-            //foreach (var item in items) {
-            //    bool mutated;
-            //    bool replacedExistingValue = false;
-            //    var newResult = overwriteOnCollision
-            //        ? result.SetItem(item.Key, item.Value, _keyComparer, _valueComparer, out replacedExistingValue, out mutated)
-            //        : result.Add(item.Key, item.Value, _keyComparer, _valueComparer, out mutated);
-            //    if (mutated) {
-            //        result = newResult;
-            //        if (!replacedExistingValue) {
-            //            count++;
-            //        }
-            //    }
-            //}
-
-            //return this.Wrap(result, count);
-
-            //TODO: mix definition and setting
 
             (Node Root, int Count) seed = (root, count);
             (Node Root, int Count) res = items.Aggregate(seed, (acc, item) => {
                 Node node;
-                bool replaced = false, mutated;
+                bool replaced = false;
                 if (overwrite)
-                    (node, replaced, mutated) = acc.Root.Set(keyComparer, valComparer, item.Key, item.Value);
+                    (node, replaced, _) = acc.Root.Set(keyComparer, valComparer, item.Key, item.Value);
                 else
-                    (node, mutated) = acc.Root.Add(keyComparer, valComparer, item.Key, item.Value);
+                    (node, _) = acc.Root.Add(keyComparer, valComparer, item.Key, item.Value);
 
                 return (node, replaced ? acc.Count : acc.Count + 1);
             });
+
+            return Wrap(res.Root, res.Count);
         }
 
         private Map<K, V> Wrap(Node _root, int adjustedCount)
