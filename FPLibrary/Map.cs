@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace FPLibrary {
-    public sealed partial class Map<K, V> where K : IComparable<K> {
+    public static partial class F {
+        public static Map<K, V> CreateRange<K, V>(IEnumerable<KeyValuePair<K, V>> items) where K : notnull
+            => Map<K, V>.Empty.AddRange(items);
+    }
+    
+    public sealed partial class Map<K, V> where K : notnull {
         public static readonly Map<K, V> Empty = new();
         private readonly int count;
         private readonly Node root;
@@ -63,7 +68,7 @@ namespace FPLibrary {
             } else {
                 //structure does depend on keyComparer
                 return new Map<K, V>(Node.Empty, 0, keyComparer, valComparer)
-                    .AddRange(this, false, false);
+                    .AddRange(/*this*/ new [] { new KeyValuePair<K, V>(default, default) }, false, false);
             }
         }
 

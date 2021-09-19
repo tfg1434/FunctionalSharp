@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using FPLibrary;
 using static FPLibrary.F;
+using System.Linq;
 
 namespace FPLibrary {
-    public sealed partial class Map<K, V> where K : IComparable<K> {
+    public sealed partial class Map<K, V> where K : notnull {
         internal sealed class Node {
             internal static readonly Node Empty = new();
             private readonly K key = default!;
