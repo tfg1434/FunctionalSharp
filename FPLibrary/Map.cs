@@ -94,7 +94,14 @@ namespace FPLibrary {
             return Wrap(res.Root, res.Count);
         }
 
-        private Map<K, V> Wrap(Node _root, int adjustedCount)
+        // private Map<K, V> Wrap(Node _root, int adjustedCount)
+        //     => _root == root 
+        //         ? this
+        //         : _root.IsEmpty
+        //             ? Clear()
+        //             : new(_root, adjustedCount, keyComparer, valComparer);
+        
+        private Func<Node, int, Map<K, V>> Wrap => (_root, adjustedCount)
             => _root == root 
                 ? this
                 : _root.IsEmpty

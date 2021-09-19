@@ -18,12 +18,13 @@ namespace FPLibrary {
         #endregion
 
         #region Methods
-
-        new Func<Node, int, Map<K, V>>(Wrap).Apply();
-
         public IImmutableDictionary<K, V> Add(K key, V val)
-            => Wrap(root.Add(keyComparer, valComparer, key, val).Node, count + 1);
-
+            => root
+                .Add(keyComparer, valComparer, key, val).Node
+                .Pipe(
+                    Wrap
+                        .Flip()
+                        .Apply(count + 1));
         IImmutableDictionary<K, V> IImmutableDictionary<K, V>.Clear() => Clear();
 
         #endregion
