@@ -72,7 +72,15 @@ namespace FPLibrary {
 
         public Map<K, V> WithDefaultComparers()
             => WithComparers(Comparer<K>.Default, EqualityComparer<V>.Default);
-
+        
+        public Map<K, V> Add(K key, V val)
+            => root
+                .Add(keyComparer, valComparer, key, val).Node
+                .Pipe(
+                    Wrap
+                        .Flip()
+                        .Apply(count + 1));
+        
         public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items)
             => AddRange(items, false, false);
 
