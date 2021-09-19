@@ -136,7 +136,7 @@ namespace FPLibrary {
              / \
             a   c
             */
-            private static Node DoubleLeft(Node tree) {
+            private static Node RotateLR(Node tree) {
                 if (tree is null) throw new ArgumentNullException(nameof(tree));
                 
                 if (tree.right!.IsEmpty)
@@ -166,7 +166,7 @@ namespace FPLibrary {
              /  \
             a    c
             */
-            private static Node DoubleRight(Node tree) {
+            private static Node RotateRL(Node tree) {
                 if (tree is null) throw new ArgumentNullException(nameof(tree));
 
                 if (tree.left!.IsEmpty)
@@ -177,17 +177,25 @@ namespace FPLibrary {
                     .Pipe(RotateRight);
             }
 
-            private static int Balance(Node tree)
+            private static int BalanceFactor(Node tree)
                 => tree.right!.height - tree.left!.height;
 
             private static bool IsRightHeavy(Node tree)
-                => Balance(tree) >= 2;
+                => BalanceFactor(tree) >= 2;
 
             private static bool IsLeftHeavy(Node tree)
-                => Balance(tree) <= -2;
-
+                => BalanceFactor(tree) <= -2;
+            
             private static Node MakeBalanced(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
+                Debug.Assert(!tree.IsEmpty);
 
+                if (IsRightHeavy(tree))
+                    return BalanceFactor(tree.right!) < 0 ? RotateLR(tree) : RotateLeft(tree);
+                else if (IsLeftHeavy(tree))
+                    return BalanceFactor(tree.left!) < 0 ? RotateRL(tree) : RotateRight(tree);
+
+                return tree;
             }
 
             #endregion
