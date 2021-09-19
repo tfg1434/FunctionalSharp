@@ -17,22 +17,20 @@ namespace FPLibrary {
         private readonly IEqualityComparer<V> valComparer;
 
         #region Ctors
-
+        
+        //default comparer overload
         private Map() {
             root = Node.Empty;
             keyComparer = Comparer<K>.Default;
             valComparer = EqualityComparer<V>.Default;
         }
-
-        internal Map(IComparer<K> keyComparer, IEqualityComparer<V> valComparer) {
-            root = Node.Empty;
+        
+        internal Map(IComparer<K> keyComparer, IEqualityComparer<V> valComparer) : this() {
             this.keyComparer = keyComparer;
             this.valComparer = valComparer;
         }
 
-        private Map(Node root, int count, IComparer<K> keyComparer,
-            IEqualityComparer<V> valComparer) {
-
+        private Map(Node root, int count, IComparer<K> keyComparer, IEqualityComparer<V> valComparer) {
             root.Freeze();
             this.root = root;
             this.count = count;

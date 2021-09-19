@@ -3,15 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using FPLibrary;
 using static FPLibrary.F;
 
 namespace FPLibrary {
-    public sealed partial class Map<K, V> : IDictionary<K, V> where K : notnull {
-        // private int count1;
-        // private bool isReadOnly;
-        // private ICollection<K> keys;
-        // private ICollection<V> values;
-        //
+    public sealed partial class Map<K, V> : IImmutableDictionary<K, V> where K : notnull {
+        #region Properties
+        
+        public int Count => count;
+        public IEnumerable<K> Keys => throw new NotImplementedException();
+        public IEnumerable<V> Values => throw new NotImplementedException();
+        public V this[K key] => throw new NotImplementedException();
+
+        #endregion
+
+        #region Methods
+
+        new Func<Node, int, Map<K, V>>(Wrap).Apply();
+
+        public IImmutableDictionary<K, V> Add(K key, V val)
+            => Wrap(root.Add(keyComparer, valComparer, key, val).Node, count + 1);
+
+        IImmutableDictionary<K, V> IImmutableDictionary<K, V>.Clear() => Clear();
+
+        #endregion
+        
+
         // IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator() => throw new NotImplementedException();
         //
         // IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
