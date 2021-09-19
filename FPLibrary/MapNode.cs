@@ -142,12 +142,39 @@ namespace FPLibrary {
                 if (tree.right!.IsEmpty)
                     return tree;
 
-                return tree.Mutate(_right: RotateRight(tree.right))
+                return tree
+                    .Mutate(_right: RotateRight(tree.right))
                     .Pipe(RotateLeft);
             }
-
+            
+            /*
+              c
+             /
+            a
+             \
+              b
+            
+            1. left rotate left subtree
+                c
+               /
+              b
+             /
+            a
+            
+            2. perform right rotation
+               b
+             /  \
+            a    c
+            */
             private static Node DoubleRight(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
 
+                if (tree.left!.IsEmpty)
+                    return tree;
+
+                return tree
+                    .Mutate(_left: RotateLeft(tree.left))
+                    .Pipe(RotateRight);
             }
 
             private static int Balance(Node tree)
