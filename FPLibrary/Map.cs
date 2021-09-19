@@ -68,7 +68,7 @@ namespace FPLibrary {
             } else {
                 //structure does depend on keyComparer
                 return new Map<K, V>(Node.Empty, 0, keyComparer, valComparer)
-                    .AddRange(/*this*/ new [] { new KeyValuePair<K, V>(default, default) }, false, false);
+                    .AddRange(this, false, false);
             }
         }
 

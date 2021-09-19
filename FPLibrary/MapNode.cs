@@ -221,12 +221,12 @@ namespace FPLibrary {
                 //no arg validation because recursive
 
                 if (IsEmpty)
-                    return (new(key, value, this, this), false, true);
+                    return (new(_key, val, this, this), false, true);
                 else {
                     //TODO: mix assignment and creation in deconstruction and/or better chaining
 
                     (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
-                        => node.SetOrAdd(keyComparer, valComparer, overwrite, key, val);
+                        => node.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
 
                     switch (keyComparer.Compare(_key, key)) {
                         case > 0:
@@ -249,7 +249,7 @@ namespace FPLibrary {
                             if (valComparer.Equals(value, val))
                                 return (this, false, false);
                             else if (overwrite)
-                                return (new(key, value, left!, right!), true, true);
+                                return (new(_key, val, left!, right!), true, true);
                             else
                                 throw new ArgumentException("Duplicate key: ", nameof(key));
                     }
