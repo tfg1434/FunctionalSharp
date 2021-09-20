@@ -20,7 +20,7 @@ namespace FPLibrary {
         
         //default comparer overload
         private Map() {
-            root = Node.Empty;
+            root = Node.EmptyNode;
             keyComparer = Comparer<K>.Default;
             valComparer = EqualityComparer<V>.Default;
         }
@@ -67,7 +67,7 @@ namespace FPLibrary {
                     : new(root, count, keyComparer, _valComparer);
             } else {
                 //structure does depend on keyComparer
-                return new Map<K, V>(Node.Empty, 0, keyComparer, valComparer)
+                return new Map<K, V>(Node.EmptyNode, 0, keyComparer, valComparer)
                     .AddRange(this, false, false);
             }
         }
