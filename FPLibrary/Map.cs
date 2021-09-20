@@ -41,7 +41,9 @@ namespace FPLibrary {
         #endregion
 
         #region Properties
-
+        
+        public int Height => he
+        
         #endregion
 
         public Map<K, V> Clear()

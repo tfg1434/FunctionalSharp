@@ -30,11 +30,10 @@ namespace FPLibrary {
                 stack = null;
                 
                 //if passed in a non-empty tree
-                if (!root.IsEmpty) {
-                    stack = new(root.Height);
-                    
-                    LeftToStack(root);
-                }
+                if (root.IsEmpty) return;
+                
+                stack = new(root.Height);
+                LeftToStack(root);
             }
             
             //push provided node and it's left nodes to stack

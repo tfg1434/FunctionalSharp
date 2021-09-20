@@ -22,6 +22,9 @@ namespace FPLibrary {
             #region Properties
 
             public bool IsEmpty => left is null;
+            public int Height => height;
+            public Node? Left => left;
+            public Node? Right => right;
 
             #endregion
 
