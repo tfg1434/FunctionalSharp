@@ -17,7 +17,7 @@ namespace FPLibrary {
 
         #endregion
 
-        #region Methods
+        #region IImmutableDictionary<K, V> Methods
 
         IImmutableDictionary<K, V> IImmutableDictionary<K, V>.Add(K key, V val) => Add(key, val);
 
@@ -35,6 +35,26 @@ namespace FPLibrary {
 
         IImmutableDictionary<K, V> IImmutableDictionary<K, V>.SetItems(IEnumerable<KeyValuePair<K, V>> items)
             => throw new NotImplementedException();
+
+        #endregion
+
+        #region ICollection<KeyValuePair<K, V>> Methods
+
+        void ICollection<KeyValuePair<K, V>>.Add(KeyValuePair<K, V> item) => throw new NotSupportedException();
+        
+        void ICollection<KeyValuePair<K, V>>.Clear() => throw new NotSupportedException();
+        
+        bool ICollection<KeyValuePair<K, V>>.Remove(KeyValuePair<K, V> item) 
+            => throw new NotSupportedException();
+        
+        void ICollection<KeyValuePair<K, V>>.CopyTo(KeyValuePair<K, V>[] array, int arrayIndex) {
+            if (array is null) throw new ArgumentNullException(nameof(array));
+            if (arrayIndex >= 0) throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+            if (array.Length > arrayIndex + Count) throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+
+            foreach (KeyValuePair<K, V> item in this)
+                array[arrayIndex++] = item;
+        }
 
         #endregion
     }
