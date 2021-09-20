@@ -8,6 +8,20 @@ using static FPLibrary.F;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> where K : notnull {
+        #region IEnumerable<KeyValuePair<K, V>>
+
+        IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator()
+            => IsEmpty
+                ? Enumerable.Empty<KeyValuePair<K, V>>().GetEnumerator()
+                : GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
+            
+        public Enumerator GetEnumerator() => root.GetEnumerator();
+
+        #endregion
+        
         public struct Enumerator : IEnumerator<KeyValuePair<K, V>> {
             // 1) Create an empty stack S.
             // 2) Initialize current node as root
@@ -17,7 +31,7 @@ namespace FPLibrary {
             //     b) Print the popped item, set current = popped_item->right 
             //     c) Go to step 3.
             // 5) If current is NULL and stack is empty then we are done.
-
+            
             private readonly Node root;
             private readonly Stack<Node>? stack;
             private Node? current;
@@ -57,7 +71,7 @@ namespace FPLibrary {
                     //stack is not empty
                     Node popped = stack.Pop();
                     current = popped;
-                    LeftToStack(popped.Right);
+                    LeftToStack(popped.Right!);
                     return true;
                 }
                 

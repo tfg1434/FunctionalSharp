@@ -41,8 +41,8 @@ namespace FPLibrary {
         #endregion
 
         #region Properties
-        
-        public int Height => he
+
+        public bool IsEmpty => Count == 0;
         
         #endregion
 
