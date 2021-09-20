@@ -17,7 +17,7 @@ namespace FPLibrary {
             //     b) Print the popped item, set current = popped_item->right 
             //     c) Go to step 3.
             // 5) If current is NULL and stack is empty then we are done.
-            
+
             private readonly Node root;
             private readonly Stack<Node>? stack;
             private Node? current;
@@ -35,11 +35,42 @@ namespace FPLibrary {
                 stack = new(root.Height);
                 LeftToStack(root);
             }
+
+            public KeyValuePair<K, V> Current 
+                => current?.Value ?? throw new InvalidOperationException();
+
+            object IEnumerator.Current => Current;
+
+            public void Reset() {
+                current = null;
+
+                if (stack is null) return;
+                
+                stack.Clear();
+                LeftToStack(root);
+            }
+
+            public void Dispose() { }
+            
+            public bool MoveNext() {
+                if (stack is not null && stack.Count > 0) {
+                    //stack is not empty
+                    Node popped = stack.Pop();
+                    current = popped;
+                    LeftToStack(popped.Right);
+                    return true;
+                }
+                
+                //empty stack
+                current = null;
+                return false;
+            }
             
             //push provided node and it's left nodes to stack
             private void LeftToStack(Node node) {
                 Debug.Assert(stack is not null);
-
+                if (node is null) throw new ArgumentNullException(nameof(node));
+                
                 while (!node.IsEmpty) {
                     stack.Push(node);
                     node = node.Left!;

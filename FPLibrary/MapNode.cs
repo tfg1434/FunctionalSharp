@@ -25,6 +25,7 @@ namespace FPLibrary {
             public int Height => height;
             public Node? Left => left;
             public Node? Right => right;
+            public KeyValuePair<K, V> Value => new(key, value);
 
             #endregion
 
