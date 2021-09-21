@@ -19,7 +19,7 @@ namespace FPLibrary.Tests.IEnumerable {
         }
 
         //fmap (f . g) == fmap f . fmap g
-        [Property]
+        [Property(Arbitrary = new[] { typeof(ArbitraryIEnumerable) })]
         public void CompositionHolds(IEnumerable<int> m) {
             Func<int, int> f = Times2;
             Func<int, int> g = Plus5;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices.ComTypes;
 using Unit = System.ValueTuple;
 
 namespace FPLibrary {
@@ -8,7 +9,11 @@ namespace FPLibrary {
         public static Func<T> ToNullary<T>(this Func<Unit, T> f)
             => () => f(Unit());
 
-        public static Predicate<T> Negate<T>(this Func<T, bool> pred) => t => !pred(t);
+        public static Func<T, bool> Negate<T>(this Func<T, bool> pred) => t => !pred(t);
+
+        public static Func<T2, T1, R> Flip<T1, T2, R>(this Func<T1, T2, R> f) => (t2, t1) => f(t1, t2);
+
+        public static Action<T2, T1> Flip<T1, T2>(this Action<T1, T2> f) => (t2, t1) => f(t1, t2);
 
         public static Func<T2, R> Apply<T1, T2, R>(this Func<T1, T2, R> f, T1 t1)
             => t2 => f(t1, t2);

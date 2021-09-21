@@ -2,14 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
 using FPLibrary;
 using static FPLibrary.F;
+using System.Linq;
 
 namespace FPLibrary {
-    public sealed partial class Map<K, V> where K : IComparable<K> {
-        internal sealed class Node {
-            internal static readonly Node Empty = new();
+    public sealed partial class Map<K, V> where K : notnull {
+        internal sealed partial class Node {
+            internal static readonly Node EmptyNode = new(); //so doesn't hide outer Empty
             private readonly K key = default!;
             private readonly V value = default!;
             private bool frozen;
@@ -21,6 +22,10 @@ namespace FPLibrary {
             #region Properties
 
             public bool IsEmpty => left is null;
+            public int Height => height;
+            public Node? Left => left;
+            public Node? Right => right;
+            public KeyValuePair<K, V> Value => new(key, value);
 
             #endregion
 
@@ -54,7 +59,7 @@ namespace FPLibrary {
                 return (node, mutated);
             }
 
-            internal (Node Node, bool replaced, bool Mutated) Set(IComparer<K> keyComparer, 
+            internal (Node Node, bool Replaced, bool Mutated) Set(IComparer<K> keyComparer, 
                 IEqualityComparer<V> valComparer, K _key, V val) {
 
                 (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valComparer, true, _key, val);
@@ -64,33 +69,137 @@ namespace FPLibrary {
 
             #region Balancing methods
 
+            /*
+            a
+             \
+              b
+               \
+                c
+            
+            b becomes the new root
+            a takes b's left node (null)
+            b takes a as left
+            */
             private static Node RotateLeft(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
+                Debug.Assert(!tree.IsEmpty);
 
+                if (tree.right!.IsEmpty)
+                    return tree;
+
+                Node right = tree.right;
+                return right.Mutate(
+                    //right.left = tree
+                    _left: tree.Mutate(
+                        //tree.left = right.left
+                        _right: right.left));
             }
 
+            /*
+                c
+               /
+              b
+             /
+            a
+
+            b becomes the new root
+            c takes b's right child (null) as its left child
+            b takes c as it's right child
+            */
             private static Node RotateRight(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
+                Debug.Assert(!tree.IsEmpty);
 
+                if (tree.left!.IsEmpty)
+                    return tree;
+
+                Node left = tree.left;
+                return left.Mutate(
+                    //left.right = tree
+                    _right: tree.Mutate(
+                        //tree.left = left.right
+                        _left: left.right));
+            }
+            
+            /*
+            a
+             \
+              c
+             /
+            b
+            
+            1. rotate right subtree
+            a
+             \
+              b
+               \
+                c
+                
+            2. perform left rotation
+              b
+             / \
+            a   c
+            */
+            private static Node RotateLR(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
+                
+                if (tree.right!.IsEmpty)
+                    return tree;
+
+                return tree
+                    .Mutate(_right: RotateRight(tree.right))
+                    .Pipe(RotateLeft);
+            }
+            
+            /*
+              c
+             /
+            a
+             \
+              b
+            
+            1. left rotate left subtree
+                c
+               /
+              b
+             /
+            a
+            
+            2. perform right rotation
+               b
+             /  \
+            a    c
+            */
+            private static Node RotateRL(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
+
+                if (tree.left!.IsEmpty)
+                    return tree;
+
+                return tree
+                    .Mutate(_left: RotateLeft(tree.left))
+                    .Pipe(RotateRight);
             }
 
-            private static Node DoubleLeft(Node tree) {
-
-            }
-
-            private static Node DoubleRight(Node tree) {
-
-            }
-
-            private static int Balance(Node tree)
-                => tree.right.height - tree.left.height;
+            private static int BalanceFactor(Node tree)
+                => tree.right!.height - tree.left!.height;
 
             private static bool IsRightHeavy(Node tree)
-                => Balance(tree) >= 2;
+                => BalanceFactor(tree) >= 2;
 
             private static bool IsLeftHeavy(Node tree)
-                => Balance(tree) <= -2;
-
+                => BalanceFactor(tree) <= -2;
+            
             private static Node MakeBalanced(Node tree) {
+                if (tree is null) throw new ArgumentNullException(nameof(tree));
+                Debug.Assert(!tree.IsEmpty);
 
+                if (IsRightHeavy(tree))
+                    return BalanceFactor(tree.right!) < 0 ? RotateLR(tree) : RotateLeft(tree);
+                else if (IsLeftHeavy(tree))
+                    return BalanceFactor(tree.left!) < 0 ? RotateRL(tree) : RotateRight(tree);
+
+                return tree;
             }
 
             #endregion
@@ -116,12 +225,12 @@ namespace FPLibrary {
                 //no arg validation because recursive
 
                 if (IsEmpty)
-                    return (new(key, value, this, this), false, true);
+                    return (new(_key, val, this, this), false, true);
                 else {
                     //TODO: mix assignment and creation in deconstruction and/or better chaining
 
                     (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
-                        => node.SetOrAdd(keyComparer, valComparer, overwrite, key, val);
+                        => node.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
 
                     switch (keyComparer.Compare(_key, key)) {
                         case > 0:
@@ -144,7 +253,7 @@ namespace FPLibrary {
                             if (valComparer.Equals(value, val))
                                 return (this, false, false);
                             else if (overwrite)
-                                return (new(key, value, left!, right!), true, true);
+                                return (new(_key, val, left!, right!), true, true);
                             else
                                 throw new ArgumentException("Duplicate key: ", nameof(key));
                     }
