@@ -86,6 +86,17 @@ namespace FPLibrary {
         public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items)
             => AddRange(items, false, false);
 
+        public bool Contains(KeyValuePair<K, V> pair) 
+            => root.Contains(keyComparer, valComparer, pair);
+
+        public bool ContainsKey(K key) {
+            if (key is null) throw new ArgumentNullException(nameof(key));
+
+            return root.ContainsKey(keyComparer, key);
+        }
+
+        public bool ContainsValue(V val) => root.ContainsValue(valComparer, val);
+
         private Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items, bool overwrite, bool avoidMap) {
             //not in terms of Add so no need for new wrapper per item
 

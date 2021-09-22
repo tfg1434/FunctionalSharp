@@ -57,5 +57,11 @@ namespace FPLibrary {
         }
 
         #endregion
+
+        #region IDictionary Methods
+
+        bool IDictionary.Contains(object key) => ContainsKey((K) key);
+
+        #endregion
     }
 }

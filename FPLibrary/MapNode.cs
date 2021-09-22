@@ -67,6 +67,35 @@ namespace FPLibrary {
                 return (node, replaced, mutated);
             }
 
+            internal bool Contains(IComparer<K> keyComparer, IEqualityComparer<V> valComparer,
+                KeyValuePair<K, V> pair) {
+
+                if (pair.Key is null) throw new ArgumentException(nameof(pair.Key));
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
+                
+                Node res = Search(keyComparer, pair.Key);
+
+                return !res.IsEmpty && valComparer.Equals(res.value, pair.Value);
+            }
+
+            internal bool ContainsKey(IComparer<K> keyComparer, K _key) {
+                if (_key is null) throw new ArgumentNullException(nameof(_key));
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+
+                return !this.Search(keyComparer, key).IsEmpty;
+            }
+
+            internal bool ContainsValue(IEqualityComparer<V> valComparer, V val) {
+                if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
+
+                foreach (KeyValuePair<K, V> item in this)
+                    if (valComparer.Equals(val, item.Value))
+                        return true;
+                
+                return false;
+            }
+
             #region Balancing methods
 
             /*
