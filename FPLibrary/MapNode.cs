@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FPLibrary;
 using static FPLibrary.F;
@@ -94,6 +95,35 @@ namespace FPLibrary {
                         return true;
                 
                 return false;
+            }
+
+            internal bool TryGetValue(IComparer<K> keyComparer, K _key, [MaybeNullWhen(false)] out V val) {
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (_key is null) throw new ArgumentNullException(nameof(_key));
+
+                Node res = Search(keyComparer, _key);
+                
+                if (res.IsEmpty) {
+                    val = default;
+                    return false;
+                }
+
+                val = res.value;
+                return true;
+            }
+
+            internal bool TryGetKey(IComparer<K> keyComparer, K checkKey, out K realKey) {
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (checkKey is null) throw new ArgumentNullException(nameof(checkKey));
+
+                Node res = Search(keyComparer, checkKey);
+                if (res.IsEmpty) {
+                    realKey = checkKey;
+                    return false;
+                }
+
+                realKey = res.key;
+                return true;
             }
 
             #region Balancing methods

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using static FPLibrary.F;
 
@@ -28,14 +29,13 @@ namespace FPLibrary {
 
         #region IDictionary Properties
 
-        bool IDictionary.IsFixedSize => true;
         
 
         #endregion
 
         #region IDictionary Methods
 
-
+        bool IDictionary.Contains(object key) => ContainsKey((K) key);
 
         #endregion
     }

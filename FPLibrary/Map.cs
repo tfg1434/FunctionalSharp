@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace FPLibrary {
@@ -96,7 +97,19 @@ namespace FPLibrary {
         }
 
         public bool ContainsValue(V val) => root.ContainsValue(valComparer, val);
+        
+        public bool TryGetValue(K key, [MaybeNullWhen(false)] out V val) {
+            if (key is null) throw new ArgumentNullException(nameof(key));
+            
+            return root.TryGetValue(keyComparer, key, out val);
+        }
 
+        public bool TryGetKey(K checkKey, out K realKey) {
+            if (checkKey is null) throw new ArgumentNullException(nameof(checkKey));
+
+            return root.TryGetKey(keyComparer, checkKey, out realKey);
+        }
+        
         private Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items, bool overwrite, bool avoidMap) {
             //not in terms of Add so no need for new wrapper per item
 
