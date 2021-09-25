@@ -54,7 +54,10 @@ namespace FPLibrary {
             get => this[(K) key];
             set => throw new NotSupportedException();
         }
-        
+
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+            => throw new NotImplementedException();
+
         #endregion
     }
 }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace FPLibrary {
     using static F;
 
-    public readonly struct Validation<T> {
-        internal IEnumerable<Error> Errors { get; }
-        internal T Value { get; }
-
-    }
+    // public readonly struct Validation<T> {
+    //     internal IEnumerable<Error> Errors { get; }
+    //     internal T Value { get; }
+    //
+    // }
 }

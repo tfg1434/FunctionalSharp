@@ -110,6 +110,7 @@ namespace FPLibrary {
             return root.TryGetKey(keyComparer, checkKey, out realKey);
         }
         
+        //TODO: avoidMap
         private Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items, bool overwrite, bool avoidMap) {
             //not in terms of Add so no need for new wrapper per item
 
