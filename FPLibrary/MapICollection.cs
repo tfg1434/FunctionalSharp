@@ -38,6 +38,7 @@ namespace FPLibrary {
         #region ICollection Properties
 
         bool ICollection.IsSynchronized => true;
+        
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         object ICollection.SyncRoot => this;
 
