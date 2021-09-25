@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Collections.Generic;
+using System.Linq;
+using FsCheck;
 using Xunit;
 
 namespace FPLibrary.Tests {
@@ -22,5 +26,24 @@ namespace FPLibrary.Tests {
             (a, b, c, d, e, f) => a + b + c + d + e + f;
         public static readonly Func<int, int, int, int, int, int, int, int> Add7 =
             (a, b, c, d, e, f, g) => a + b + c + d + e + f + g;
+    }
+    
+    public static class ArbitraryIEnumerable {
+        private static Gen<IEnumerable<T>> Empty<T>()
+            => Gen.Constant(Enumerable.Empty<T>());
+
+        private static Gen<IEnumerable<T>> NonEmpty<T>()
+            => from head in Arb.Generate<T>()
+               from tail in GenIEnumerable<T>()
+               select ImmutableList.Create(head)
+                   .Concat(tail);
+
+        private static Gen<IEnumerable<T>> GenIEnumerable<T>()
+            => from isEmpty in Arb.Generate<bool>()
+               from list in isEmpty ? Empty<T>() : NonEmpty<T>()
+               select list;
+
+        public static Arbitrary<IEnumerable<T>> IEnumerable<T>()
+            => GenIEnumerable<T>().ToArbitrary();
     }
 }
