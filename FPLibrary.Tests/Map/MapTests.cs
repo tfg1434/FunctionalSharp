@@ -1,36 +1,57 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
+using FPLibrary;
+using static FPLibrary.F;
 
 namespace FPLibrary.Tests.Map {
     public static class ArbitraryMap {
-        private static Gen<Map<K, V>> Empty<K, V>() where K : notnull
-            => Gen.Constant(Map<K, V>.Empty);
+        // private static Gen<Map<K, V>> Empty<K, V>() where K : notnull
+        //     => Gen.Constant(Map<K, V>.Empty);
+        //
+        // private static Gen<Map<K, V>> NonEmpty<K, V>() where K : notnull
+        //     => from key in Arb.Generate<K>()
+        //        from val in Arb.Generate<V>()
+        //        from map in GenMap<K, V>()
+        //        select map.Add(key, val);
+        //
+        // private static Gen<Map<K, V>> GenMap<K, V>() where K : notnull
+        //     => from isEmpty in Arb.Generate<bool>()
+        //        from map in isEmpty ? Empty<K, V>() : NonEmpty<K, V>()
+        //        select map;
+        //
+        // public static Arbitrary<Map<K, V>> IDictionary<K, V>() where K : notnull
+        //     => GenMap<K, V>().ToArbitrary();
 
-        private static Gen<Map<K, V>> NonEmpty<K, V>() where K : notnull
-            => from key in Arb.Generate<K>()
-               from val in Arb.Generate<V>()
-               from map in GenMap<K, V>()
-               select map.Add(key, val);
+        private static Map<K, V> MapFromLists<K, V>(K[] keys, V[] vals) where K : notnull {
+            var map = Map<K, V>.Empty;
+
+            for (int i = 0; i < keys.Length; i++)
+                map = map.Add(keys[i], vals[i]);
+
+            return map;
+        }
 
         private static Gen<Map<K, V>> GenMap<K, V>() where K : notnull
-            => from isEmpty in Arb.Generate<bool>()
-               from map in isEmpty ? Empty<K, V>() : NonEmpty<K, V>()
-               select map;
+            => from length in Arb.Generate<int>()
+               from keys in Gen.ArrayOf(length, Arb.Generate<K>())
+               from vals in Gen.ArrayOf(length, Arb.Generate<V>())
+               select MapFromLists(keys, vals);
 
-        public static Arbitrary<Map<K, V>> IDictionary<K, V>() where K : notnull
+        public static Arbitrary<Map<K, V>> MapArb<K, V>() where K : notnull
             => GenMap<K, V>().ToArbitrary();
     }
     
     public static class ArbitrarySortedDictionary {
-        private static SortedDictionary<K, V> SortedDict<K, V>(K[] keys, V[] vals) where K : notnull {
-
+        private static SortedDictionary<K, V> SortedDictFromLists<K, V>(K[] keys, V[] vals) where K : notnull {
             SortedDictionary<K, V> dict = new();
-            
+
             for (int i = 0; i < keys.Length; i++)
-                dict.Add(keys[i], vals[i]);
+                dict[keys[i]] = vals[i];
 
             return dict;
         }
@@ -39,33 +60,41 @@ namespace FPLibrary.Tests.Map {
             => from length in Arb.Generate<int>()
                from keys in Gen.ArrayOf(length, Arb.Generate<K>())
                from vals in Gen.ArrayOf(length, Arb.Generate<V>())
-               select SortedDict(keys, vals);
+               select SortedDictFromLists(keys, vals);
 
         public static Arbitrary<SortedDictionary<K, V>> SortedDictionary<K, V>() where K : notnull
             => GenSortedDictionary<K, V>().ToArbitrary();
     }
     
     public class MapTests {
-        [Property(Arbitrary = new[] { typeof(ArbitraryIEnumerable) })]
-        public void Add_IntBool_EqualsMutable(IEnumerable<int> keys) {
-            SortedDictionary<int, bool> expected = new();
+        [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
+        public void Add_IntBool_EqualsMutable(SortedDictionary<int, bool> expected) {
             var actual = Map<int, bool>.Empty;
 
-            foreach (int key in keys) {
-                bool val = key % 2 == 0;
-                
-                expected.Add(key, val);
+            foreach ((int key, bool val) in expected)
                 actual = actual.Add(key, val);
-                
-                Assert.Equal(expected.ToList(), actual.ToList());
-            }
+
+            Assert.Equal(expected.ToList(), actual.ToList());
         }
 
-        [Property(Arbitrary = new[] { typeof(ArbitraryIEnumerable) })]
-        public void Set_IntBool_EqualsMutable(IEnumerable<int> keys) {
-            IEnumerable<bool> vals = keys.Select(x => x % 2 == 0);
-            
-            
+        [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
+        public void Set_IntBool_EqualsMutable(SortedDictionary<int, bool> expected) {
+            var actual = Map<int, bool>.Empty;
+
+            foreach ((int key, bool val) in expected) {
+                actual = actual.Add(key, default);
+                actual = actual.SetItem(key, val);
+            }
+
+            var eToList = expected.ToList();
+            var aToList = actual.ToList();
+            if (!eToList.SequenceEqual(aToList)) {
+                int b = 10;
+            }
+            Assert.Equal(expected.ToList(), actual.ToList());
         }
+
+        // [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
+        // public void Remove_IntBool_EqualsMutable
     }
 }

@@ -53,8 +53,11 @@ namespace FPLibrary {
                 : Empty.WithComparers(keyComparer, valComparer);
 
         public Map<K, V> SetItem(K key, V value) {
+            if (key is null) throw new ArgumentNullException(nameof(key));
+            
             (Node newRoot, bool replaced, _) = root.Set(keyComparer, valComparer, key, value);
-
+            
+            //replaced: false
             return Wrap(newRoot, replaced ? count : count + 1);
         }
 
@@ -76,13 +79,18 @@ namespace FPLibrary {
         public Map<K, V> WithDefaultComparers()
             => WithComparers(Comparer<K>.Default, EqualityComparer<V>.Default);
         
-        public Map<K, V> Add(K key, V val)
-            => root
-                .Add(keyComparer, valComparer, key, val).Node
-                .Pipe(
-                    Wrap
-                        .Flip()
-                        .Apply(count + 1));
+        //TODO: Add overload that takes a KeyValuePair<>
+        public Map<K, V> Add(K key, V val) {
+            (Node res, _) = root.Add(keyComparer, valComparer, key, val);
+
+            return Wrap(res, count + 1);
+        }
+            // => root
+            //     .Add(keyComparer, valComparer, key, val).Node
+            //     .Pipe(
+            //         Wrap
+            //             .Flip()
+            //             .Apply(count + 1));
         
         public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items)
             => AddRange(items, false, false);
@@ -135,13 +143,18 @@ namespace FPLibrary {
         //         : _root.IsEmpty
         //             ? Clear()
         //             : new(_root, adjustedCount, keyComparer, valComparer);
-        
-        private Func<Node, int, Map<K, V>> Wrap => (_root, adjustedCount)
-            => _root == root 
-                ? this
-                : _root.IsEmpty
-                    ? Clear()
-                    : new(_root, adjustedCount, keyComparer, valComparer);
+
+        private Func<Node, int, Map<K, V>> Wrap => (_root, adjustedCount) => {
+            if (root != _root)
+                return _root.IsEmpty ? Clear() : new(_root, adjustedCount, keyComparer, valComparer);
+
+            return this;
+        };
+            // => _root == root 
+            //     ? this
+            //     : _root.IsEmpty
+            //         ? Clear()
+            //         : new(_root, adjustedCount, keyComparer, valComparer);
 
         internal enum KeyCollisionBehaviour {
             SetValue,
