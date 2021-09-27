@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FPLibrary;
 using static FPLibrary.F;
@@ -65,6 +66,82 @@ namespace FPLibrary {
                 (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valComparer, true, _key, val);
 
                 return (node, replaced, mutated);
+            }
+
+            internal bool Contains(IComparer<K> keyComparer, IEqualityComparer<V> valComparer,
+                KeyValuePair<K, V> pair) {
+
+                if (pair.Key is null) throw new ArgumentException(nameof(pair.Key));
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
+                
+                Node res = Search(keyComparer, pair.Key);
+
+                return !res.IsEmpty && valComparer.Equals(res.value, pair.Value);
+            }
+
+            internal bool ContainsKey(IComparer<K> keyComparer, K _key) {
+                if (_key is null) throw new ArgumentNullException(nameof(_key));
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+
+                return !this.Search(keyComparer, key).IsEmpty;
+            }
+
+            internal bool ContainsValue(IEqualityComparer<V> valComparer, V val) {
+                if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
+
+                foreach (KeyValuePair<K, V> item in this)
+                    if (valComparer.Equals(val, item.Value))
+                        return true;
+                
+                return false;
+            }
+
+            internal bool TryGetValue(IComparer<K> keyComparer, K _key, [MaybeNullWhen(false)] out V val) {
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (_key is null) throw new ArgumentNullException(nameof(_key));
+
+                Node res = Search(keyComparer, _key);
+                
+                if (res.IsEmpty) {
+                    val = default;
+                    return false;
+                }
+
+                val = res.value;
+                return true;
+            }
+
+            internal bool TryGetKey(IComparer<K> keyComparer, K checkKey, out K realKey) {
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (checkKey is null) throw new ArgumentNullException(nameof(checkKey));
+
+                Node res = Search(keyComparer, checkKey);
+                if (res.IsEmpty) {
+                    realKey = checkKey;
+                    return false;
+                }
+
+                realKey = res.key;
+                return true;
+            }
+
+            internal void CopyTo(KeyValuePair<K, V>[] array, int index, int size) {
+                if (array is null) throw new ArgumentNullException(nameof(array));
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+                if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
+                
+                foreach (KeyValuePair<K, V> item in this)
+                    array[index++] = item;
+            }
+            
+            internal void CopyTo(Array array, int index, int size) {
+                if (array is null) throw new ArgumentNullException(nameof(array));
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+                if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
+                
+                foreach (KeyValuePair<K, V> item in this)
+                    array.SetValue(new DictionaryEntry(item.Key, item.Value), index++);
             }
 
             #region Balancing methods
@@ -221,43 +298,59 @@ namespace FPLibrary {
 
             private (Node Node, bool Replaced, bool Mutated) SetOrAdd(IComparer<K> keyComparer,
                 IEqualityComparer<V> valComparer, bool overwrite, K _key, V val) {
+                
+                //TODO: mix assignment and creation in deconstruction and/or better chaining
+                
+                (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
+                    => node.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
 
-                //no arg validation because recursive
-
-                if (IsEmpty)
+                if (this.IsEmpty)
                     return (new(_key, val, this, this), false, true);
-                else {
-                    //TODO: mix assignment and creation in deconstruction and/or better chaining
 
-                    (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
-                        => node.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
+                Node res = this;
+                bool replaced = false;
+                bool mutated;
+                
+                switch (keyComparer.Compare(_key, key)) {
+                    case > 0:
+                        //node goes on right
+                        Node newRight;
+                        (newRight, replaced, mutated) = right!.Pipe(setOrAdd);
 
-                    switch (keyComparer.Compare(_key, key)) {
-                        case > 0:
-                            (Node newRight, bool replaced, bool mutated) = setOrAdd(right!);
+                        if (mutated)
+                            res = res.Mutate(_right: newRight);
+                        
+                        break;
+                    case < 0:
+                        //node goes on left
+                        Node newLeft;
+                        (newLeft, replaced, mutated) = left!.Pipe(setOrAdd);
+                        
+                        if (mutated)
+                            // ReSharper disable once ArgumentsStyleNamedExpression
+                            res = res.Mutate(_left: newLeft);
 
-                            Node res = Mutate(_right: newRight);
+                        break;
+                    default:
+                        if (valComparer.Equals(value, val)) {
+                            //key and val are both the same
+                            mutated = false;
+                            
+                            return (this, replaced, mutated);
+                        } else if (overwrite) {
+                            //key exists, but val is different. mutate
+                            mutated = replaced = true;
+                            res = new(_key, val, left!, right!);
+                        } else
+                            throw new ArgumentException("Duplicate key: ", nameof(_key));
 
-                            return (mutated
-                                ? MakeBalanced(res)
-                                : res, replaced, mutated);
-                        case < 0:
-                            (Node newLeft, bool lreplaced, bool lmutated) = setOrAdd(left!);
-
-                            Node lres = Mutate(_left: newLeft);
-
-                            return (lmutated
-                                ? MakeBalanced(lres)
-                                : lres, lreplaced, lmutated);
-                        default:
-                            if (valComparer.Equals(value, val))
-                                return (this, false, false);
-                            else if (overwrite)
-                                return (new(_key, val, left!, right!), true, true);
-                            else
-                                throw new ArgumentException("Duplicate key: ", nameof(key));
-                    }
+                        break;
                 }
+
+                if (mutated)
+                    res = MakeBalanced(res);
+                
+                return (res, replaced, mutated);
             }
 
             private Node Search(IComparer<K> keyComparer, K _key) {

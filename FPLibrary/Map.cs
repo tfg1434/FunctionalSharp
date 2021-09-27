@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace FPLibrary {
@@ -52,8 +53,11 @@ namespace FPLibrary {
                 : Empty.WithComparers(keyComparer, valComparer);
 
         public Map<K, V> SetItem(K key, V value) {
+            if (key is null) throw new ArgumentNullException(nameof(key));
+            
             (Node newRoot, bool replaced, _) = root.Set(keyComparer, valComparer, key, value);
-
+            
+            //replaced: false
             return Wrap(newRoot, replaced ? count : count + 1);
         }
 
@@ -75,17 +79,46 @@ namespace FPLibrary {
         public Map<K, V> WithDefaultComparers()
             => WithComparers(Comparer<K>.Default, EqualityComparer<V>.Default);
         
-        public Map<K, V> Add(K key, V val)
-            => root
-                .Add(keyComparer, valComparer, key, val).Node
-                .Pipe(
-                    Wrap
-                        .Flip()
-                        .Apply(count + 1));
+        //TODO: Add overload that takes a KeyValuePair<>
+        public Map<K, V> Add(K key, V val) {
+            (Node res, _) = root.Add(keyComparer, valComparer, key, val);
+
+            return Wrap(res, count + 1);
+        }
+            // => root
+            //     .Add(keyComparer, valComparer, key, val).Node
+            //     .Pipe(
+            //         Wrap
+            //             .Flip()
+            //             .Apply(count + 1));
         
         public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items)
             => AddRange(items, false, false);
 
+        public bool Contains(KeyValuePair<K, V> pair) 
+            => root.Contains(keyComparer, valComparer, pair);
+
+        public bool ContainsKey(K key) {
+            if (key is null) throw new ArgumentNullException(nameof(key));
+
+            return root.ContainsKey(keyComparer, key);
+        }
+
+        public bool ContainsValue(V val) => root.ContainsValue(valComparer, val);
+        
+        public bool TryGetValue(K key, [MaybeNullWhen(false)] out V val) {
+            if (key is null) throw new ArgumentNullException(nameof(key));
+            
+            return root.TryGetValue(keyComparer, key, out val);
+        }
+
+        public bool TryGetKey(K checkKey, out K realKey) {
+            if (checkKey is null) throw new ArgumentNullException(nameof(checkKey));
+
+            return root.TryGetKey(keyComparer, checkKey, out realKey);
+        }
+        
+        //TODO: avoidMap
         private Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items, bool overwrite, bool avoidMap) {
             //not in terms of Add so no need for new wrapper per item
 
@@ -104,19 +137,12 @@ namespace FPLibrary {
             return Wrap(res.Root, res.Count);
         }
 
-        // private Map<K, V> Wrap(Node _root, int adjustedCount)
-        //     => _root == root 
-        //         ? this
-        //         : _root.IsEmpty
-        //             ? Clear()
-        //             : new(_root, adjustedCount, keyComparer, valComparer);
-        
-        private Func<Node, int, Map<K, V>> Wrap => (_root, adjustedCount)
-            => _root == root 
-                ? this
-                : _root.IsEmpty
-                    ? Clear()
-                    : new(_root, adjustedCount, keyComparer, valComparer);
+        private Func<Node, int, Map<K, V>> Wrap => (_root, adjustedCount) => {
+            if (root != _root)
+                return _root.IsEmpty ? Clear() : new(_root, adjustedCount, keyComparer, valComparer);
+
+            return this;
+        };
 
         internal enum KeyCollisionBehaviour {
             SetValue,

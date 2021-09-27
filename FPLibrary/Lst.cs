@@ -41,7 +41,7 @@ namespace FPLibrary {
         public Maybe<Lst<T>> TailSafe {
             get {
                 int count = Count;
-                return head.Map<Node, Lst<T>>(head => new(head.Next, count - 1));
+                return head.Map<Node, Lst<T>>(_head => new(_head.Next, count - 1));
             }
         }
 

@@ -8,12 +8,16 @@ using static FPLibrary.F;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> where K : notnull {
-        #region IEnumerable<KeyValuePair<K, V>>
+        #region IEnumerable<KeyValuePair<K, V>> Methods
 
         IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator()
             => IsEmpty
                 ? Enumerable.Empty<KeyValuePair<K, V>>().GetEnumerator()
                 : GetEnumerator();
+
+        #endregion
+
+        #region IEnumerable Methods
 
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
