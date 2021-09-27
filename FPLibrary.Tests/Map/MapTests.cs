@@ -85,12 +85,7 @@ namespace FPLibrary.Tests.Map {
                 actual = actual.Add(key, default);
                 actual = actual.SetItem(key, val);
             }
-
-            var eToList = expected.ToList();
-            var aToList = actual.ToList();
-            if (!eToList.SequenceEqual(aToList)) {
-                int b = 10;
-            }
+            
             Assert.Equal(expected.ToList(), actual.ToList());
         }
 
