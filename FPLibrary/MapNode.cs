@@ -299,87 +299,58 @@ namespace FPLibrary {
             private (Node Node, bool Replaced, bool Mutated) SetOrAdd(IComparer<K> keyComparer,
                 IEqualityComparer<V> valComparer, bool overwrite, K _key, V val) {
                 
-                //bool replacedExistingValue = false;
-                if (this.IsEmpty) {
-                    return (new Node(_key, val, this, this), false, true);
-                }
-                else {
-                    Node result = this;
-                    bool replacedExistingValue = false;
-                    bool mutated;
+                //TODO: mix assignment and creation in deconstruction and/or better chaining
+                
+                (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
+                    => node.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
 
-                    int compareResult = keyComparer.Compare(_key, key);
-                    if (compareResult > 0) {
+                if (this.IsEmpty)
+                    return (new(_key, val, this, this), false, true);
+
+                Node res = this;
+                bool replaced = false;
+                bool mutated;
+                
+                switch (keyComparer.Compare(_key, key)) {
+                    case > 0:
+                        //node goes on right
                         Node newRight;
-                        (newRight, replacedExistingValue, mutated) =
-                            right!.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
-                        if (mutated) {
-                            result = this.Mutate(_right: newRight);
-                        }
-                    }
-                    else if (compareResult < 0) {
+                        (newRight, replaced, mutated) = right!.Pipe(setOrAdd);
+
+                        if (mutated)
+                            res = res.Mutate(_right: newRight);
+                        
+                        break;
+                    case < 0:
+                        //node goes on left
                         Node newLeft;
-                        (newLeft, replacedExistingValue, mutated) =
-                            left!.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
-                        if (mutated) {
-                            result = this.Mutate(_left: newLeft);
-                        }
-                    }
-                    else {
+                        (newLeft, replaced, mutated) = left!.Pipe(setOrAdd);
+                        
+                        if (mutated)
+                            // ReSharper disable once ArgumentsStyleNamedExpression
+                            res = res.Mutate(_left: newLeft);
+
+                        break;
+                    default:
                         if (valComparer.Equals(value, val)) {
+                            //key and val are both the same
                             mutated = false;
-                            return (this, replacedExistingValue, mutated);
-                        }
-                        else if (overwrite) {
-                            mutated = true;
-                            replacedExistingValue = true;
-                            result = new Node(_key, val, left!, right!);
-                        }
-                        else {
-                            throw new ArgumentException();
-                        }
-                    }
-                    
-                    return mutated ? (MakeBalanced(result), replacedExistingValue, mutated) : (result, 
-                        replacedExistingValue, mutated);
+                            
+                            return (this, replaced, mutated);
+                        } else if (overwrite) {
+                            //key exists, but val is different. mutate
+                            mutated = replaced = true;
+                            res = new(_key, val, left!, right!);
+                        } else
+                            throw new ArgumentException("Duplicate key: ", nameof(_key));
+
+                        break;
                 }
 
-                // //no arg validation because recursive
-                //
-                // if (IsEmpty)
-                //     return (new(_key, val, this, this), false, true);
-                // else {
-                //     //TODO: mix assignment and creation in deconstruction and/or better chaining
-                //
-                //     (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
-                //         => node.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
-                //
-                //     switch (keyComparer.Compare(_key, key)) {
-                //         case > 0:
-                //             (Node newRight, bool replaced, bool mutated) = setOrAdd(right!);
-                //
-                //             Node res = Mutate(_right: newRight);
-                //
-                //             return (mutated
-                //                 ? MakeBalanced(res)
-                //                 : res, replaced, mutated);
-                //         case < 0:
-                //             (Node newLeft, bool lreplaced, bool lmutated) = setOrAdd(left!);
-                //
-                //             Node lres = Mutate(_left: newLeft);
-                //
-                //             return (lmutated
-                //                 ? MakeBalanced(lres)
-                //                 : lres, lreplaced, lmutated);
-                //         default:
-                //             if (valComparer.Equals(value, val))
-                //                 return (this, false, false);
-                //             else if (overwrite)
-                //                 return (new(_key, val, left!, right!), true, true);
-                //             else
-                //                 throw new ArgumentException("Duplicate key: ", nameof(key));
-                //     }
-                // }
+                if (mutated)
+                    res = MakeBalanced(res);
+                
+                return (res, replaced, mutated);
             }
 
             private Node Search(IComparer<K> keyComparer, K _key) {
