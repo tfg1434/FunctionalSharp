@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -89,7 +90,35 @@ namespace FPLibrary.Tests.Map {
             Assert.Equal(expected.ToList(), actual.ToList());
         }
 
-        // [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
-        // public void Remove_IntBool_EqualsMutable
+        [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
+        public void Remove_IntBool_EqualsMutable(SortedDictionary<int, bool> expected, int index) {
+            Map<int, bool> actual = expected.ToMap();
+            int key = expected.Skip(index).First().Key;
+            actual = actual.Remove(key);
+            expected.Remove(key);
+            
+            Assert.Equal(expected.ToList(), actual.ToList());
+        }
+        
+        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
+        public void Add_ExistingKeySameValue_Same(Map<int, bool> map, int key, bool val) {
+            map = map.Add(key, val);
+            
+            Assert.Equal(map, map.Add(key, val));
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
+        public void AddRange_ExistingKeySameValue_Same(Map<int, bool> map, int key, bool val) {
+            map = map.Add(key, val);
+
+            Assert.Equal(map, map.AddRange(new[] { new KeyValuePair<int, bool>(key, val) }));
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
+        public void Add_ExisitingKeyDiffValue_Throws(Map<int, bool> map, int key, bool val1, bool val2) {
+            map = map.Add(key, val1);
+
+            Assert.Throws<ArgumentException>(() => map.Add(key, val2));
+        }
     }
 }
