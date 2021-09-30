@@ -8,6 +8,7 @@ using FsCheck.Xunit;
 using Xunit;
 using FPLibrary;
 using static FPLibrary.F;
+using static FPLibrary.Tests.Utils;
 
 namespace FPLibrary.Tests.Map {
     public static class ArbitraryMap {
@@ -116,9 +117,27 @@ namespace FPLibrary.Tests.Map {
 
         [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
         public void Add_ExisitingKeyDiffValue_Throws(Map<int, bool> map, int key, bool val1, bool val2) {
+            if (map.ValueComparer.Equals(val1, val2))
+                Succeed();
+
             map = map.Add(key, val1);
 
             Assert.Throws<ArgumentException>(() => map.Add(key, val2));
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
+        public void AddRange_ExistingKeyDiffValue_Throws(Map<int, bool> map, int key, bool val1, bool val2) {
+            if (map.ValueComparer.Equals(val1, val2))
+                Succeed();
+
+            map = map.Add(key, val1);
+
+            Assert.Throws<ArgumentException>(
+                () => map.AddRange(new[] { new KeyValuePair<int, bool>(key, val2) }));
+        }
+
+        [Fact]
+        public void Create() {
         }
     }
 }
