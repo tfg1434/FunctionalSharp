@@ -138,6 +138,12 @@ namespace FPLibrary.Tests.Map {
 
         [Fact]
         public void Create() {
+            var map = Map<int, bool>();
+            Assert.Equal(0, map.Count);
+            Assert.Same(Comparer<int>.Default, map.KeyComparer);
+            Assert.Same(EqualityComparer<bool>.Default, map.ValueComparer);
+            
+
         }
     }
 }

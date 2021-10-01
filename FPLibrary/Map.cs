@@ -5,8 +5,8 @@ using System.Linq;
 
 namespace FPLibrary {
     public static partial class F {
-        public static Map<K, V> CreateRange<K, V>(IEnumerable<KeyValuePair<K, V>> items) where K : notnull
-            => Map<K, V>.Empty.AddRange(items);
+        public static FPLibrary.Map<K, V> Map<K, V>() where K : notnull
+            => Map<K, V>.Empty;
     }
     
     public sealed partial class Map<K, V> where K : notnull {
@@ -42,7 +42,7 @@ namespace FPLibrary {
         #endregion
 
         #region Properties
-
+        
         public bool IsEmpty => Count == 0;
         
         #endregion
