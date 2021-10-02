@@ -18,7 +18,7 @@ namespace FPLibrary {
         public static Map<K, V> Map<K, V>(IComparer<K> keyComparer, IEqualityComparer<V> valComparer) where K : notnull
             => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, valComparer);
         
-        public static Map<K, V> Map<K, V>(params (K, V)[] items) where K : notnull
+        public static Map<K, V> Map<K, V>(params (K Key, V Val)[] items) where K : notnull
             => FPLibrary.Map<K, V>.Empty.AddRange(items);
     }
     
@@ -65,10 +65,10 @@ namespace FPLibrary {
                 ? this
                 : Empty.WithComparers(keyComparer, valComparer);
 
-        public Map<K, V> SetItem(K key, V value) {
-            if (key is null) throw new ArgumentNullException(nameof(key));
+        public Map<K, V> SetItem((K Key, V Val) pair) {
+            if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
             
-            (Node newRoot, bool replaced, _) = root.Set(keyComparer, valComparer, key, value);
+            (Node newRoot, bool replaced, _) = root.Set(keyComparer, valComparer, pair);
             
             //replaced: false
             return Wrap(newRoot, replaced ? count : count + 1);
@@ -93,16 +93,16 @@ namespace FPLibrary {
             => WithComparers(Comparer<K>.Default, EqualityComparer<V>.Default);
         
         //TODO: Add overload that takes a KeyValuePair<>
-        public Map<K, V> Add(K key, V val) {
-            (Node res, _) = root.Add(keyComparer, valComparer, key, val);
+        public Map<K, V> Add((K Key, V Val) pair) {
+            (Node res, _) = root.Add(keyComparer, valComparer, pair);
 
             return Wrap(res, count + 1);
         }
 
-        public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items)
+        public Map<K, V> AddRange(IEnumerable<(K Key, V Val)> items)
             => AddRange(items, false, false);
 
-        public bool Contains(KeyValuePair<K, V> pair) 
+        public bool Contains((K Key, V Val) pair) 
             => root.Contains(keyComparer, valComparer, pair);
 
         public bool ContainsKey(K key) {
@@ -126,7 +126,7 @@ namespace FPLibrary {
         }
         
         //TODO: avoidMap
-        private Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items, bool overwrite, bool avoidMap) {
+        private Map<K, V> AddRange(IEnumerable<(K Key, V Val)> items, bool overwrite, bool avoidMap) {
             //not in terms of Add so no need for new wrapper per item
 
             (Node Root, int Count) seed = (root, count);
@@ -134,9 +134,9 @@ namespace FPLibrary {
                 Node node;
                 bool replaced = false;
                 if (overwrite)
-                    (node, replaced, _) = acc.Root.Set(keyComparer, valComparer, item.Key, item.Value);
+                    (node, replaced, _) = acc.Root.Set(keyComparer, valComparer, item);
                 else
-                    (node, _) = acc.Root.Add(keyComparer, valComparer, item.Key, item.Value);
+                    (node, _) = acc.Root.Add(keyComparer, valComparer, item);
 
                 return (node, replaced ? acc.Count : acc.Count + 1);
             });

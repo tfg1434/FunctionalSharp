@@ -26,19 +26,18 @@ namespace FPLibrary {
             public int Height => height;
             public Node? Left => left;
             public Node? Right => right;
-            public KeyValuePair<K, V> Value => new(key, value);
+            public (K Key, V Val) Value => (key, value);
 
             #endregion
 
             #region Ctors
             private Node() => frozen = true;
 
-            private Node(K key, V val, Node left, Node right, bool frozen=false) {
-                this.key = key;
-                value = val;
+            private Node((K Key, V Val) pair, Node left, Node right, bool frozen=false) {
+                (key, value) = pair;
                 this.left = left;
                 this.right = right;
-                height = checked((byte)(1 + Math.Max(left.height, right.height)));
+                height = checked((byte) (1 + Math.Max(left.height, right.height)));
                 this.frozen = frozen;
             }
 
@@ -53,31 +52,30 @@ namespace FPLibrary {
             }
 
             internal (Node Node, bool Mutated) Add(IComparer<K> keyComparer,
-                IEqualityComparer<V> valComparer, K _key, V val) {
+                IEqualityComparer<V> valComparer, (K Key, V Val) pair) {
 
-                (Node node, _, bool mutated) = SetOrAdd(keyComparer, valComparer, false, _key, val);
+                (Node node, _, bool mutated) = SetOrAdd(keyComparer, valComparer, false, pair);
 
                 return (node, mutated);
             }
 
             internal (Node Node, bool Replaced, bool Mutated) Set(IComparer<K> keyComparer, 
-                IEqualityComparer<V> valComparer, K _key, V val) {
+                IEqualityComparer<V> valComparer, (K Key, V Val) pair) {
 
-                (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valComparer, true, _key, val);
+                (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valComparer, true, pair);
 
                 return (node, replaced, mutated);
             }
 
-            internal bool Contains(IComparer<K> keyComparer, IEqualityComparer<V> valComparer,
-                KeyValuePair<K, V> pair) {
+            internal bool Contains(IComparer<K> keyComparer, IEqualityComparer<V> valComparer, (K Key, V Val) pair) {
 
-                if (pair.Key is null) throw new ArgumentException(nameof(pair.Key));
+                if (pair.Key is null) throw new ArgumentException($"{nameof(pair)}.{nameof(pair.Key)}");
                 if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
                 if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
                 
                 Node res = Search(keyComparer, pair.Key);
 
-                return !res.IsEmpty && valComparer.Equals(res.value, pair.Value);
+                return !res.IsEmpty && valComparer.Equals(res.value, pair.Val);
             }
 
             internal bool ContainsKey(IComparer<K> keyComparer, K _key) {
@@ -90,8 +88,8 @@ namespace FPLibrary {
             internal bool ContainsValue(IEqualityComparer<V> valComparer, V val) {
                 if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
 
-                foreach (KeyValuePair<K, V> item in this)
-                    if (valComparer.Equals(val, item.Value))
+                foreach ((_, V v) in this)
+                    if (valComparer.Equals(val, v))
                         return true;
                 
                 return false;
@@ -285,7 +283,7 @@ namespace FPLibrary {
                 Debug.Assert(left is not null && right is not null);
 
                 if (frozen)
-                    return new(key, value, _left ?? left, _right ?? right);
+                    return new((key, value), _left ?? left, _right ?? right);
 
                 if (_left is not null)
                     left = _left;
@@ -297,23 +295,23 @@ namespace FPLibrary {
             }
 
             private (Node Node, bool Replaced, bool Mutated) SetOrAdd(IComparer<K> keyComparer,
-                IEqualityComparer<V> valComparer, bool overwrite, K _key, V val) {
+                IEqualityComparer<V> valComparer, bool overwrite, (K Key, V Val) pair) {
                 
                 //TODO: mix assignment and creation in deconstruction and/or better chaining
                 
                 (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
-                    => node.SetOrAdd(keyComparer, valComparer, overwrite, _key, val);
+                    => node.SetOrAdd(keyComparer, valComparer, overwrite, pair);
 
-                if (this.IsEmpty)
-                    return (new(_key, val, this, this), false, true);
+                if (IsEmpty)
+                    return (new(pair, this, this), false, true);
 
                 Node res = this;
                 bool replaced = false;
                 bool mutated;
                 
-                switch (keyComparer.Compare(_key, key)) {
+                switch (keyComparer.Compare(pair.Key, key)) {
                     case > 0:
-                        //node goes on right
+                        //node goes on right 
                         Node newRight;
                         (newRight, replaced, mutated) = right!.Pipe(setOrAdd);
 
@@ -332,7 +330,7 @@ namespace FPLibrary {
 
                         break;
                     default:
-                        if (valComparer.Equals(value, val)) {
+                        if (valComparer.Equals(value, pair.Val)) {
                             //key and val are both the same
                             mutated = false;
                             
@@ -340,9 +338,10 @@ namespace FPLibrary {
                         } else if (overwrite) {
                             //key exists, but val is different. mutate
                             mutated = replaced = true;
-                            res = new(_key, val, left!, right!);
+                            res = new(pair, left!, right!);
                         } else
-                            throw new ArgumentException("Duplicate key: ", nameof(_key));
+                            throw new ArgumentException("Duplicate key: ",
+                                $"{nameof(pair)}.{nameof(pair.Key)}");
 
                         break;
                 }
