@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace FPLibrary {
     public static partial class F {
-        public static FPLibrary.Map<K, V> Map<K, V>() where K : notnull
-            => Map<K, V>.Empty;
+        public static Map<K, V> Map<K, V>() where K : notnull
+            => FPLibrary.Map<K, V>.Empty;
+        
+        public static Map<K, V> Map<K, V, KC>() where KC : IComparer<K> 
+            => FPLibrary.Map<K, V>.Empty.WithComparers(KC, EqualityComparer<V>.Default);
     }
     
     public sealed partial class Map<K, V> where K : notnull {
