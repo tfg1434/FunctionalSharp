@@ -9,8 +9,17 @@ namespace FPLibrary {
         public static Map<K, V> Map<K, V>() where K : notnull
             => FPLibrary.Map<K, V>.Empty;
         
-        public static Map<K, V> Map<K, V, KC>() where KC : IComparer<K> 
-            => FPLibrary.Map<K, V>.Empty.WithComparers(KC, EqualityComparer<V>.Default);
+        public static Map<K, V> Map<K, V>(IComparer<K> keyComparer) where K : notnull 
+            => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, EqualityComparer<V>.Default);
+
+        public static Map<K, V> Map<K, V>(IEqualityComparer<V> valComparer) where K : notnull
+            => FPLibrary.Map<K, V>.Empty.WithComparers(Comparer<K>.Default, valComparer);
+        
+        public static Map<K, V> Map<K, V>(IComparer<K> keyComparer, IEqualityComparer<V> valComparer) where K : notnull
+            => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, valComparer);
+        
+        public static Map<K, V> Map<K, V>(params (K, V)[] items) where K : notnull
+            => FPLibrary.Map<K, V>.Empty.AddRange(items);
     }
     
     public sealed partial class Map<K, V> where K : notnull {
@@ -89,13 +98,7 @@ namespace FPLibrary {
 
             return Wrap(res, count + 1);
         }
-            // => root
-            //     .Add(keyComparer, valComparer, key, val).Node
-            //     .Pipe(
-            //         Wrap
-            //             .Flip()
-            //             .Apply(count + 1));
-        
+
         public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items)
             => AddRange(items, false, false);
 
