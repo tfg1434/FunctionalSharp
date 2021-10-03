@@ -7,12 +7,18 @@ using System.Linq;
 using static FPLibrary.F;
 
 namespace FPLibrary {
-    public sealed partial class Map<K, V> where K : notnull {
-        #region IEnumerable<KeyValuePair<K, V>> Methods
+    public sealed partial class Map<K, V> : IEnumerable<(K Key, V Val)> where K : notnull {
 
-        IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator()
+        public IEnumerable<(K Key, V Val)> AsEnumerable() {
+            foreach ((K Key, V Val) item in this)
+                yield return item;
+        }
+
+        #region IEnumerable<Tuple> Methods
+
+        IEnumerator<(K Key, V Val)> IEnumerable<(K Key, V Val)>.GetEnumerator()
             => IsEmpty
-                ? Enumerable.Empty<KeyValuePair<K, V>>().GetEnumerator()
+                ? Enumerable.Empty<(K Key, V Val)>().GetEnumerator()
                 : GetEnumerator();
 
         #endregion
@@ -26,7 +32,16 @@ namespace FPLibrary {
 
         #endregion
         
-        public struct Enumerator : IEnumerator<KeyValuePair<K, V>> {
+        #region IEnumerable<KeyValuePair<>> Methods
+
+        IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator()
+            => AsEnumerable()
+                .Map(ToKeyValuePair)
+                .GetEnumerator();
+        
+        #endregion
+        
+        public struct Enumerator : IEnumerator<(K Key, V Val)> {
             // 1) Create an empty stack S.
             // 2) Initialize current node as root
             // 3) Push the current node to S and set current = current->left until current is NULL
@@ -54,7 +69,7 @@ namespace FPLibrary {
                 LeftToStack(root);
             }
 
-            public KeyValuePair<K, V> Current 
+            public (K Key, V Val) Current 
                 => current?.Value ?? throw new InvalidOperationException();
 
             object IEnumerator.Current => Current;

@@ -9,10 +9,10 @@ using System.Linq;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> where K : notnull {
-        internal sealed partial class Node : IEnumerable<KeyValuePair<K, V>> {
+        internal sealed partial class Node : IEnumerable<(K Key, V Val)> {
             public Enumerator GetEnumerator() => new(this);
 
-            IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator()
+            IEnumerator<(K Key, V Val)> IEnumerable<(K Key, V Val)>.GetEnumerator()
                 => GetEnumerator();
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

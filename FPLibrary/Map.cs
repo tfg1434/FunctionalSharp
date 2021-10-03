@@ -29,6 +29,10 @@ namespace FPLibrary {
 
         private readonly IComparer<K> keyComparer;
         private readonly IEqualityComparer<V> valComparer;
+        
+        //util
+        private static KeyValuePair<K, V> ToKeyValuePair((K Key, V Val) tup)
+            => new(tup.Key, tup.Val);
 
         #region Ctors
         
@@ -55,7 +59,8 @@ namespace FPLibrary {
         #endregion
 
         #region Properties
-        
+
+        public int Count => count;
         public bool IsEmpty => Count == 0;
         
         #endregion
