@@ -32,22 +32,34 @@ namespace FPLibrary {
             params (K Key, V Val)[] items) where K : notnull
         
             => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, valComparer).AddRange(items);
+        
+        //to Map with no projections and default comparers
+        public static Map<K, V> ToMap<K, V>(this IEnumerable<(K, V)> src) where K : notnull
+            => Map(src.ToArray());
+        //TODO: use params IEnumerable
 
+        public static Map<K, V> ToMap<K, V>(this IEnumerable<KeyValuePair<K, V>> src) where K : notnull
+            => src.ToMap(item => item.Key, item => item.Value);
+        
+        //to Map with both key and value projections
         public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, Func<T, K> keyProj, Func<T, V> valProj)
             where K : notnull
 
             => ToMap(src, Comparer<K>.Default, EqualityComparer<V>.Default, keyProj, valProj);
         
+        //to Map with both key and value projections & key comparer
         public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IComparer<K> keyComparer, Func<T, K> keyProj, 
             Func<T, V> valProj) where K : notnull
             
             => ToMap(src, keyComparer, EqualityComparer<V>.Default, keyProj, valProj);
-
+        
+        //to Map with both key and value projections & value comparer
         public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IEqualityComparer<V> valComparer,
             Func<T, K> keyProj, Func<T, V> valProj) where K : notnull
 
             => ToMap(src, Comparer<K>.Default, valComparer, keyProj, valProj);
         
+        //to Map with both key and value projections & key and value comparers
         public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IComparer<K> keyComparer, 
             IEqualityComparer<V> valComparer, Func<T, K> keyProj, Func<T, V> valProj) where K : notnull {
             
@@ -123,6 +135,8 @@ namespace FPLibrary {
             return Wrap(newRoot, replaced ? count : count + 1);
         }
 
+        public Map<K, V> SetItem(K key, V val) => SetItem((key, val));
+
         public Map<K, V> WithComparers(IComparer<K> _keyComparer,
             IEqualityComparer<V> _valComparer) {
 
@@ -137,16 +151,14 @@ namespace FPLibrary {
                     .AddRange(this, false, true);
             }
         }
-
-        public Map<K, V> WithDefaultComparers()
-            => WithComparers(Comparer<K>.Default, EqualityComparer<V>.Default);
         
-        //TODO: Add overload that takes a KeyValuePair<>
         public Map<K, V> Add((K Key, V Val) pair) {
             (Node res, _) = root.Add(keyComparer, valComparer, pair);
 
             return Wrap(res, count + 1);
         }
+
+        public Map<K, V> Add(K key, V val) => Add((key, val));
 
         public Map<K, V> AddRange(IEnumerable<(K Key, V Val)> items)
             => AddRange(items, false, false);
