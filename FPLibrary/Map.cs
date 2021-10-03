@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -105,6 +104,8 @@ namespace FPLibrary {
 
         public int Count => count;
         public bool IsEmpty => Count == 0;
+        public IComparer<K> KeyComparer => keyComparer;
+        public IEqualityComparer<V> ValComparer => valComparer;
         
         #endregion
 
@@ -132,8 +133,8 @@ namespace FPLibrary {
                     : new(root, count, keyComparer, _valComparer);
             } else {
                 //structure does depend on keyComparer
-                return new Map<K, V>(Node.EmptyNode, 0, keyComparer, valComparer)
-                    .AddRange(this, false, false);
+                return new Map<K, V>(Node.EmptyNode, 0, _keyComparer, _valComparer)
+                    .AddRange(this, false, true);
             }
         }
 
