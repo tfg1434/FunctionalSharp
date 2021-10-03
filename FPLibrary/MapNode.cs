@@ -68,7 +68,6 @@ namespace FPLibrary {
             }
 
             internal bool Contains(IComparer<K> keyComparer, IEqualityComparer<V> valComparer, (K Key, V Val) pair) {
-
                 if (pair.Key is null) throw new ArgumentException($"{nameof(pair)}.{nameof(pair.Key)}");
                 if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
                 if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
@@ -82,7 +81,7 @@ namespace FPLibrary {
                 if (_key is null) throw new ArgumentNullException(nameof(_key));
                 if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
 
-                return !this.Search(keyComparer, key).IsEmpty;
+                return !Search(keyComparer, key).IsEmpty;
             }
 
             internal bool ContainsValue(IEqualityComparer<V> valComparer, V val) {
@@ -124,23 +123,23 @@ namespace FPLibrary {
                 return true;
             }
 
-            internal void CopyTo(KeyValuePair<K, V>[] array, int index, int size) {
-                if (array is null) throw new ArgumentNullException(nameof(array));
-                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
-                if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
-                
-                foreach (KeyValuePair<K, V> item in this)
-                    array[index++] = item;
-            }
-            
-            internal void CopyTo(Array array, int index, int size) {
-                if (array is null) throw new ArgumentNullException(nameof(array));
-                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
-                if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
-                
-                foreach (KeyValuePair<K, V> item in this)
-                    array.SetValue(new DictionaryEntry(item.Key, item.Value), index++);
-            }
+            // internal void CopyTo(KeyValuePair<K, V>[] array, int index, int size) {
+            //     if (array is null) throw new ArgumentNullException(nameof(array));
+            //     if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+            //     if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
+            //     
+            //     foreach (KeyValuePair<K, V> item in this)
+            //         array[index++] = item;
+            // }
+            //
+            // internal void CopyTo(Array array, int index, int size) {
+            //     if (array is null) throw new ArgumentNullException(nameof(array));
+            //     if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+            //     if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
+            //     
+            //     foreach (KeyValuePair<K, V> item in this)
+            //         array.SetValue(new DictionaryEntry(item.Key, item.Value), index++);
+            // }
 
             #region Balancing methods
 

@@ -10,16 +10,59 @@ namespace FPLibrary {
             => FPLibrary.Map<K, V>.Empty;
         
         public static Map<K, V> Map<K, V>(IComparer<K> keyComparer) where K : notnull 
-            => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, EqualityComparer<V>.Default);
+            => Map(keyComparer, EqualityComparer<V>.Default);
 
         public static Map<K, V> Map<K, V>(IEqualityComparer<V> valComparer) where K : notnull
-            => FPLibrary.Map<K, V>.Empty.WithComparers(Comparer<K>.Default, valComparer);
+            => Map(Comparer<K>.Default, valComparer);
         
         public static Map<K, V> Map<K, V>(IComparer<K> keyComparer, IEqualityComparer<V> valComparer) where K : notnull
             => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, valComparer);
-        
+
         public static Map<K, V> Map<K, V>(params (K Key, V Val)[] items) where K : notnull
-            => FPLibrary.Map<K, V>.Empty.AddRange(items);
+            => Map(Comparer<K>.Default, EqualityComparer<V>.Default, items);
+
+        public static Map<K, V> Map<K, V>(IComparer<K> keyComparer, params (K Key, V Val)[] items) where K : notnull
+            => Map(keyComparer, EqualityComparer<V>.Default, items);
+
+        public static Map<K, V> Map<K, V>(IEqualityComparer<V> valComparer, params (K Key, V Val)[] items) 
+            where K : notnull
+
+            => Map(Comparer<K>.Default, valComparer, items);
+        
+        public static Map<K, V> Map<K, V>(IComparer<K> keyComparer, IEqualityComparer<V> valComparer, 
+            params (K Key, V Val)[] items) where K : notnull
+        
+            => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, valComparer).AddRange(items);
+
+        public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, Func<T, K> keyProj, Func<T, V> valProj)
+            where K : notnull
+
+            => ToMap(src, Comparer<K>.Default, EqualityComparer<V>.Default, keyProj, valProj);
+        
+        public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IComparer<K> keyComparer, Func<T, K> keyProj, 
+            Func<T, V> valProj) where K : notnull
+            
+            => ToMap(src, keyComparer, EqualityComparer<V>.Default, keyProj, valProj);
+
+        public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IEqualityComparer<V> valComparer,
+            Func<T, K> keyProj, Func<T, V> valProj) where K : notnull
+
+            => ToMap(src, Comparer<K>.Default, valComparer, keyProj, valProj);
+        
+        public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IComparer<K> keyComparer, 
+            IEqualityComparer<V> valComparer, Func<T, K> keyProj, Func<T, V> valProj) where K : notnull {
+            
+            if (src is null) throw new ArgumentNullException(nameof(src));
+            if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+            if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
+            if (keyProj is null) throw new ArgumentNullException(nameof(keyProj));
+            if (valProj is null) throw new ArgumentNullException(nameof(valProj));
+
+            return FPLibrary.Map<K, V>
+                .Empty
+                .WithComparers(keyComparer, valComparer)
+                .AddRange(src.Map(item => (keyProj(item), valProj(item))));
+        }
     }
     
     public sealed partial class Map<K, V> where K : notnull {
