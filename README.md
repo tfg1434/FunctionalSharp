@@ -1,10 +1,14 @@
 # FunctionalSharp: A lightweight functional programming library
+
+![example workflow](https://github.com/torontofangirl/FunctionalSharp/actions/workflows/tests.yml/badge.svg)
+
 ### WIP C# functional programming library
 This library brings common functional programming patterns and types to C#.
 
 ### Why don't you just use a functional programming language?
 I choose to use C# over an FP language for the .NET ecosystem
-and large userbase.
+and large userbase. Furthermore, all paradigms have their merits and C#, being
+multi-paradigm, is great for this purpose.
 
 ## Features
 #### Maybe&lt;T&gt;
