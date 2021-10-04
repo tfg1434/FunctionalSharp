@@ -128,7 +128,7 @@ namespace FPLibrary.Tests.Map {
         
         [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
         public void AddRange_ExistingKeyDiffValue_Throws(Map<int, bool> map, int key, bool val1, bool val2) {
-            if (map.ValueComparer.Equals(val1, val2))
+            if (map.ValComparer.Equals(val1, val2))
                 Succeed();
         
             map = map.Add(key, val1);

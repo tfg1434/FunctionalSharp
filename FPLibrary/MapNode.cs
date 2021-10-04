@@ -361,6 +361,66 @@ namespace FPLibrary {
                     _ => left!.Search(keyComparer, key),
                 };
             }
+            
+            private (Node Node, bool Mutated) RemoveRec(IComparer<K> keyComparer, K _key) {
+                //no validation, recursive
+
+                if (IsEmpty)
+                    return (this, false);
+
+                Debug.Assert(right is not null && left is not null);
+                Node res = this;
+                bool mutated;
+
+                switch (keyComparer.Compare(_key, key)) {
+                    //getting block scoping
+                    case 0: {
+                        mutated = true;
+                        
+                        if (right.IsEmpty && left.IsEmpty)
+                            //leaf
+                            return (EmptyNode, true);
+                        else if (right.IsEmpty && !left.IsEmpty)
+                            //branch one level up from leaf
+                            res = left;
+                        else if (!right.IsEmpty && left.IsEmpty)
+                            //branch one level up from leaf
+                            res = right;
+                        else {
+                            //multiple children
+                            Node successor = right;
+                            while (!successor.left!.IsEmpty)
+                                successor = successor.left;
+                            
+                            //replace right node (successor) with node below
+                            (Node newRight, _) = right.Remove(keyComparer, successor.key);
+                            res = successor.Mutate(left, newRight);
+                        }
+
+                        break;
+                    }
+                        
+                    case < 0:
+                        Node newLeft;
+                        (newLeft, mutated) = left.Remove(keyComparer, key);
+
+                        if (mutated)
+                            res = Mutate(_left: newLeft);
+
+                        break;
+                    case > 0: {
+                        Node newRight;
+                        (newRight, mutated) = right.Remove(keyComparer, key);
+
+                        if (mutated)
+                            res = Mutate(_right: newRight);
+
+                        break;
+                    }
+                }
+
+                return (res.IsEmpty ? res : MakeBalanced(res), mutated);
+            }
         }
     }
 }
