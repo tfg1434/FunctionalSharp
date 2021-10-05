@@ -94,6 +94,13 @@ namespace FPLibrary {
                 return false;
             }
 
+            internal (Node Node, bool Mutated) Remove(IComparer<K> keyComparer, K _key) {
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (_key is null) throw new ArgumentNullException(nameof(_key));
+                
+                return RemoveRec(keyComparer, _key);
+            }
+
             internal bool TryGetValue(IComparer<K> keyComparer, K _key, [MaybeNullWhen(false)] out V val) {
                 if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
                 if (_key is null) throw new ArgumentNullException(nameof(_key));
@@ -376,10 +383,10 @@ namespace FPLibrary {
                     //getting block scoping
                     case 0: {
                         mutated = true;
-                        
+
                         if (right.IsEmpty && left.IsEmpty)
                             //leaf
-                            return (EmptyNode, true);
+                            res = EmptyNode;
                         else if (right.IsEmpty && !left.IsEmpty)
                             //branch one level up from leaf
                             res = left;

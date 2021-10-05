@@ -127,7 +127,15 @@ namespace FPLibrary {
                 : Empty.WithComparers(keyComparer, valComparer);
 
         public Map<K, V> Remove(K key) {
-            
+            if (key is null) throw new ArgumentNullException(nameof(key));
+
+            return root
+                .Remove(keyComparer, key)
+                .Node
+                .Pipe(
+                    Wrap
+                        .Flip()
+                        .Apply(count - 1));
         }
 
         public Map<K, V> SetItem((K Key, V Val) pair) {
