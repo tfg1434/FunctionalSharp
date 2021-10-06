@@ -81,7 +81,7 @@ namespace FPLibrary {
                 if (_key is null) throw new ArgumentNullException(nameof(_key));
                 if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
 
-                return !Search(keyComparer, key).IsEmpty;
+                return !Search(keyComparer, _key).IsEmpty;
             }
 
             internal bool ContainsValue(IEqualityComparer<V> valComparer, V val) {
@@ -371,6 +371,7 @@ namespace FPLibrary {
             
             private (Node Node, bool Mutated) RemoveRec(IComparer<K> keyComparer, K _key) {
                 //no validation, recursive
+                //http://www.mathcs.emory.edu/~cheung/Courses/253/Syllabus/Trees/AVL-delete.html
 
                 if (IsEmpty)
                     return (this, false);
@@ -388,20 +389,21 @@ namespace FPLibrary {
                             //leaf
                             res = EmptyNode;
                         else if (right.IsEmpty && !left.IsEmpty)
-                            //branch one level up from leaf
+                            //1 child NODE on left: connect its parent and its child
                             res = left;
                         else if (!right.IsEmpty && left.IsEmpty)
-                            //branch one level up from leaf
+                            //1 child NODE on right: connect its parent and its child
                             res = right;
                         else {
-                            //multiple children
+                            //2 child nodes
                             Node successor = right;
+                            //get the inorder successor: leftmost child of right subtree
                             while (!successor.left!.IsEmpty)
                                 successor = successor.left;
                             
-                            //replace right node (successor) with node below
+                            //remove successor and replace this node with it
                             (Node newRight, _) = right.Remove(keyComparer, successor.key);
-                            res = successor.Mutate(left, newRight);
+                            res = successor.Mutate(_left: left, _right: newRight);
                         }
 
                         break;
@@ -409,7 +411,7 @@ namespace FPLibrary {
                         
                     case < 0:
                         Node newLeft;
-                        (newLeft, mutated) = left.Remove(keyComparer, key);
+                        (newLeft, mutated) = left.Remove(keyComparer, _key);
 
                         if (mutated)
                             res = Mutate(_left: newLeft);
@@ -417,7 +419,7 @@ namespace FPLibrary {
                         break;
                     case > 0: {
                         Node newRight;
-                        (newRight, mutated) = right.Remove(keyComparer, key);
+                        (newRight, mutated) = right.Remove(keyComparer, _key);
 
                         if (mutated)
                             res = Mutate(_right: newRight);

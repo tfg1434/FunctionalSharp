@@ -96,12 +96,10 @@ namespace FPLibrary.Tests.Map {
         private static SortedDictionary<int, bool> inlineData = new() { { -1, false }, {0, false} };
         [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
         public void Remove_IntBool_EqualsMutable(SortedDictionary<int, bool> expected) {
-            if (!expected.Any()) {
+            if (expected.Count == 0) {
                 Succeed();
                 return;
             }
-
-            expected = inlineData;
 
             int index = new Random().Next(0, expected.Count);
             
@@ -113,39 +111,36 @@ namespace FPLibrary.Tests.Map {
             Assert.Equal(expected.ToList(), actual.ToList<KeyValuePair<int, bool>>());
         }
         
-        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
-        public void Add_ExistingKeySameValue_Same(Map<int, bool> map, int key, bool val) {
+        [Property]
+        public void Add_ExistingKeySameValue_Same(int key, bool val) {
+            var map = Map<int, bool>();
             map = map.Add(key, val);
             
             Assert.Equal(map, map.Add(key, val));
         }
         
-        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
-        public void AddRange_ExistingKeySameValue_Same(Map<int, bool> map, int key, bool val) {
+        [Property]
+        public void AddRange_ExistingKeySameValue_Same(int key, bool val) {
+            var map = Map<int, bool>();
             map = map.Add(key, val);
         
             Assert.Equal(map, map.AddRange(new[] { (key, val) }));
         }
         
-        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
-        public void Add_ExisitingKeyDiffValue_Throws(Map<int, bool> map, int key, bool val1, bool val2) {
-            if (map.ValComparer.Equals(val1, val2))
-                Succeed();
-        
-            map = map.Add(key, val1);
-        
-            Assert.Throws<ArgumentException>(() => map.Add(key, val2));
+        [Property]
+        public void Add_ExisitingKeyDiffValue_Throws(int key, bool val) {
+            var map = Map<int, bool>();
+            map = map.Add(key, val);
+            
+            Assert.Throws<ArgumentException>(() => map.Add(key, !val));
         }
         
-        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
-        public void AddRange_ExistingKeyDiffValue_Throws(Map<int, bool> map, int key, bool val1, bool val2) {
-            if (map.ValComparer.Equals(val1, val2))
-                Succeed();
+        [Property]
+        public void AddRange_ExistingKeyDiffValue_Throws(int key, bool val) {
+            var map = Map<int, bool>();
+            map = map.Add(key, val);
         
-            map = map.Add(key, val1);
-        
-            Assert.Throws<ArgumentException>(
-                () => map.AddRange(new[] { (key, val2) }));
+            Assert.Throws<ArgumentException>(() => map.AddRange(new[] { (key, !val) }));
         }
         
         // [Fact]
