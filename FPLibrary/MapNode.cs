@@ -364,8 +364,8 @@ namespace FPLibrary {
 
                 return keyComparer.Compare(_key, key) switch {
                     0 => this,
-                    > 0 => right!.Search(keyComparer, key),
-                    _ => left!.Search(keyComparer, key),
+                    > 0 => right!.Search(keyComparer, _key),
+                    _ => left!.Search(keyComparer, _key),
                 };
             }
             

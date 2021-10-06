@@ -92,8 +92,6 @@ namespace FPLibrary.Tests.Map {
             Assert.Equal(expected.ToList(), actual.ToList<KeyValuePair<int, bool>>());
         }
         
-        //[Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
-        private static SortedDictionary<int, bool> inlineData = new() { { -1, false }, {0, false} };
         [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
         public void Remove_IntBool_EqualsMutable(SortedDictionary<int, bool> expected) {
             if (expected.Count == 0) {
@@ -142,7 +140,15 @@ namespace FPLibrary.Tests.Map {
         
             Assert.Throws<ArgumentException>(() => map.AddRange(new[] { (key, !val) }));
         }
-        
+
+        [Property]
+        public void SetItem_ExistingKey_Updates(int key, bool val1, bool val2) {
+            var map = Map<int, bool>((key, val1));
+            map = map.SetItem(key, val2);
+            
+            Assert.Equal(key, map.Keys.Single());
+        }
+
         // [Fact]
         // public void SetItems_NullKey_Throws() {
         //     (string, bool)[] items = { (null!, default) };
@@ -150,13 +156,20 @@ namespace FPLibrary.Tests.Map {
         //     Assert.Throws<ArgumentNullException>(() => Map<string, int>().SetItems(items));
         // }
         
-        [Property]
-        public void ContainsValue(int key, bool val) {
-            var map = Map<int, bool>();
-            Assert.False(map.ContainsValue(val));
-            Assert.True(map.Add(key, val).ContainsValue(val));
+        [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
+        public void ContainsKey_IntBool_EqualsMutable(SortedDictionary<int, bool> mutable, int key) {
+            var map = mutable.ToMap();
+            
+            Assert.Equal(mutable.ContainsKey(key), map.ContainsKey(key));
         }
-        
+
+        [Property(Arbitrary = new[] { typeof(ArbitrarySortedDictionary) })]
+        public void ContainsValue_IntBool_EqualsMutable(SortedDictionary<int, bool> mutable, bool val) {
+            var map = mutable.ToMap();
+            
+            Assert.Equal(mutable.ContainsValue(val), map.ContainsValue(val));
+        }
+
         [Fact]
         public void Create() {
             IComparer<string> keyComparer = StringComparer.OrdinalIgnoreCase;
