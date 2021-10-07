@@ -217,5 +217,9 @@ namespace FPLibrary.Tests.Map {
             Assert.Same(keyComparer, map.KeyComparer);
             Assert.Same(valComparer, map.ValComparer);
         }
+
+        public void Map_Comparers_Collision() {
+            var map = Map<string, string>(StringComparer.OrdinalIgnoreCase, ("a", "0"), ("A", "0"));
+        }
     }
 }

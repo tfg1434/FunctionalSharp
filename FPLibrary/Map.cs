@@ -8,71 +8,58 @@ namespace FPLibrary {
         public static Map<K, V> Map<K, V>() where K : notnull
             => FPLibrary.Map<K, V>.Empty;
         
-        public static Map<K, V> Map<K, V>(IComparer<K> keyComparer) where K : notnull 
-            => Map(keyComparer, EqualityComparer<V>.Default);
+        public static Map<K, V> MapWithComparers<K, V>(IComparer<K>? keyComparer=null, 
+            IEqualityComparer<V>? valComparer=null) where K : notnull
 
-        public static Map<K, V> Map<K, V>(IEqualityComparer<V> valComparer) where K : notnull
-            => Map(Comparer<K>.Default, valComparer);
-        
-        public static Map<K, V> Map<K, V>(IComparer<K> keyComparer, IEqualityComparer<V> valComparer) where K : notnull
             => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, valComparer);
 
         public static Map<K, V> Map<K, V>(params (K Key, V Val)[] items) where K : notnull
-            => Map(Comparer<K>.Default, EqualityComparer<V>.Default, items);
+            => Map<K, V>().AddRange(items);
 
-        public static Map<K, V> Map<K, V>(IComparer<K> keyComparer, params (K Key, V Val)[] items) where K : notnull
-            => Map(keyComparer, EqualityComparer<V>.Default, items);
+        public static Map<K, V> MapWithComparers<K, V>(IComparer<K>? keyComparer=null, 
+            IEqualityComparer<V>? valComparer=null, params (K Key, V Val)[] items) where K : notnull
 
-        public static Map<K, V> Map<K, V>(IEqualityComparer<V> valComparer, params (K Key, V Val)[] items) 
-            where K : notnull
+            => MapWithComparers(keyComparer, valComparer).AddRange(items);
 
-            => Map(Comparer<K>.Default, valComparer, items);
-        
-        public static Map<K, V> Map<K, V>(IComparer<K> keyComparer, IEqualityComparer<V> valComparer, 
-            params (K Key, V Val)[] items) where K : notnull
-        
-            => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, valComparer).AddRange(items);
-        
         //to Map with no projections and default comparers
         public static Map<K, V> ToMap<K, V>(this IEnumerable<(K, V)> src) where K : notnull
             => Map(src.ToArray());
         //TODO: use params IEnumerable
 
+        //to Map with default comparers and no projections
         public static Map<K, V> ToMap<K, V>(this IEnumerable<KeyValuePair<K, V>> src) where K : notnull
             => src.ToMap(item => item.Key, item => item.Value);
-        
+
         //to Map with both key and value projections
         public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, Func<T, K> keyProj, Func<T, V> valProj)
             where K : notnull
 
-            => ToMap(src, Comparer<K>.Default, EqualityComparer<V>.Default, keyProj, valProj);
-        
-        //to Map with both key and value projections & key comparer
-        public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IComparer<K> keyComparer, Func<T, K> keyProj, 
-            Func<T, V> valProj) where K : notnull
-            
-            => ToMap(src, keyComparer, EqualityComparer<V>.Default, keyProj, valProj);
-        
-        //to Map with both key and value projections & value comparer
-        public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IEqualityComparer<V> valComparer,
-            Func<T, K> keyProj, Func<T, V> valProj) where K : notnull
+            => src.ToMapWithComparers(keyProj, valProj);
 
-            => ToMap(src, Comparer<K>.Default, valComparer, keyProj, valProj);
-        
-        //to Map with both key and value projections & key and value comparers
-        public static Map<K, V> ToMap<T, K, V>(this IEnumerable<T> src, IComparer<K> keyComparer, 
-            IEqualityComparer<V> valComparer, Func<T, K> keyProj, Func<T, V> valProj) where K : notnull {
+        //to Map with key and value comparers
+        public static Map<K, V> ToMapWithComparers<K, V>(this IEnumerable<(K Key, V Val)> src, 
+            IComparer<K>? keyComparer=null, IEqualityComparer<V>? valComparer=null) where K : notnull {
             
             if (src is null) throw new ArgumentNullException(nameof(src));
-            if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
-            if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
+
+            keyComparer ??= Comparer<K>.Default;
+            valComparer ??= EqualityComparer<V>.Default;
+
+            return MapWithComparers(keyComparer, valComparer)
+                .AddRange(src);
+        }
+        
+        //to Map with both key and value projections & key and value comparers
+        public static Map<K, V> ToMapWithComparers<T, K, V>(this IEnumerable<T> src, Func<T, K> keyProj, 
+            Func<T, V> valProj, IComparer<K>? keyComparer=null, IEqualityComparer<V>? valComparer=null) 
+            where K : notnull {
+            
             if (keyProj is null) throw new ArgumentNullException(nameof(keyProj));
             if (valProj is null) throw new ArgumentNullException(nameof(valProj));
 
-            return FPLibrary.Map<K, V>
-                .Empty
-                .WithComparers(keyComparer, valComparer)
-                .AddRange(src.Map(item => (keyProj(item), valProj(item))));
+            return src
+                .Map(t => (keyProj(t), valProj(t)))
+                .ToMapWithComparers(keyComparer, valComparer);
         }
     }
     
@@ -149,8 +136,9 @@ namespace FPLibrary {
 
         public Map<K, V> SetItem(K key, V val) => SetItem((key, val));
 
-        public Map<K, V> WithComparers(IComparer<K> _keyComparer,
-            IEqualityComparer<V> _valComparer) {
+        public Map<K, V> WithComparers(IComparer<K>? _keyComparer=null, IEqualityComparer<V>? _valComparer=null) {
+            _keyComparer ??= Comparer<K>.Default;
+            _valComparer ??= EqualityComparer<V>.Default;
 
             if (_keyComparer == keyComparer) {
                 //structure doesn't depend on valComparer, so just one new node
