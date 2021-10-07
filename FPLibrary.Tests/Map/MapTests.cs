@@ -11,26 +11,32 @@ using static FPLibrary.F;
 using static FPLibrary.Tests.Utils;
 
 namespace FPLibrary.Tests.Map {
-    //public static class ArbitraryMap {
-    // private static Gen<Map<K, V>> Empty<K, V>() where K : notnull
-    //     => Gen.Constant(Map<K, V>.Empty);
+    // public static class ArbitraryMap {
+    //     private static Gen<Map<K, V>> Empty<K, V>() where K : notnull
+    //         => Gen.Constant(Map<K, V>.Empty);
     //
-    // private static Gen<Map<K, V>> NonEmpty<K, V>() where K : notnull
-    //     => from key in Arb.Generate<K>()
-    //        from val in Arb.Generate<V>()
-    //        from map in GenMap<K, V>()
-    //        select map.Add(key, val);
+    //     private static Gen<Map<K, V>> NonEmpty<K, V>() where K : notnull
+    //         => from key in Arb.Generate<K>()
+    //            from val in Arb.Generate<V>()
+    //            from map in GenMap<K, V>()
+    //            select map.Add(key, val);
     //
-    // private static Gen<Map<K, V>> GenMap<K, V>() where K : notnull
-    //     => from isEmpty in Arb.Generate<bool>()
-    //        from map in isEmpty ? Empty<K, V>() : NonEmpty<K, V>()
-    //        select map;
+    //     private static Gen<Map<K, V>> GenMap<K, V>() where K : notnull
+    //         => from isEmpty in Arb.Generate<bool>()
+    //            from map in isEmpty ? Empty<K, V>() : NonEmpty<K, V>()
+    //            select map;
     //
-    // public static Arbitrary<Map<K, V>> IDictionary<K, V>() where K : notnull
-    //     => GenMap<K, V>().ToArbitrary();
+    //     public static Arbitrary<Map<K, V>> IDictionary<K, V>() where K : notnull
+    //         => GenMap<K, V>().ToArbitrary();
+    // }
     
+    //TODO: Generate tuples instead of two arrays
     public static class ArbitraryMap {
         private static Map<K, V> MapFromLists<K, V>(K[] keys, V[] vals) where K : notnull {
+            //too lazy to just not generate duplicates
+            keys = keys.Distinct().ToArray();
+            vals = vals.Distinct().ToArray();
+            
             var map = Map<K, V>.Empty;
         
             for (int i = 0; i < keys.Length; i++)
@@ -180,17 +186,17 @@ namespace FPLibrary.Tests.Map {
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
             Assert.Same(EqualityComparer<string>.Default, map.ValComparer);
 
-            map = Map<string, string>(keyComparer);
+            map = MapWithComparers<string, string>(keyComparer: keyComparer);
             Assert.Empty(map);
             Assert.Same(keyComparer, map.KeyComparer);
             Assert.Same(EqualityComparer<string>.Default, map.ValComparer);
 
-            map = Map<string, string>(valComparer);
+            map = MapWithComparers<string, string>(valComparer: valComparer);
             Assert.Empty(map);
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
             Assert.Same(valComparer, map.ValComparer);
             
-            map = Map<string, string>(keyComparer, valComparer);
+            map = MapWithComparers(keyComparer, valComparer);
             Assert.Empty(map);
             Assert.Same(keyComparer, map.KeyComparer);
             Assert.Same(valComparer, map.ValComparer);
@@ -202,24 +208,44 @@ namespace FPLibrary.Tests.Map {
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
             Assert.Same(EqualityComparer<string>.Default, map.ValComparer);
             
-            map = Map<string, string>(keyComparer, pairs);
+            map = MapWithComparers(pairs, keyComparer: keyComparer);
             Assert.Single(map);
             Assert.Same(keyComparer, map.KeyComparer);
             Assert.Same(EqualityComparer<string>.Default, map.ValComparer);
             
-            map = Map<string, string>(valComparer, pairs);
+            map = MapWithComparers(pairs, valComparer: valComparer);
             Assert.Single(map);
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
             Assert.Same(valComparer, map.ValComparer);
             
-            map = Map<string, string>(keyComparer, valComparer, pairs);
+            map = MapWithComparers(pairs, keyComparer, valComparer);
             Assert.Single(map);
             Assert.Same(keyComparer, map.KeyComparer);
             Assert.Same(valComparer, map.ValComparer);
         }
+        
+        [Fact(Skip = "Not implemented")]
+        public void Map_Comparers_UsesThem() {
+            var map = MapWithComparers<string, string>(keyComparer: StringComparer.OrdinalIgnoreCase, null, 
+                ("a", "0"), ("A", "0"));
+            
+            Assert.Same(StringComparer.OrdinalIgnoreCase, map.KeyComparer);
+            Assert.Single(map);
+            Assert.True(map.ContainsKey("a"));
+            Assert.Equal("0", map["a"]);
+        }
 
-        public void Map_Comparers_Collision() {
-            var map = Map<string, string>(StringComparer.OrdinalIgnoreCase, ("a", "0"), ("A", "0"));
+        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
+        public void Clear_NoComparer_NoComparer(Map<int, bool> map) {
+            Assert.Same(Map<int, bool>.Empty, map.Clear());
+        }
+        
+        [Fact]
+        public void Clear_WithComparer_KeepsComparer() {
+            var map = MapWithComparers<string, string>(StringComparer.OrdinalIgnoreCase, null, ("a", "0"));
+            
+            Assert.NotSame(Map<string, string>.Empty, map.Clear());
+            Assert.Same(MapWithComparers<string, string>(StringComparer.OrdinalIgnoreCase), map);
         }
     }
 }

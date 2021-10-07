@@ -21,8 +21,16 @@ namespace FPLibrary {
 
             => MapWithComparers(keyComparer, valComparer).AddRange(items);
 
+        public static Map<K, V> Map<K, V>(IEnumerable<(K Key, V Val)> items) where K : notnull
+            => Map<K, V>().AddRange(items);
+
+        public static Map<K, V> MapWithComparers<K, V>(IEnumerable<(K Key, V Val)> items, 
+            IComparer<K>? keyComparer=null, IEqualityComparer<V>? valComparer=null) where K : notnull
+
+            => MapWithComparers(keyComparer, valComparer).AddRange(items);
+
         //to Map with no projections and default comparers
-        public static Map<K, V> ToMap<K, V>(this IEnumerable<(K, V)> src) where K : notnull
+        public static Map<K, V> ToMap<K, V>(this IEnumerable<(K Key, V Val)> src) where K : notnull
             => Map(src.ToArray());
         //TODO: use params IEnumerable
 
