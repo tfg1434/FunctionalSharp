@@ -30,29 +30,40 @@ namespace FPLibrary.Tests.Map {
     //         => GenMap<K, V>().ToArbitrary();
     // }
     
+    // public static class ArbitraryMap {
+    //     private static Map<K, V> MapFromLists<K, V>(K[] keys, V[] vals) where K : notnull {
+    //         //too lazy to just not generate duplicates
+    //         keys = keys.Distinct().ToArray();
+    //         vals = vals.Distinct().ToArray();
+    //         
+    //         var map = Map<K, V>.Empty;
+    //     
+    //         for (int i = 0; i < keys.Length; i++)
+    //             map = map.Add(keys[i], vals[i]);
+    //     
+    //         return map;
+    //     }
+    //     
+    //     private static Gen<Map<K, V>> GenMap<K, V>() where K : notnull
+    //         => from length in Arb.Generate<int>()
+    //            from keys in Gen.ArrayOf(length, Arb.Generate<K>())
+    //            from vals in Gen.ArrayOf(length, Arb.Generate<V>())
+    //            select MapFromLists(keys, vals);
+    //     
+    //     public static Arbitrary<Map<K, V>> MapArb<K, V>() where K : notnull
+    //         => GenMap<K, V>().ToArbitrary();
+    // }
+    
     //TODO: Generate tuples instead of two arrays
     public static class ArbitraryMap {
-        private static Map<K, V> MapFromLists<K, V>(K[] keys, V[] vals) where K : notnull {
-            //too lazy to just not generate duplicates
-            keys = keys.Distinct().ToArray();
-            vals = vals.Distinct().ToArray();
-            
-            var map = Map<K, V>.Empty;
-        
-            for (int i = 0; i < keys.Length; i++)
-                map = map.Add(keys[i], vals[i]);
-        
-            return map;
-        }
-        
         private static Gen<Map<K, V>> GenMap<K, V>() where K : notnull
             => from length in Arb.Generate<int>()
-               from keys in Gen.ArrayOf(length, Arb.Generate<K>())
-               from vals in Gen.ArrayOf(length, Arb.Generate<V>())
-               select MapFromLists(keys, vals);
-        
-        public static Arbitrary<Map<K, V>> MapArb<K, V>() where K : notnull
-            => GenMap<K, V>().ToArbitrary();
+               from lowerBound in Arb.Generate<int>()
+               from upperBound in Arb.Generate<int>()
+               from rangeGen in Gen.Choose(lowerBound, upperBound)
+               from tupleGen in Gen.Two(rangeGen)
+               select Gen.ArrayOf(length, tupleGen).ToMap();
+
     }
     
     public static class ArbitrarySortedDictionary {
