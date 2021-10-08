@@ -60,10 +60,8 @@ namespace FPLibrary.Tests.Map {
             => from length in Arb.Generate<int>()
                from lowerBound in Arb.Generate<int>()
                from upperBound in Arb.Generate<int>()
-               from rangeGen in Gen.Choose(lowerBound, upperBound)
-               from tupleGen in Gen.Two(rangeGen)
-               select Gen.ArrayOf(length, tupleGen).ToMap();
-
+               from arr in Gen.ArrayOf(length, Gen.Two(Gen.Choose(lowerBound, upperBound)))
+               select arr.ToMap();
     }
     
     public static class ArbitrarySortedDictionary {
