@@ -89,7 +89,7 @@ namespace FPLibrary.Tests.Map {
             Assert.Equal(expected.ToList(), actual.ToList<KeyValuePair<int, bool>>());
         }
         
-        [Property]
+        [Property(Skip = "Equals not implemented")]
         public void Add_ExistingKeySameValue_Same(int key, bool val) {
             var map = Map<int, bool>();
             map = map.Add(key, val);
@@ -97,7 +97,7 @@ namespace FPLibrary.Tests.Map {
             Assert.Equal(map, map.Add(key, val));
         }
         
-        [Property]
+        [Property(Skip = "Equals not implemented")]
         public void AddRange_ExistingKeySameValue_Same(int key, bool val) {
             var map = Map<int, bool>();
             map = map.Add(key, val);
@@ -121,7 +121,7 @@ namespace FPLibrary.Tests.Map {
             Assert.Throws<ArgumentException>(() => map.AddRange(new[] { (key, !val) }));
         }
 
-        [Property(Skip = "Not implemented")]
+        [Property(Skip = "Keys not implemented")]
         public void SetItem_ExistingKey_Updates(int key, bool val1, bool val2) {
             var map = Map<int, bool>((key, val1));
             map = map.SetItem(key, val2);

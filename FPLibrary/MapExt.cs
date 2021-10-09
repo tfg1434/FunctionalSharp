@@ -98,5 +98,14 @@ namespace FPLibrary {
         public Map<K, V> SetItem(KeyValuePair<K, V> kv) => SetItem(ToValueTuple(kv));
         
         public Map<K, V> SetItem(Tuple<K, V> tup) => SetItem(ToValueTuple(tup));
+        
+        public Map<K, V> SetItems(IEnumerable<KeyValuePair<K, V>> items) 
+            => SetItems(items.Map(ToValueTuple));
+        
+        public Map<K, V> SetItems(IEnumerable<Tuple<K, V>> items) 
+            => SetItems(items.Map(ToValueTuple));
+
+        public Map<K, V> SetItems(params (K Key, V Val)[] items)
+            => SetItems((IEnumerable<(K Key, V Val)>) items);
     }
 }

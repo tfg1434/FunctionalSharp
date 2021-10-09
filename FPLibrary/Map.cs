@@ -145,6 +145,9 @@ namespace FPLibrary {
             return Wrap(newRoot, replaced ? count : count + 1);
         }
 
+        public Map<K, V> SetItems(IEnumerable<(K Key, V Val)> items)
+            => AddRange(items, true, false);
+
         public Map<K, V> WithComparers(IComparer<K>? _keyComparer=null, IEqualityComparer<V>? _valComparer=null) {
             _keyComparer ??= Comparer<K>.Default;
             _valComparer ??= EqualityComparer<V>.Default;
