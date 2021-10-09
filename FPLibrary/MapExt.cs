@@ -73,16 +73,30 @@ namespace FPLibrary {
 
     public sealed partial class Map<K, V> where K : notnull {
         public Map<K, V> Add(K key, V val) => Add((key, val));
+        
         public Map<K, V> Add(KeyValuePair<K, V> kv) => Add(ToValueTuple(kv));
+        
         public Map<K, V> Add(Tuple<K, V> tup) => Add(ToValueTuple(tup));
 
         public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items) 
             => AddRange(items.Map(ToValueTuple));
+        
         public Map<K, V> AddRange(IEnumerable<Tuple<K, V>> items) 
             => AddRange(items.Map(ToValueTuple));
 
+        public bool Contains(K key, V val)
+            => Contains((key, val));
+        
+        public bool Contains(KeyValuePair<K, V> kv) 
+            => Contains(ToValueTuple(kv));
+        
+        public bool Contains(Tuple<K, V> tup)
+            => Contains(ToValueTuple(tup));
+
         public Map<K, V> SetItem(K key, V val) => SetItem((key, val));
+        
         public Map<K, V> SetItem(KeyValuePair<K, V> kv) => SetItem(ToValueTuple(kv));
+        
         public Map<K, V> SetItem(Tuple<K, V> tup) => SetItem(ToValueTuple(tup));
     }
 }

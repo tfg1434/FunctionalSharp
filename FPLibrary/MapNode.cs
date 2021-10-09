@@ -130,23 +130,23 @@ namespace FPLibrary {
                 return true;
             }
 
-            // internal void CopyTo(KeyValuePair<K, V>[] array, int index, int size) {
-            //     if (array is null) throw new ArgumentNullException(nameof(array));
-            //     if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
-            //     if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
-            //     
-            //     foreach (KeyValuePair<K, V> item in this)
-            //         array[index++] = item;
-            // }
-            //
-            // internal void CopyTo(Array array, int index, int size) {
-            //     if (array is null) throw new ArgumentNullException(nameof(array));
-            //     if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
-            //     if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
-            //     
-            //     foreach (KeyValuePair<K, V> item in this)
-            //         array.SetValue(new DictionaryEntry(item.Key, item.Value), index++);
-            // }
+            internal void CopyTo(KeyValuePair<K, V>[] array, int index, int size) {
+                if (array is null) throw new ArgumentNullException(nameof(array));
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+                if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
+                
+                foreach ((K k, V v) in this)
+                    array[index++] = new(k, v);
+            }
+            
+            internal void CopyTo(Array array, int index, int size) {
+                if (array is null) throw new ArgumentNullException(nameof(array));
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+                if (array.Length < index + size) throw new ArgumentOutOfRangeException(nameof(index));
+                
+                foreach ((K k, V v) in this)
+                    array.SetValue(new DictionaryEntry(k, v), index++);
+            }
 
             #region Balancing methods
 
