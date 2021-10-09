@@ -42,7 +42,31 @@ namespace FPLibrary {
 
         #region ToMap
 
+        //to Map with no projections and default comparers
+        public static Map<K, V> ToMap<K, V>(this IEnumerable<KeyValuePair<K, V>> src) where K : notnull
+            => Map(src);
+        
+        public static Map<K, V> ToMap<K, V>(this IEnumerable<Tuple<K, V>> src) where K : notnull
+            => Map(src);
 
+        //to Map with key and value comparers
+        public static Map<K, V> ToMapWithComparers<K, V>(this IEnumerable<KeyValuePair<K, V>> src,
+            IComparer<K>? keyComparer=null, IEqualityComparer<V>? valComparer=null) where K : notnull {
+
+            if (src is null) throw new ArgumentNullException(nameof(src));
+
+            return MapWithComparers(keyComparer, valComparer)
+                .AddRange(src);
+        }
+        
+        public static Map<K, V> ToMapWithComparers<K, V>(this IEnumerable<Tuple<K, V>> src,
+            IComparer<K>? keyComparer=null, IEqualityComparer<V>? valComparer=null) where K : notnull {
+
+            if (src is null) throw new ArgumentNullException(nameof(src));
+
+            return MapWithComparers(keyComparer, valComparer)
+                .AddRange(src);
+        }
 
         #endregion
     }
@@ -52,7 +76,8 @@ namespace FPLibrary {
         public Map<K, V> Add(KeyValuePair<K, V> kv) => Add(ToValueTuple(kv));
         public Map<K, V> Add(Tuple<K, V> tup) => Add(ToValueTuple(tup));
 
-        public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items) => AddRange(items.Map(ToValueTuple));
+        public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items) 
+            => AddRange(items.Map(ToValueTuple));
         public Map<K, V> AddRange(IEnumerable<Tuple<K, V>> items) 
             => AddRange(items.Map(ToValueTuple));
 
