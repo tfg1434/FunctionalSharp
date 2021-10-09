@@ -26,10 +26,10 @@ namespace FPLibrary {
             => throw new NotImplementedException();
     
         IImmutableDictionary<K, V> IImmutableDictionary<K, V>.SetItem(K key, V value) => SetItem((key, value));
-    
+
         IImmutableDictionary<K, V> IImmutableDictionary<K, V>.SetItems(IEnumerable<KeyValuePair<K, V>> items)
-            => throw new NotImplementedException();
-    
+            => SetItems(items);
+
         #endregion
     }
 }

@@ -24,7 +24,7 @@ namespace FPLibrary {
             => ts.Bind(t => f(t).AsEnumerable());
 
 
-        public static Maybe<T> Find<T>(this IEnumerable<T> ts, Func<T, bool> p) {
+        public static Maybe<T> FirstSafe<T>(this IEnumerable<T> ts, Func<T, bool> p) {
             foreach (T t in ts)
                 if (p(t))
                     return t;

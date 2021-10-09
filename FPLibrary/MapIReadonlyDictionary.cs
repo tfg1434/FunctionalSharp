@@ -7,8 +7,9 @@ using System.Linq;
 using static FPLibrary.F;
 
 namespace FPLibrary {
-    public sealed partial class Map<K, V> : IReadOnlyDictionary<K, V> where K : notnull {
-        public V this[K key] => throw new NotImplementedException();
+    public sealed partial class Map<K, V> where K : notnull {
+        public V this[K key] => Find(key).IfNothing(() 
+            => throw new ArgumentException("Key doesn't exist."));
 
         public IEnumerable<K> Keys => throw new NotImplementedException();
         public IEnumerable<V> Values => throw new NotImplementedException();

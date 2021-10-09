@@ -124,6 +124,9 @@ namespace FPLibrary {
                 ? this
                 : Empty.WithComparers(keyComparer, valComparer);
 
+        public Maybe<V> Find(K key)
+            => 
+
         public Map<K, V> Remove(K key) {
             if (key is null) throw new ArgumentNullException(nameof(key));
 
