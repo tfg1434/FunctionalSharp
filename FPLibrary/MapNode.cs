@@ -51,9 +51,13 @@ namespace FPLibrary {
                 frozen = true;
             }
 
-            internal (Node Node, bool Mutated) Add(IComparer<K> keyComparer,
-                IEqualityComparer<V> valComparer, (K Key, V Val) pair) {
-
+            internal (Node Node, bool Mutated) Add(IComparer<K> keyComparer, IEqualityComparer<V> valComparer, 
+                (K Key, V Val) pair) {
+                
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (valComparer is null) throw new ArgumentNullException(nameof(valComparer)); 
+                if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
+                
                 (Node node, _, bool mutated) = SetOrAdd(keyComparer, valComparer, false, pair);
 
                 return (node, mutated);
@@ -61,6 +65,10 @@ namespace FPLibrary {
 
             internal (Node Node, bool Replaced, bool Mutated) Set(IComparer<K> keyComparer, 
                 IEqualityComparer<V> valComparer, (K Key, V Val) pair) {
+                
+                if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
+                if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
+                if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
 
                 (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valComparer, true, pair);
 
@@ -92,6 +100,16 @@ namespace FPLibrary {
                         return true;
                 
                 return false;
+            }
+
+            internal Maybe<V> Get(IComparer<K> keyComparer, K _key) {
+                if (_key is null) throw new ArgumentNullException(nameof(_key));
+
+                Node res = Search(keyComparer, _key);
+
+                return res.IsEmpty
+                    ? Nothing
+                    : Just(res.value);
             }
 
             internal (Node Node, bool Mutated) Remove(IComparer<K> keyComparer, K _key) {
@@ -366,7 +384,7 @@ namespace FPLibrary {
                 return keyComparer.Compare(_key, key) switch {
                     0 => this,
                     > 0 => right!.Search(keyComparer, _key),
-                    _ => left!.Search(keyComparer, _key),
+                    < 0 => left!.Search(keyComparer, _key),
                 };
             }
             

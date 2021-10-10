@@ -78,10 +78,19 @@ namespace FPLibrary {
         
         public Map<K, V> Add(Tuple<K, V> tup) => Add(ToValueTuple(tup));
 
+        public Map<K, V> AddRange(params (K, V)[] items)
+            => AddRange((IEnumerable<(K Key, V Val)>) items);
+
         public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items) 
             => AddRange(items.Map(ToValueTuple));
         
+        public Map<K, V> AddRange(params KeyValuePair<K, V>[] items)
+            => AddRange(items.Map(ToValueTuple));
+        
         public Map<K, V> AddRange(IEnumerable<Tuple<K, V>> items) 
+            => AddRange(items.Map(ToValueTuple));
+        
+        public Map<K, V> AddRange(params Tuple<K, V>[] items) 
             => AddRange(items.Map(ToValueTuple));
 
         public bool Contains(K key, V val)
@@ -99,13 +108,19 @@ namespace FPLibrary {
         
         public Map<K, V> SetItem(Tuple<K, V> tup) => SetItem(ToValueTuple(tup));
         
+        public Map<K, V> SetItems(params (K Key, V Val)[] items)
+            => SetItems((IEnumerable<(K Key, V Val)>) items);
+
+        public Map<K, V> SetItems(params KeyValuePair<K, V>[] items)
+            => SetItems(items.Map(ToValueTuple));
+        
         public Map<K, V> SetItems(IEnumerable<KeyValuePair<K, V>> items) 
+            => SetItems(items.Map(ToValueTuple));
+        
+        public Map<K, V> SetItems(Tuple<K, V>[] items) 
             => SetItems(items.Map(ToValueTuple));
         
         public Map<K, V> SetItems(IEnumerable<Tuple<K, V>> items) 
             => SetItems(items.Map(ToValueTuple));
-
-        public Map<K, V> SetItems(params (K Key, V Val)[] items)
-            => SetItems((IEnumerable<(K Key, V Val)>) items);
     }
 }

@@ -97,14 +97,6 @@ namespace FPLibrary.Tests.Map {
             Assert.Equal(map, map.Add(key, val));
         }
         
-        [Property(Skip = "Equals not implemented")]
-        public void AddRange_ExistingKeySameValue_Same(int key, bool val) {
-            var map = Map<int, bool>();
-            map = map.Add(key, val);
-        
-            Assert.Equal(map, map.AddRange(new[] { (key, val) }));
-        }
-        
         [Property]
         public void Add_ExisitingKeyDiffValue_Throws(int key, bool val) {
             var map = Map<int, bool>();
@@ -112,13 +104,33 @@ namespace FPLibrary.Tests.Map {
             
             Assert.Throws<ArgumentException>(() => map.Add(key, !val));
         }
+
+        [Fact]
+        public void Add_NullKey_Throws() {
+            Assert.Throws<ArgumentNullException>(
+                () => Map<string, bool>().Add(null!, default));
+        }
         
+        [Property(Skip = "Equals not implemented")]
+        public void AddRange_ExistingKeySameValue_Same(int key, bool val) {
+            var map = Map<int, bool>();
+            map = map.Add(key, val);
+        
+            Assert.Equal(map, map.AddRange(new[] { (key, val) }));
+        }
+
         [Property]
         public void AddRange_ExistingKeyDiffValue_Throws(int key, bool val) {
             var map = Map<int, bool>();
             map = map.Add(key, val);
         
             Assert.Throws<ArgumentException>(() => map.AddRange(new[] { (key, !val) }));
+        }
+        
+        [Fact]
+        public void AddRange_NullKey_Throws() {
+            Assert.Throws<ArgumentNullException>(
+                () => Map<string, bool>().AddRange((null!, default)));
         }
 
         [Property(Skip = "Keys not implemented")]
@@ -129,12 +141,11 @@ namespace FPLibrary.Tests.Map {
             Assert.Equal(key, map.Keys.Single());
         }
 
-        // [Fact]
-        // public void SetItems_NullKey_Throws() {
-        //     (string, bool)[] items = { (null!, default) };
-        //     
-        //     Assert.Throws<ArgumentNullException>(() => Map<string, int>().SetItems(items));
-        // }
+        [Fact]
+        public void SetItems_NullKey_Throws() {
+            Assert.Throws<ArgumentNullException>(
+                () => Map<string, bool>().SetItems((null!, default)));
+        }
         
         [Property(Arbitrary = new[] { typeof(ArbitraryImmutableSortedDictionary) })]
         public void ContainsKey_IntBool_EqualsMutable(ImmutableSortedDictionary<int, bool> dict, int key) {
@@ -198,7 +209,7 @@ namespace FPLibrary.Tests.Map {
             Assert.Same(valComparer, map.ValComparer);
         }
         
-        [Fact(Skip = "Not implemented")]
+        [Fact]
         public void Map_Comparers_UsesThem() {
             var map = MapWithComparers<string, string>(keyComparer: StringComparer.OrdinalIgnoreCase, null, 
                 ("a", "0"), ("A", "0"));
@@ -220,6 +231,13 @@ namespace FPLibrary.Tests.Map {
             
             Assert.NotSame(Map<string, string>.Empty, map.Clear());
             Assert.Same(MapWithComparers<string, string>(StringComparer.OrdinalIgnoreCase), map.Clear());
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryImmutableSortedDictionary) })]
+        public void Get_IntBool_EqualsBuiltin(ImmutableSortedDictionary<int, bool> dict, int key) {
+            var map = dict.ToMap();
+
+            Assert.Equal(dict.ContainsKey(key), map.Get(key).IsJust);
         }
     }
 }

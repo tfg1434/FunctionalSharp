@@ -44,6 +44,22 @@ namespace FPLibrary {
             if (isJust) yield return value!;
         }
 
+        public T IfNothing(T val) {
+            if (val is null) throw new ArgumentNullException(nameof(val));
+            
+            return isJust ? value!: val;
+        }
+
+        public T IfNothing(Func<T> f)
+            => (isJust
+                ? value
+                : f()) ?? throw new InvalidOperationException();
+
+        public Unit IfNothing(Action f) {
+            if (IsNothing) f();
+            return Unit();
+        }
+
         public bool Equals(Maybe<T> other)
             => isJust == other.isJust && (!isJust || value!.Equals(other.value));
         public bool Equals(NothingType _) => !isJust;

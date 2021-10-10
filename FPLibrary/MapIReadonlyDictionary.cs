@@ -8,8 +8,8 @@ using static FPLibrary.F;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> where K : notnull {
-        public V this[K key] => Find(key).IfNothing(() 
-            => throw new ArgumentException("Key doesn't exist."));
+        public V this[K key] => Get(key)
+            .IfNothing(() => throw new ArgumentException("Key does not exist in map.", nameof(key)));
 
         public IEnumerable<K> Keys => throw new NotImplementedException();
         public IEnumerable<V> Values => throw new NotImplementedException();

@@ -124,8 +124,11 @@ namespace FPLibrary {
                 ? this
                 : Empty.WithComparers(keyComparer, valComparer);
 
-        public Maybe<V> Find(K key)
-            => 
+        public Maybe<V> Get(K key) {
+            if (key is null) throw new ArgumentNullException(nameof(key));
+
+            return root.Get(keyComparer, key);
+        }
 
         public Map<K, V> Remove(K key) {
             if (key is null) throw new ArgumentNullException(nameof(key));
@@ -201,6 +204,8 @@ namespace FPLibrary {
         
         //TODO: avoidMap
         private Map<K, V> AddRange(IEnumerable<(K Key, V Val)> items, bool overwrite, bool avoidMap) {
+            if (items is null) throw new ArgumentNullException(nameof(items));
+            
             //not in terms of Add so no need for new wrapper per item
 
             (Node Root, int Count) seed = (root, count);
