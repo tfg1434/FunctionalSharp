@@ -94,11 +94,6 @@ namespace FPLibrary {
             keyComparer = Comparer<K>.Default;
             valComparer = EqualityComparer<V>.Default;
         }
-        
-        internal Map(IComparer<K> keyComparer, IEqualityComparer<V> valComparer) : this() {
-            this.keyComparer = keyComparer;
-            this.valComparer = valComparer;
-        }
 
         private Map(Node root, int count, IComparer<K> keyComparer, IEqualityComparer<V> valComparer) {
             root.Freeze();
