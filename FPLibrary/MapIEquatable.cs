@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> : IEquatable<Map<K, V>> where K : notnull {
@@ -11,8 +12,8 @@ namespace FPLibrary {
             int hash = -2128831035;
 
             unchecked {
-                foreach ((K Key, V Val) item in AsEnumerable())
-                    hash = (item.GetHashCode() ^ hash) * 16777619;
+                hash = AsEnumerable().Aggregate(hash, 
+                    (acc, item) => (item.GetHashCode() ^ acc) * 16777619);
             }
 
             return hash;

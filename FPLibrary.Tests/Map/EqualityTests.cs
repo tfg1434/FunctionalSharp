@@ -8,11 +8,17 @@ using static FPLibrary.F;
 namespace FPLibrary.Tests.Map {
     public class MapEqualityTests {
         [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
-        public void HashEquals_IntBool_Equal(Map<int, bool> map1, Map<int, bool> map2) {
+        public void Equal_HashCode_Holds(Map<int, bool> map1, Map<int, bool> map2) {
             if (map1 == map2)
                 Assert.Equal(map1.GetHashCode(), map2.GetHashCode());
             else
-                Succeed();
+                Assert.NotEqual(map1.GetHashCode(), map2.GetHashCode());
+        }
+        
+        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
+        public void HashCode_NoThrow_Holds(Map<int, bool> map) {
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            /*Assert.DoesNotThrow(*/map.GetHashCode();
         }
         
         [Fact]
