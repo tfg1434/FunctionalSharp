@@ -89,7 +89,7 @@ namespace FPLibrary.Tests.Map {
             Assert.Equal(expected.ToList(), actual.ToList<KeyValuePair<int, bool>>());
         }
         
-        [Property(Skip = "Equals not implemented")]
+        [Property]
         public void Add_ExistingKeySameValue_Same(int key, bool val) {
             var map = Map<int, bool>();
             map = map.Add(key, val);
@@ -111,7 +111,7 @@ namespace FPLibrary.Tests.Map {
                 () => Map<string, bool>().Add(null!, default));
         }
         
-        [Property(Skip = "Equals not implemented")]
+        [Property]
         public void AddRange_ExistingKeySameValue_Same(int key, bool val) {
             var map = Map<int, bool>();
             map = map.Add(key, val);
@@ -225,12 +225,12 @@ namespace FPLibrary.Tests.Map {
             Assert.Same(Map<int, bool>.Empty, map.Clear());
         }
         
-        [Fact(Skip = "Not implemented")]
+        [Fact]
         public void Clear_WithComparer_KeepsComparer() {
             var map = MapWithComparers<string, string>(StringComparer.OrdinalIgnoreCase, null, ("a", "0"));
             
-            Assert.NotSame(Map<string, string>.Empty, map.Clear());
-            Assert.Same(MapWithComparers<string, string>(StringComparer.OrdinalIgnoreCase), map.Clear());
+            Assert.NotEqual(Map<string, string>.Empty, map.Clear());
+            Assert.Equal(MapWithComparers<string, string>(StringComparer.OrdinalIgnoreCase), map.Clear());
         }
 
         [Property(Arbitrary = new[] { typeof(ArbitraryImmutableSortedDictionary) })]

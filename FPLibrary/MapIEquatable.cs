@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> : IEquatable<Map<K, V>> where K : notnull {
@@ -8,15 +9,29 @@ namespace FPLibrary {
         //FNV-1a 32-bit hash
         public override int GetHashCode() {
             if (hashCode != 0) return hashCode;
-
+            
             int hash = -2128831035;
-
+            
             unchecked {
-                hash = AsEnumerable().Aggregate(hash, 
-                    (acc, item) => (item.GetHashCode() ^ acc) * 16777619);
+                return (hashCode = AsEnumerable().Aggregate(hash, 
+                        (acc, item) => (item.GetHashCode() ^ acc) * 16777619), 
+                    keyComparer, valComparer).GetHashCode();
             }
-
-            return hash;
+            
+            // const int seed = 487;
+            // const int modifier = 31;
+            //
+            // unchecked {
+            //     return hashCode = AsEnumerable().Aggregate(seed,
+            //         (acc, item) => acc * modifier + item.GetHashCode());
+            // }
+            
+            // int hash = -2128831035;
+            //
+            // unchecked {
+            //     hash = AsEnumerable().Aggregate(hash, 
+            //         (acc, item) => (item.GetHashCode() ^ acc) * 16777619);
+            // }
         }
 
         public static bool operator ==(Map<K, V> self, Map<K, V> other)
@@ -26,12 +41,13 @@ namespace FPLibrary {
             => !(self == other);
 
         public override bool Equals(object? obj)
-            => obj is Map<K, V> map && Equals(map);
+            => Equals(obj as Map<K, V>);
 
         public bool Equals(Map<K, V>? other) {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
             if (Count != other.Count) return false;
+            if (KeyComparer != other.KeyComparer || ValComparer != other.ValComparer) return false;
             //if (hashCode != 0 && other.hashCode != 0) return false;
 
             using var iterThis = GetEnumerator();
