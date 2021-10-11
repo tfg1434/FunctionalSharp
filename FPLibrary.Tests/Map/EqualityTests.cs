@@ -7,12 +7,18 @@ using static FPLibrary.F;
 
 namespace FPLibrary.Tests.Map {
     public class MapEqualityTests {
-        [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
-        public void Equal_HashCode_Holds(Map<int, bool> map1, Map<int, bool> map2) {
-            if (map1 == map2)
-                Assert.Equal(map1.GetHashCode(), map2.GetHashCode());
-            else
-                Assert.NotEqual(map1.GetHashCode(), map2.GetHashCode());
+        [Fact]
+        public void Equal_HashCode_Holds() {
+            var map1 = Map<string, string>(("e", "f"), ("e", "f"));
+            var map2 = Map<string, string>(("e", "f"), ("e", "f"));
+            
+            Assert.Equal(map1, map2);
+            Assert.Equal(map1.GetHashCode(), map2.GetHashCode());
+
+            map1 = MapWithComparers<string, string>(StringComparer.OrdinalIgnoreCase, null, ("e", "f"), ("e", "f"));
+            map2 = Map<string, string>(("e", "f"), ("e", "f"));
+            Assert.NotEqual(map1, map2);
+            Assert.NotEqual(map1.GetHashCode(), map2.GetHashCode());
         }
         
         [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
@@ -69,6 +75,11 @@ namespace FPLibrary.Tests.Map {
             var rhs = Map<int, bool>((1, true), (4, false));
             
             Assert.False(lhs.Equals(rhs));
+        }
+
+        [Fact]
+        public void Equals_Comparer_Uses() {
+            
         }
     }
 }

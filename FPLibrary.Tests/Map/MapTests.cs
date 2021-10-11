@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FsCheck;
 using FsCheck.Xunit;
@@ -131,6 +132,15 @@ namespace FPLibrary.Tests.Map {
         public void AddRange_NullKey_Throws() {
             Assert.Throws<ArgumentNullException>(
                 () => Map<string, bool>().AddRange((null!, default)));
+        }
+
+        [Fact]
+        [SuppressMessage("ReSharper", "xUnit2004")]
+        public void AddRange_Duplicates_Ignores() {
+            var map = Map<int, bool>((0, true), (0, true));
+
+            Assert.Single(map);
+            Assert.Equal(true, map[0]);
         }
 
         [Property(Skip = "Keys not implemented")]

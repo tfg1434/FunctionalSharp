@@ -205,14 +205,15 @@ namespace FPLibrary {
 
             (Node Root, int Count) seed = (root, count);
             (Node Root, int Count) res = items.Aggregate(seed, (acc, item) => {
-                Node node;
+                Node newRes;
                 bool replaced = false;
+                bool mutated;
                 if (overwrite)
-                    (node, replaced, _) = acc.Root.Set(keyComparer, valComparer, item);
+                    (newRes, replaced, mutated) = acc.Root.Set(keyComparer, valComparer, item);
                 else
-                    (node, _) = acc.Root.Add(keyComparer, valComparer, item);
-
-                return (node, replaced ? acc.Count : acc.Count + 1);
+                    (newRes, mutated) = acc.Root.Add(keyComparer, valComparer, item);
+                
+                return mutated ? (newRes, replaced ? acc.Count : acc.Count + 1) : (acc.Root, acc.Count);
             });
 
             return Wrap(res.Root, res.Count);

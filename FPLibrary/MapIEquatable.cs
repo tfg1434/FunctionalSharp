@@ -9,28 +9,28 @@ namespace FPLibrary {
         //FNV-1a 32-bit hash
         public override int GetHashCode() {
             if (hashCode != 0) return hashCode;
-            
-            int hash = -2128831035;
-            
-            unchecked {
-                return (hashCode = AsEnumerable().Aggregate(hash, 
-                        (acc, item) => (item.GetHashCode() ^ acc) * 16777619), 
-                    keyComparer, valComparer).GetHashCode();
-            }
-            
+
+            var hash = new HashCode();
+            AsEnumerable().ForEach(item => hash.Add(item));
+            hash.Add(keyComparer);
+            hash.Add(valComparer);
+
+            return hashCode = hash.ToHashCode();
+
+            // int hash = -2128831035;
+            //
+            // unchecked {
+            //     return (hashCode = AsEnumerable().Aggregate(hash, 
+            //             (acc, item) => (item.GetHashCode() ^ acc) * 16777619), 
+            //         keyComparer, valComparer).GetHashCode();
+            // }
+
             // const int seed = 487;
             // const int modifier = 31;
             //
             // unchecked {
             //     return hashCode = AsEnumerable().Aggregate(seed,
             //         (acc, item) => acc * modifier + item.GetHashCode());
-            // }
-            
-            // int hash = -2128831035;
-            //
-            // unchecked {
-            //     hash = AsEnumerable().Aggregate(hash, 
-            //         (acc, item) => (item.GetHashCode() ^ acc) * 16777619);
             // }
         }
 
@@ -48,7 +48,7 @@ namespace FPLibrary {
             if (ReferenceEquals(this, other)) return true;
             if (Count != other.Count) return false;
             if (KeyComparer != other.KeyComparer || ValComparer != other.ValComparer) return false;
-            //if (hashCode != 0 && other.hashCode != 0) return false;
+            if (hashCode != 0 && other.hashCode != 0) return false;
 
             using var iterThis = GetEnumerator();
             using var iterOther = other.GetEnumerator();
