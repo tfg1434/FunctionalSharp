@@ -27,6 +27,8 @@ namespace FPLibrary {
             public Node? Left => left;
             public Node? Right => right;
             public (K Key, V Val) Value => (key, value);
+            internal IEnumerable<K> Keys => this.Select(x => x.Key);
+            internal IEnumerable<V> Values => this.Select(x => x.Val);
 
             #endregion
 
