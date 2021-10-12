@@ -9,9 +9,9 @@ using static FPLibrary.F;
 namespace FPLibrary {
     public sealed partial class Map<K, V> : IDictionary, IDictionary<K, V> where K : notnull {
         #region IDictionary<K, V> Properties
-        
-        ICollection<K> IDictionary<K, V>.Keys => throw new NotImplementedException();
-        ICollection<V> IDictionary<K, V>.Values => throw new NotImplementedException();
+
+        ICollection<K> IDictionary<K, V>.Keys => new MapKeysCollectionAccessor<K, V>(this);
+        ICollection<V> IDictionary<K, V>.Values => new MapValsCollectionAccessor<K, V>(this);
         
         V IDictionary<K, V>.this[K key] {
             get => this[key];
@@ -33,10 +33,10 @@ namespace FPLibrary {
         bool IDictionary.IsFixedSize => true;
         
         bool IDictionary.IsReadOnly => true;
-        
-        ICollection IDictionary.Keys => throw new NotImplementedException();
-        
-        ICollection IDictionary.Values => throw new NotImplementedException();
+
+        ICollection IDictionary.Keys => new MapKeysCollectionAccessor<K, V>(this);
+
+        ICollection IDictionary.Values => new MapValsCollectionAccessor<K, V>(this);
         
         #endregion
         

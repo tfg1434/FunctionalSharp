@@ -168,7 +168,7 @@ namespace FPLibrary.Tests.Map {
         public void ContainsValue_IntBool_EqualsMutable(ImmutableSortedDictionary<int, bool> dict, bool val) {
             var map = dict.ToMap();
             
-            Assert.Equal(dict.ContainsValue(val), map.ContainsValue(val));
+            Assert.Equal(dict.ContainsValue(val), map.ContainsVal(val));
         }
 
         [Fact]

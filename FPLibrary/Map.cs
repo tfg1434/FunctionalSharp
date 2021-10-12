@@ -183,7 +183,7 @@ namespace FPLibrary {
             return root.ContainsKey(keyComparer, key);
         }
 
-        public bool ContainsValue(V val) => root.ContainsValue(valComparer, val);
+        public bool ContainsVal(V val) => root.ContainsVal(valComparer, val);
         
         public bool TryGetValue(K key, [MaybeNullWhen(false)] out V val) {
             if (key is null) throw new ArgumentNullException(nameof(key));

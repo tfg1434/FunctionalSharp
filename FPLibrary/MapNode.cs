@@ -94,7 +94,7 @@ namespace FPLibrary {
                 return !Search(keyComparer, _key).IsEmpty;
             }
 
-            internal bool ContainsValue(IEqualityComparer<V> valComparer, V val) {
+            internal bool ContainsVal(IEqualityComparer<V> valComparer, V val) {
                 if (valComparer is null) throw new ArgumentNullException(nameof(valComparer));
 
                 foreach ((_, V v) in this)
