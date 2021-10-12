@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> : IEquatable<Map<K, V>> where K : notnull {
-        private int hashCode = 0;
+        private int hashCode;
 
         //FNV-1a 32-bit hash
         public override int GetHashCode() {
-            if (hashCode != 0) return hashCode;
+            if (hashCode != default) return hashCode;
 
             var hash = new HashCode();
             AsEnumerable().ForEach(item => hash.Add(item));

@@ -17,12 +17,15 @@ namespace FPLibrary {
         private readonly R? right;
 
         private readonly bool isRight;
+        // ReSharper disable once UnusedMember.Local
         private bool isLeft => !isRight;
 
+        // ReSharper disable once MemberCanBePrivate.Global
         internal Either(L l)
             => (isRight, left, right)
                 = (false, l ?? throw new ArgumentNullException(nameof(l)), default);
 
+        // ReSharper disable once MemberCanBePrivate.Global
         internal Either(R r)
             => (isRight, left, right)
                 = (true, default, r ?? throw new ArgumentNullException(nameof(r)));

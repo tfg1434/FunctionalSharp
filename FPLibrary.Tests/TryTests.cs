@@ -12,7 +12,7 @@ namespace FPLibrary.Tests {
             Try<Uri> uri = CreateUri("http://github.com");
 
             uri.Run().Match(
-                ex => Fail(),
+                _ => Fail(),
                 Assert.NotNull);
         }
 

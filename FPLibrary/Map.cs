@@ -198,6 +198,7 @@ namespace FPLibrary {
         }
         
         //TODO: avoidMap
+        // ReSharper disable once UnusedParameter.Local
         private Map<K, V> AddRange(IEnumerable<(K Key, V Val)> items, bool overwrite, bool avoidMap) {
             if (items is null) throw new ArgumentNullException(nameof(items));
             

@@ -82,9 +82,11 @@ namespace FPLibrary.Tests.Maybe {
                                 from b in mB
                                 from c in mC
                                 select a + b + c;
+            
+            Assert.Equal(expected, actual);
         }
 
-        private Maybe<int> GetValue(bool select)
+        private static Maybe<int> GetValue(bool select)
             => select ? Just(0) : Nothing;
     }
 }
