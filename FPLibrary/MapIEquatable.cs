@@ -4,14 +4,14 @@
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> : IEquatable<Map<K, V>> where K : notnull {
-        private int hashCode;
+        private int _hashCode;
 
         public bool Equals(Map<K, V>? other) {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
             if (Count != other.Count) return false;
             if (KeyComparer != other.KeyComparer || ValComparer != other.ValComparer) return false;
-            if (hashCode != 0 && other.hashCode != 0) return false;
+            if (_hashCode != 0 && other._hashCode != 0) return false;
 
             using Enumerator iterThis = GetEnumerator();
             using Enumerator iterOther = other.GetEnumerator();
@@ -29,14 +29,14 @@ namespace FPLibrary {
 
         //FNV-1a 32-bit hash
         public override int GetHashCode() {
-            if (hashCode != default) return hashCode;
+            if (_hashCode != default) return _hashCode;
 
             HashCode hash = new();
             AsEnumerable().ForEach(item => hash.Add(item));
             hash.Add(KeyComparer);
             hash.Add(ValComparer);
 
-            return hashCode = hash.ToHashCode();
+            return _hashCode = hash.ToHashCode();
 
             // int hash = -2128831035;
             //

@@ -64,11 +64,11 @@ namespace FPLibrary {
     public sealed partial class Map<K, V> where K : notnull {
         public static readonly Map<K, V> Empty = new();
 
-        private readonly Node root;
+        private readonly Node _root;
 
-        private Func<Node, int, Map<K, V>> Wrap => (_root, adjustedCount) => {
-            if (root != _root)
-                return _root.IsEmpty ? Clear() : new(_root, adjustedCount, KeyComparer, ValComparer);
+        private Func<Node, int, Map<K, V>> Wrap => (root, adjustedCount) => {
+            if (_root != root)
+                return root.IsEmpty ? Clear() : new(root, adjustedCount, KeyComparer, ValComparer);
 
             return this;
         };
@@ -76,19 +76,19 @@ namespace FPLibrary {
         public bool ContainsKey(K key) {
             if (key is null) throw new ArgumentNullException(nameof(key));
 
-            return root.ContainsKey(KeyComparer, key);
+            return _root.ContainsKey(KeyComparer, key);
         }
 
         public bool TryGetValue(K key, [MaybeNullWhen(false)] out V val) {
             if (key is null) throw new ArgumentNullException(nameof(key));
 
-            return root.TryGetValue(KeyComparer, key, out val);
+            return _root.TryGetValue(KeyComparer, key, out val);
         }
 
         public bool TryGetKey(K checkKey, out K realKey) {
             if (checkKey is null) throw new ArgumentNullException(nameof(checkKey));
 
-            return root.TryGetKey(KeyComparer, checkKey, out realKey);
+            return _root.TryGetKey(KeyComparer, checkKey, out realKey);
         }
 
         //util
@@ -102,20 +102,20 @@ namespace FPLibrary {
             => (tup.Item1, tup.Item2);
 
         public Map<K, V> Clear()
-            => root.IsEmpty
+            => _root.IsEmpty
                 ? this
                 : Empty.WithComparers(KeyComparer, ValComparer);
 
         public Maybe<V> Get(K key) {
             if (key is null) throw new ArgumentNullException(nameof(key));
 
-            return root.Get(KeyComparer, key);
+            return _root.Get(KeyComparer, key);
         }
 
         public Map<K, V> Remove(K key) {
             if (key is null) throw new ArgumentNullException(nameof(key));
 
-            return root
+            return _root
                 .Remove(KeyComparer, key)
                 .Node
                 .Pipe(
@@ -127,7 +127,7 @@ namespace FPLibrary {
         public Map<K, V> SetItem((K Key, V Val) pair) {
             if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
 
-            (Node newRoot, bool replaced, _) = root.Set(KeyComparer, ValComparer, pair);
+            (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValComparer, pair);
 
             //replaced: false
             return Wrap(newRoot, replaced ? Count : Count + 1);
@@ -136,21 +136,21 @@ namespace FPLibrary {
         public Map<K, V> SetItems(IEnumerable<(K Key, V Val)> items)
             => AddRange(items, true, false);
 
-        public Map<K, V> WithComparers(IComparer<K>? _keyComparer = null, IEqualityComparer<V>? _valComparer = null) {
-            _keyComparer ??= Comparer<K>.Default;
-            _valComparer ??= EqualityComparer<V>.Default;
+        public Map<K, V> WithComparers(IComparer<K>? keyComparer = null, IEqualityComparer<V>? valComparer = null) {
+            keyComparer ??= Comparer<K>.Default;
+            valComparer ??= EqualityComparer<V>.Default;
 
-            if (_keyComparer == KeyComparer) //structure doesn't depend on valComparer, so just one new node
-                return _valComparer == ValComparer
+            if (keyComparer == KeyComparer) //structure doesn't depend on valComparer, so just one new node
+                return valComparer == ValComparer
                     ? this
-                    : new(root, Count, KeyComparer, _valComparer);
+                    : new(_root, Count, KeyComparer, valComparer);
 
-            return new Map<K, V>(Node.EmptyNode, 0, _keyComparer, _valComparer)
+            return new Map<K, V>(Node.EmptyNode, 0, keyComparer, valComparer)
                 .AddRange(this, false, true);
         }
 
         public Map<K, V> Add((K Key, V Val) pair) {
-            (Node res, _) = root.Add(KeyComparer, ValComparer, pair);
+            (Node res, _) = _root.Add(KeyComparer, ValComparer, pair);
 
             return Wrap(res, Count + 1);
         }
@@ -159,9 +159,9 @@ namespace FPLibrary {
             => AddRange(items, false, false);
 
         public bool Contains((K Key, V Val) pair)
-            => root.Contains(KeyComparer, ValComparer, pair);
+            => _root.Contains(KeyComparer, ValComparer, pair);
 
-        public bool ContainsVal(V val) => root.ContainsVal(ValComparer, val);
+        public bool ContainsVal(V val) => _root.ContainsVal(ValComparer, val);
 
         //TODO: avoidMap
         // ReSharper disable once UnusedParameter.Local
@@ -170,7 +170,7 @@ namespace FPLibrary {
 
             //not in terms of Add so no need for new wrapper per item
 
-            (Node Root, int Count) seed = (root, Count);
+            (Node Root, int Count) seed = (_root, Count);
             (Node Root, int Count) res = items.Aggregate(seed, (acc, item) => {
                 Node newRes;
                 bool replaced = false;
@@ -190,14 +190,14 @@ namespace FPLibrary {
 
         //default comparer overload
         private Map() {
-            root = Node.EmptyNode;
+            _root = Node.EmptyNode;
             KeyComparer = Comparer<K>.Default;
             ValComparer = EqualityComparer<V>.Default;
         }
 
         private Map(Node root, int count, IComparer<K> keyComparer, IEqualityComparer<V> valComparer) {
             root.Freeze();
-            this.root = root;
+            this._root = root;
             Count = count;
             KeyComparer = keyComparer;
             ValComparer = valComparer;

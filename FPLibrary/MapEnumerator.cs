@@ -39,64 +39,64 @@ namespace FPLibrary {
             //     c) Go to step 3.
             // 5) If current is NULL and stack is empty then we are done.
 
-            private readonly Node root;
-            private readonly Stack<Node>? stack;
-            private Node? current;
+            private readonly Node _root;
+            private readonly Stack<Node>? _stack;
+            private Node? _current;
 
             internal Enumerator(Node root) {
                 if (root is null) throw new ArgumentNullException(nameof(root));
 
-                this.root = root;
-                current = null;
-                stack = null;
+                _root = root;
+                _current = null;
+                _stack = null;
 
                 //if passed in a non-empty tree
                 if (root.IsEmpty) return;
 
-                stack = new(root.Height);
+                _stack = new(root.Height);
                 LeftToStack(root);
             }
 
             public (K Key, V Val) Current
-                => current?.Value ?? throw new InvalidOperationException();
+                => _current?.Value ?? throw new InvalidOperationException();
 
             object IEnumerator.Current => Current;
 
             public void Reset() {
-                current = null;
+                _current = null;
 
-                if (stack is null) return;
+                if (_stack is null) return;
 
-                stack.Clear();
-                LeftToStack(root);
+                _stack.Clear();
+                LeftToStack(_root);
             }
 
             public void Dispose() { }
 
             public bool MoveNext() {
-                if (stack is not null && stack.Count > 0) {
+                if (_stack is not null && _stack.Count > 0) {
                     //stack is not empty
-                    Node popped = stack.Pop();
-                    current = popped;
+                    Node popped = _stack.Pop();
+                    _current = popped;
                     LeftToStack(popped.Right!);
 
                     return true;
                 }
 
                 //empty stack
-                current = null;
+                _current = null;
 
                 return false;
             }
 
             //push provided node and it's left nodes to stack
             private void LeftToStack(Node node) {
-                Debug.Assert(stack is not null);
+                Debug.Assert(_stack is not null);
 
                 if (node is null) throw new ArgumentNullException(nameof(node));
 
                 while (!node.IsEmpty) {
-                    stack.Push(node);
+                    _stack.Push(node);
                     node = node.Left!;
                 }
             }
@@ -107,7 +107,7 @@ namespace FPLibrary {
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
 
-        public Enumerator GetEnumerator() => root.GetEnumerator();
+        public Enumerator GetEnumerator() => _root.GetEnumerator();
 
         #endregion
     }

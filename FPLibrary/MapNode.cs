@@ -10,20 +10,20 @@ namespace FPLibrary {
     public sealed partial class Map<K, V> where K : notnull {
         sealed partial class Node {
             internal static readonly Node EmptyNode = new(); //so doesn't hide outer Empty
-            private readonly K key = default!;
-            private readonly V value = default!;
+            private readonly K _key = default!;
+            private readonly V _value = default!;
 
-            private bool frozen;
+            private bool _frozen;
 
             //AVL tree max height is 1.44 * log2(n + 2)
-            private byte height;
+            private byte _height;
 
             internal void Freeze() {
-                if (frozen) return;
+                if (_frozen) return;
 
                 Left!.Freeze();
                 Right!.Freeze();
-                frozen = true;
+                _frozen = true;
             }
 
             internal (Node Node, bool Mutated) Add(IComparer<K> keyComparer, IEqualityComparer<V> valComparer,
@@ -55,14 +55,14 @@ namespace FPLibrary {
 
                 Node res = Search(keyComparer, pair.Key);
 
-                return !res.IsEmpty && valComparer.Equals(res.value, pair.Val);
+                return !res.IsEmpty && valComparer.Equals(res._value, pair.Val);
             }
 
-            internal bool ContainsKey(IComparer<K> keyComparer, K _key) {
-                if (_key is null) throw new ArgumentNullException(nameof(_key));
+            internal bool ContainsKey(IComparer<K> keyComparer, K key) {
+                if (key is null) throw new ArgumentNullException(nameof(key));
                 if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
 
-                return !Search(keyComparer, _key).IsEmpty;
+                return !Search(keyComparer, key).IsEmpty;
             }
 
             internal bool ContainsVal(IEqualityComparer<V> valComparer, V val) {
@@ -75,28 +75,28 @@ namespace FPLibrary {
                 return false;
             }
 
-            internal Maybe<V> Get(IComparer<K> keyComparer, K _key) {
-                if (_key is null) throw new ArgumentNullException(nameof(_key));
+            internal Maybe<V> Get(IComparer<K> keyComparer, K key) {
+                if (key is null) throw new ArgumentNullException(nameof(key));
 
-                Node res = Search(keyComparer, _key);
+                Node res = Search(keyComparer, key);
 
                 return res.IsEmpty
                     ? Nothing
-                    : Just(res.value);
+                    : Just(res._value);
             }
 
-            internal (Node Node, bool Mutated) Remove(IComparer<K> keyComparer, K _key) {
+            internal (Node Node, bool Mutated) Remove(IComparer<K> keyComparer, K key) {
                 if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
-                if (_key is null) throw new ArgumentNullException(nameof(_key));
+                if (key is null) throw new ArgumentNullException(nameof(key));
 
-                return RemoveRec(keyComparer, _key);
+                return RemoveRec(keyComparer, key);
             }
 
-            internal bool TryGetValue(IComparer<K> keyComparer, K _key, [MaybeNullWhen(false)] out V val) {
+            internal bool TryGetValue(IComparer<K> keyComparer, K key, [MaybeNullWhen(false)] out V val) {
                 if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
-                if (_key is null) throw new ArgumentNullException(nameof(_key));
+                if (key is null) throw new ArgumentNullException(nameof(key));
 
-                Node res = Search(keyComparer, _key);
+                Node res = Search(keyComparer, key);
 
                 if (res.IsEmpty) {
                     val = default;
@@ -104,7 +104,7 @@ namespace FPLibrary {
                     return false;
                 }
 
-                val = res.value;
+                val = res._value;
 
                 return true;
             }
@@ -120,7 +120,7 @@ namespace FPLibrary {
                     return false;
                 }
 
-                realKey = res.key;
+                realKey = res._key;
 
                 return true;
             }
@@ -143,17 +143,17 @@ namespace FPLibrary {
                     array.SetValue(new DictionaryEntry(k, v), index++);
             }
 
-            private Node Mutate(Node? _left = null, Node? _right = null) {
+            private Node Mutate(Node? left = null, Node? right = null) {
                 Debug.Assert(Left is not null && Right is not null);
 
-                if (frozen)
-                    return new((key, value), _left ?? Left, _right ?? Right);
+                if (_frozen)
+                    return new((_key, _value), left ?? Left, right ?? Right);
 
-                if (_left is not null)
-                    Left = _left;
-                if (_right is not null)
-                    Right = _right;
-                height = checked((byte) (1 + Math.Max(Left.height, Right.height)));
+                if (left is not null)
+                    Left = left;
+                if (right is not null)
+                    Right = right;
+                _height = checked((byte) (1 + Math.Max(Left._height, Right._height)));
 
                 return this;
             }
@@ -163,7 +163,7 @@ namespace FPLibrary {
                 //
                 //TODO: mix assignment and creation in deconstruction and/or better chaining
 
-                (Node Node, bool Replaced, bool Mutated) setOrAdd(Node node)
+                (Node Node, bool Replaced, bool Mutated) SetOrAddNode(Node node)
                     => node.SetOrAdd(keyComparer, valComparer, overwrite, pair);
 
                 if (IsEmpty)
@@ -173,28 +173,28 @@ namespace FPLibrary {
                 bool replaced = false;
                 bool mutated;
 
-                switch (keyComparer.Compare(pair.Key, key)) {
+                switch (keyComparer.Compare(pair.Key, _key)) {
                     case > 0:
                         //node goes on right 
                         Node newRight;
-                        (newRight, replaced, mutated) = Right!.Pipe(setOrAdd);
+                        (newRight, replaced, mutated) = Right!.Pipe(SetOrAddNode);
 
                         if (mutated)
-                            res = res.Mutate(_right: newRight);
+                            res = res.Mutate(right: newRight);
 
                         break;
                     case < 0:
                         //node goes on left
                         Node newLeft;
-                        (newLeft, replaced, mutated) = Left!.Pipe(setOrAdd);
+                        (newLeft, replaced, mutated) = Left!.Pipe(SetOrAddNode);
 
                         if (mutated)
                             // ReSharper disable once ArgumentsStyleNamedExpression
-                            res = res.Mutate(_left: newLeft);
+                            res = res.Mutate(left: newLeft);
 
                         break;
                     default:
-                        if (valComparer.Equals(value, pair.Val)) {
+                        if (valComparer.Equals(_value, pair.Val)) {
                             //key and val are both the same
                             mutated = false;
 
@@ -216,18 +216,18 @@ namespace FPLibrary {
                 return (res, replaced, mutated);
             }
 
-            private Node Search(IComparer<K> keyComparer, K _key) {
+            private Node Search(IComparer<K> keyComparer, K key) {
                 if (IsEmpty)
                     return this;
 
-                return keyComparer.Compare(_key, key) switch {
+                return keyComparer.Compare(key, this._key) switch {
                     0 => this,
-                    > 0 => Right!.Search(keyComparer, _key),
-                    < 0 => Left!.Search(keyComparer, _key),
+                    > 0 => Right!.Search(keyComparer, key),
+                    < 0 => Left!.Search(keyComparer, key),
                 };
             }
 
-            private (Node Node, bool Mutated) RemoveRec(IComparer<K> keyComparer, K _key) {
+            private (Node Node, bool Mutated) RemoveRec(IComparer<K> keyComparer, K key) {
                 //no validation, recursive
                 //http://www.mathcs.emory.edu/~cheung/Courses/253/Syllabus/Trees/AVL-delete.html
 
@@ -238,7 +238,7 @@ namespace FPLibrary {
                 Node res = this;
                 bool mutated;
 
-                switch (keyComparer.Compare(_key, key)) {
+                switch (keyComparer.Compare(key, _key)) {
                     //getting block scoping
                     case 0: {
                         mutated = true;
@@ -260,7 +260,7 @@ namespace FPLibrary {
                                 successor = successor.Left;
 
                             //remove successor and replace this node with it
-                            (Node newRight, _) = Right.Remove(keyComparer, successor.key);
+                            (Node newRight, _) = Right.Remove(keyComparer, successor._key);
                             res = successor.Mutate(Left, newRight);
                         }
 
@@ -269,7 +269,7 @@ namespace FPLibrary {
 
                     case < 0:
                         Node newLeft;
-                        (newLeft, mutated) = Left.Remove(keyComparer, _key);
+                        (newLeft, mutated) = Left.Remove(keyComparer, key);
 
                         if (mutated)
                             res = Mutate(newLeft);
@@ -277,10 +277,10 @@ namespace FPLibrary {
                         break;
                     case > 0: {
                         Node newRight;
-                        (newRight, mutated) = Right.Remove(keyComparer, _key);
+                        (newRight, mutated) = Right.Remove(keyComparer, key);
 
                         if (mutated)
-                            res = Mutate(_right: newRight);
+                            res = Mutate(right: newRight);
 
                         break;
                     }
@@ -292,12 +292,12 @@ namespace FPLibrary {
             #region Properties
 
             public bool IsEmpty => Left is null;
-            public int Height => height;
+            public int Height => _height;
             public Node? Left { get; private set; }
 
             public Node? Right { get; private set; }
 
-            public (K Key, V Val) Value => (key, value);
+            public (K Key, V Val) Value => (_key, _value);
             internal IEnumerable<K> Keys => this.Select(x => x.Key);
             internal IEnumerable<V> Values => this.Select(x => x.Val);
 
@@ -305,14 +305,14 @@ namespace FPLibrary {
 
             #region Ctors
 
-            private Node() => frozen = true;
+            private Node() => _frozen = true;
 
             private Node((K Key, V Val) pair, Node left, Node right, bool frozen = false) {
-                (key, value) = pair;
+                (_key, _value) = pair;
                 Left = left;
                 Right = right;
-                height = checked((byte) (1 + Math.Max(left.height, right.height)));
-                this.frozen = frozen;
+                _height = checked((byte) (1 + Math.Max(left._height, right._height)));
+                this._frozen = frozen;
             }
 
             #endregion
@@ -343,7 +343,7 @@ namespace FPLibrary {
                     //right.left = tree
                     tree.Mutate(
                         //tree.left = right.left
-                        _right: right.Left));
+                        right: right.Left));
             }
 
             /*
@@ -368,7 +368,7 @@ namespace FPLibrary {
 
                 return left.Mutate(
                     //left.right = tree
-                    _right: tree.Mutate(
+                    right: tree.Mutate(
                         //tree.left = left.right
                         left.Right));
             }
@@ -392,14 +392,14 @@ namespace FPLibrary {
              / \
             a   c
             */
-            private static Node RotateLR(Node tree) {
+            private static Node RotateLr(Node tree) {
                 if (tree is null) throw new ArgumentNullException(nameof(tree));
 
                 if (tree.Right!.IsEmpty)
                     return tree;
 
                 return tree
-                    .Mutate(_right: RotateRight(tree.Right))
+                    .Mutate(right: RotateRight(tree.Right))
                     .Pipe(RotateLeft);
             }
 
@@ -422,7 +422,7 @@ namespace FPLibrary {
              /  \
             a    c
             */
-            private static Node RotateRL(Node tree) {
+            private static Node RotateRl(Node tree) {
                 if (tree is null) throw new ArgumentNullException(nameof(tree));
 
                 if (tree.Left!.IsEmpty)
@@ -434,7 +434,7 @@ namespace FPLibrary {
             }
 
             private static int BalanceFactor(Node tree)
-                => tree.Right!.height - tree.Left!.height;
+                => tree.Right!._height - tree.Left!._height;
 
             private static bool IsRightHeavy(Node tree)
                 => BalanceFactor(tree) >= 2;
@@ -447,9 +447,9 @@ namespace FPLibrary {
                 Debug.Assert(!tree.IsEmpty);
 
                 if (IsRightHeavy(tree))
-                    return BalanceFactor(tree.Right!) < 0 ? RotateLR(tree) : RotateLeft(tree);
+                    return BalanceFactor(tree.Right!) < 0 ? RotateLr(tree) : RotateLeft(tree);
                 if (IsLeftHeavy(tree))
-                    return BalanceFactor(tree.Left!) < 0 ? RotateRL(tree) : RotateRight(tree);
+                    return BalanceFactor(tree.Left!) < 0 ? RotateRl(tree) : RotateRight(tree);
 
                 return tree;
             }

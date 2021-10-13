@@ -8,7 +8,7 @@ namespace FPLibrary {
         #region ICollection Methods
 
         void ICollection.CopyTo(Array array, int index)
-            => root.CopyTo(array, index, Count);
+            => _root.CopyTo(array, index, Count);
 
         #endregion
 
