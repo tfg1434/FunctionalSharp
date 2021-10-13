@@ -12,22 +12,22 @@ namespace FPLibrary {
     }
 
     public readonly struct Either<L, R> {
-        private readonly L? left;
-        private readonly R? right;
+        private readonly L? _left;
+        private readonly R? _right;
 
-        private readonly bool isRight;
+        private readonly bool _isRight;
 
         // ReSharper disable once UnusedMember.Local
-        private bool isLeft => !isRight;
+        private bool IsLeft => !_isRight;
 
         // ReSharper disable once MemberCanBePrivate.Global
         internal Either(L l)
-            => (isRight, left, right)
+            => (_isRight, _left, _right)
                 = (false, l ?? throw new ArgumentNullException(nameof(l)), default);
 
         // ReSharper disable once MemberCanBePrivate.Global
         internal Either(R r)
-            => (isRight, left, right)
+            => (_isRight, _left, _right)
                 = (true, default, r ?? throw new ArgumentNullException(nameof(r)));
 
         public static implicit operator Either<L, R>(L left) => new(left);
@@ -39,13 +39,13 @@ namespace FPLibrary {
         public static implicit operator Either<L, R>(Either.Right<R> right) => new(right.Value);
 
         public TR Match<TR>(Func<L, TR> l, Func<R, TR> r)
-            => isRight ? r(right!) : l(left!);
+            => _isRight ? r(_right!) : l(_left!);
 
         public Unit Match(Action<L> l, Action<R> r)
             => Match(l.ToFunc(), r.ToFunc());
 
         public IEnumerable<R> AsEnumerable() {
-            if (isRight) yield return right!;
+            if (_isRight) yield return _right!;
         }
 
         public override string ToString() => Match(l => $"Left({l})", r => $"Right({r})");

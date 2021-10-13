@@ -16,17 +16,16 @@ namespace FPLibrary {
     public readonly struct NothingType { }
 
     public readonly struct Maybe<T> : IEquatable<NothingType>, IEquatable<Maybe<T>> {
-        private bool isNothing => !IsJust;
-        private readonly T? value;
+        private readonly T? _value;
 
         public bool IsJust { get; }
 
-        public bool IsNothing => isNothing;
+        public bool IsNothing => !IsJust;
 
 
         internal Maybe(T t) {
             IsJust = true;
-            value = t;
+            _value = t;
         }
 
         public static implicit operator Maybe<T>(NothingType _) => default;
@@ -35,21 +34,21 @@ namespace FPLibrary {
             => t is null ? Nothing : Just(t);
 
         public R Match<R>(Func<R> nothing, Func<T, R> just)
-            => IsJust ? just(value!) : nothing();
+            => IsJust ? just(_value!) : nothing();
 
         public IEnumerable<T> AsEnumerable() {
-            if (IsJust) yield return value!;
+            if (IsJust) yield return _value!;
         }
 
         public T IfNothing(T val) {
             if (val is null) throw new ArgumentNullException(nameof(val));
 
-            return IsJust ? value! : val;
+            return IsJust ? _value! : val;
         }
 
         public T IfNothing(Func<T> f)
             => (IsJust
-                ? value
+                ? _value
                 : f()) ?? throw new InvalidOperationException();
 
         public Unit IfNothing(Action f) {
@@ -59,7 +58,7 @@ namespace FPLibrary {
         }
 
         public bool Equals(Maybe<T> other)
-            => IsJust == other.IsJust && (!IsJust || value!.Equals(other.value));
+            => IsJust == other.IsJust && (!IsJust || _value!.Equals(other._value));
 
         public bool Equals(NothingType _) => !IsJust;
 
@@ -67,13 +66,13 @@ namespace FPLibrary {
             => other is Maybe<T> && Equals(other);
 
         public override int GetHashCode()
-            => IsJust ? value!.GetHashCode() : 0;
+            => IsJust ? _value!.GetHashCode() : 0;
 
         public static bool operator ==(Maybe<T> self, Maybe<T> other) => self.Equals(other);
 
         public static bool operator !=(Maybe<T> self, Maybe<T> other) => !(self == other);
 
-        public override string ToString() => IsJust ? $"Just({value})" : "Nothing";
+        public override string ToString() => IsJust ? $"Just({_value})" : "Nothing";
     }
 
     //namespace Maybe {
@@ -95,8 +94,8 @@ namespace FPLibrary {
     public static class MaybeExt {
         public static Maybe<R> Map<T, R>(this NothingType _, Func<T, R> __) => Nothing;
 
-        public static Maybe<R> Map<T, R>(this Maybe<T> maybeT, Func<T, R> f)
-            => maybeT.Match(() => Nothing, t => Just(f(t)));
+        public static Maybe<R> Map<T, R>(this Maybe<T> self, Func<T, R> f)
+            => self.Match(() => Nothing, t => Just(f(t)));
 
         public static Maybe<Func<T2, R>> Map<T1, T2, R>(this Maybe<T1> self, Func<T1, T2, R> f)
             => self.Map(f.CurryFirst());
@@ -119,15 +118,15 @@ namespace FPLibrary {
             Func<T1, T2, T3, T4, T5, T6, T7, R> f)
             => self.Map(f.CurryFirst());
 
-        public static Maybe<Unit> ForEach<T>(this Maybe<T> maybe, Action<T> act)
-            => Map(maybe, act.ToFunc());
+        public static Maybe<Unit> ForEach<T>(this Maybe<T> self, Action<T> act)
+            => Map(self, act.ToFunc());
 
-        public static Maybe<R> Bind<T, R>(this Maybe<T> maybeT, Func<T, Maybe<R>> f)
-            => maybeT.Match(() => Nothing, f);
+        public static Maybe<R> Bind<T, R>(this Maybe<T> self, Func<T, Maybe<R>> f)
+            => self.Match(() => Nothing, f);
 
         //give IEnumerable<R> instead of Maybe<IEnumerable<R>>
-        public static IEnumerable<R> Bind<T, R>(this Maybe<T> maybe, Func<T, IEnumerable<R>> f)
-            => maybe.AsEnumerable().Bind(f);
+        public static IEnumerable<R> Bind<T, R>(this Maybe<T> self, Func<T, IEnumerable<R>> f)
+            => self.AsEnumerable().Bind(f);
 
         public static Either<L, R> ToEither<L, R>(this Maybe<R> self, Func<L> left)
             => self.Match<Either<L, R>>(() => left(), r => r);
@@ -170,25 +169,25 @@ namespace FPLibrary {
         public static Unit Match<T>(this Maybe<T> self, Action nothing, Action<T> just)
             => self.Match(nothing.ToFunc(), just.ToFunc());
 
-        public static T GetOrElse<T>(this Maybe<T> maybeT, T defaultVal)
-            => maybeT.Match(() => defaultVal, t => t);
+        public static T GetOrElse<T>(this Maybe<T> self, T defaultVal)
+            => self.Match(() => defaultVal, t => t);
 
-        public static T GetOrElse<T>(this Maybe<T> maybeT, Func<T> defaultVal)
-            => maybeT.Match(defaultVal, t => t);
+        public static T GetOrElse<T>(this Maybe<T> self, Func<T> defaultVal)
+            => self.Match(defaultVal, t => t);
 
         //query syntax
         public static Maybe<R> Select<T, R>(this Maybe<T> self, Func<T, R> f) => self.Map(f);
 
-        public static Maybe<RR> SelectMany<T, R, RR>(this Maybe<T> maybe, Func<T, Maybe<R>> bind, Func<T, R, RR> proj)
-            => maybe.Match(
+        public static Maybe<RR> SelectMany<T, R, RR>(this Maybe<T> self, Func<T, Maybe<R>> bind, Func<T, R, RR> proj)
+            => self.Match(
                 () => Nothing,
                 t => bind(t).Match(
                     () => Nothing,
                     r => Just(proj(t, r))));
 
-        public static Maybe<T> Where<T>(this Maybe<T> maybeT, Predicate<T> pred)
-            => maybeT.Match(
+        public static Maybe<T> Where<T>(this Maybe<T> self, Predicate<T> pred)
+            => self.Match(
                 () => Nothing,
-                t => pred(t) ? maybeT : Nothing);
+                t => pred(t) ? self : Nothing);
     }
 }

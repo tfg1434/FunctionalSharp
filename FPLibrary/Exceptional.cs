@@ -8,33 +8,33 @@ namespace FPLibrary {
     }
 
     public readonly struct Exceptional<T> {
-        private Exception? ex { get; }
-        private T? value { get; }
+        private readonly Exception? _ex;
+        private readonly T? _value;
 
-        private bool isSuccess { get; }
-        private bool isEx => !isSuccess;
+        private readonly bool _isSuccess;
+        private bool isEx => !_isSuccess;
 
         internal Exceptional(Exception ex) {
-            isSuccess = false;
-            this.ex = ex;
-            value = default;
+            _isSuccess = false;
+            _ex = ex;
+            _value = default;
         }
 
         internal Exceptional(T value) {
-            isSuccess = true;
-            this.value = value;
-            ex = default;
+            _isSuccess = true;
+            this._value = value;
+            _ex = default;
         }
 
         public static implicit operator Exceptional<T>(Exception ex) => new(ex);
 
         public static implicit operator Exceptional<T>(T t) => new(t);
 
-        public R Match<R>(Func<Exception, R> fEx, Func<T, R> fSuccess)
-            => isEx ? fEx(ex!) : fSuccess(value!);
+        public R Match<R>(Func<Exception, R> ex, Func<T, R> succ)
+            => isEx ? ex(_ex!) : succ(_value!);
 
-        public Unit Match(Action<Exception> fEx, Action<T> fSuccess)
-            => Match(fEx.ToFunc(), fSuccess.ToFunc());
+        public Unit Match(Action<Exception> ex, Action<T> succ)
+            => Match(ex.ToFunc(), succ.ToFunc());
 
         public override string ToString()
             => Match(
