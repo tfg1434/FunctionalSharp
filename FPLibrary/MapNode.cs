@@ -8,7 +8,7 @@ using static FPLibrary.F;
 
 namespace FPLibrary {
     public sealed partial class Map<K, V> where K : notnull {
-        private sealed partial class Node {
+        sealed partial class Node {
             internal static readonly Node EmptyNode = new(); //so doesn't hide outer Empty
             private readonly K key = default!;
             private readonly V value = default!;
