@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Unit = System.ValueTuple;
 using static FPLibrary.F;
 
@@ -28,6 +27,7 @@ namespace FPLibrary {
         }
 
         public static implicit operator Exceptional<T>(Exception ex) => new(ex);
+
         public static implicit operator Exceptional<T>(T t) => new(t);
 
         public R Match<R>(Func<Exception, R> fEx, Func<T, R> fSuccess)
@@ -54,7 +54,7 @@ namespace FPLibrary {
 
         public static Exceptional<R> Bind<T, R>(this Exceptional<T> self, Func<T, Exceptional<R>> f)
             => self.Match(
-                ex => new Exceptional<R>(ex), f);
+                ex => new(ex), f);
 
         //monadic return
         public static Func<T, Exceptional<T>> Return<T>()
@@ -71,26 +71,32 @@ namespace FPLibrary {
             => self.Match(
                 ex => ex,
                 func => arg.Match(
-                   ex => ex,
-                   t => F.Exceptional(func(t))));
+                    ex => ex,
+                    t => Exceptional(func(t))));
 
-        public static Exceptional<Func<T2, R>> Apply<T1, T2, R>(this Exceptional<Func<T1, T2, R>> self, Exceptional<T1> arg)
+        public static Exceptional<Func<T2, R>> Apply<T1, T2, R>(this Exceptional<Func<T1, T2, R>> self,
+            Exceptional<T1> arg)
             => Apply(self.Map(F.CurryFirst), arg);
 
-        public static Exceptional<Func<T2, T3, R>> Apply<T1, T2, T3, R>(this Exceptional<Func<T1, T2, T3, R>> self, Exceptional<T1> arg)
-           => Apply(self.Map(F.CurryFirst), arg);
+        public static Exceptional<Func<T2, T3, R>> Apply<T1, T2, T3, R>(this Exceptional<Func<T1, T2, T3, R>> self,
+            Exceptional<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
 
-        public static Exceptional<Func<T2, T3, T4, R>> Apply<T1, T2, T3, T4, R>(this Exceptional<Func<T1, T2, T3, T4, R>> self, Exceptional<T1> arg)
-           => Apply(self.Map(F.CurryFirst), arg);
+        public static Exceptional<Func<T2, T3, T4, R>> Apply<T1, T2, T3, T4, R>(
+            this Exceptional<Func<T1, T2, T3, T4, R>> self, Exceptional<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
 
-        public static Exceptional<Func<T2, T3, T4, T5, R>> Apply<T1, T2, T3, T4, T5, R>(this Exceptional<Func<T1, T2, T3, T4, T5, R>> self, Exceptional<T1> arg)
-           => Apply(self.Map(F.CurryFirst), arg);
+        public static Exceptional<Func<T2, T3, T4, T5, R>> Apply<T1, T2, T3, T4, T5, R>(
+            this Exceptional<Func<T1, T2, T3, T4, T5, R>> self, Exceptional<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
 
-        public static Exceptional<Func<T2, T3, T4, T5, T6, R>> Apply<T1, T2, T3, T4, T5, T6, R>(this Exceptional<Func<T1, T2, T3, T4, T5, T6, R>> self, Exceptional<T1> arg)
-           => Apply(self.Map(F.CurryFirst), arg);
+        public static Exceptional<Func<T2, T3, T4, T5, T6, R>> Apply<T1, T2, T3, T4, T5, T6, R>(
+            this Exceptional<Func<T1, T2, T3, T4, T5, T6, R>> self, Exceptional<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
 
-        public static Exceptional<Func<T2, T3, T4, T5, T6, T7, R>> Apply<T1, T2, T3, T4, T5, T6, T7, R>(this Exceptional<Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Exceptional<T1> arg)
-           => Apply(self.Map(F.CurryFirst), arg);
+        public static Exceptional<Func<T2, T3, T4, T5, T6, T7, R>> Apply<T1, T2, T3, T4, T5, T6, T7, R>(
+            this Exceptional<Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Exceptional<T1> arg)
+            => Apply(self.Map(F.CurryFirst), arg);
 
         //QOL
         public static Maybe<T> ToMaybe<T>(this Exceptional<T> self)
@@ -100,9 +106,10 @@ namespace FPLibrary {
         public static Exceptional<R> Select<T, R>(this Exceptional<T> self, Func<T, R> f)
             => self.Map(f);
 
-        public static Exceptional<RR> SelectMany<T, R, RR>(this Exceptional<T> self, Func<T, Exceptional<R>> bind, Func<T, R, RR> project)
+        public static Exceptional<RR> SelectMany<T, R, RR>(this Exceptional<T> self, Func<T, Exceptional<R>> bind,
+            Func<T, R, RR> project)
             => self.Match(
-                ex => new Exceptional<RR>(ex),
+                ex => new(ex),
                 t => bind(t).Match(
                     ex => new Exceptional<RR>(ex),
                     r => project(t, r)));

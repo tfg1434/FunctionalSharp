@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FPLibrary {
     public delegate Exceptional<T> Try<T>();
@@ -13,12 +9,15 @@ namespace FPLibrary {
 
     public static class TryExt {
         public static Exceptional<T> Run<T>(this Try<T> self) {
-            try { return self(); }
-            catch (Exception ex) { return ex; }
+            try {
+                return self();
+            } catch (Exception ex) {
+                return ex;
+            }
         }
 
         public static Try<R> Bind<T, R>(this Try<T> self, Func<T, Try<R>> f)
-            => () 
+            => ()
                 => self.Run()
                     .Match(ex => ex, t => f(t).Run());
 

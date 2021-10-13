@@ -12,6 +12,7 @@ namespace FPLibrary {
 
         public static Unit Pipe<T>(this T self, Action<T> f) {
             f(self);
+
             return Unit();
         }
     }

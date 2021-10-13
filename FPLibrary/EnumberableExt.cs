@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 using Unit = System.ValueTuple;
 
 namespace FPLibrary {
@@ -16,7 +14,7 @@ namespace FPLibrary {
             foreach (T t in ts) act(t);
         }
 
-        public static IEnumerable<R> Bind<T, R>(this IEnumerable<T> ts, Func<T, IEnumerable<R>> f) 
+        public static IEnumerable<R> Bind<T, R>(this IEnumerable<T> ts, Func<T, IEnumerable<R>> f)
             => ts.SelectMany(f);
 
         //give IEnumerable<R> instead of IEnumerable<Maybe<R>> (Map)

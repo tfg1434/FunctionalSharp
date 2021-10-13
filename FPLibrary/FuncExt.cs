@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices.ComTypes;
 using Unit = System.ValueTuple;
 
 namespace FPLibrary {
@@ -27,10 +26,12 @@ namespace FPLibrary {
         public static Func<T2, T3, T4, T5, R> Apply<T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> f, T1 t1)
             => (t2, t3, t4, t5) => f(t1, t2, t3, t4, t5);
 
-        public static Func<T2, T3, T4, T5, T6, R> Apply<T1, T2, T3, T4, T5, T6, R>(this Func<T1, T2, T3, T4, T5, T6, R> f, T1 t1)
+        public static Func<T2, T3, T4, T5, T6, R> Apply<T1, T2, T3, T4, T5, T6, R>(
+            this Func<T1, T2, T3, T4, T5, T6, R> f, T1 t1)
             => (t2, t3, t4, t5, t6) => f(t1, t2, t3, t4, t5, t6);
 
-        public static Func<T2, T3, T4, T5, T6, T7, R> Apply<T1, T2, T3, T4, T5, T6, T7, R>(this Func<T1, T2, T3, T4, T5, T6, T7, R> f, T1 t1)
+        public static Func<T2, T3, T4, T5, T6, T7, R> Apply<T1, T2, T3, T4, T5, T6, T7, R>(
+            this Func<T1, T2, T3, T4, T5, T6, T7, R> f, T1 t1)
             => (t2, t3, t4, t5, t6, t7) => f(t1, t2, t3, t4, t5, t6, t7);
 
         //functor
@@ -49,13 +50,16 @@ namespace FPLibrary {
         public static Func<I1, I2, I3, I4, R> Map<I1, I2, I3, I4, T, R>(this Func<I1, I2, I3, I4, T> self, Func<T, R> f)
             => (i1, i2, i3, i4) => f(self(i1, i2, i3, i4));
 
-        public static Func<I1, I2, I3, I4, I5, R> Map<I1, I2, I3, I4, I5, T, R>(this Func<I1, I2, I3, I4, I5, T> self, Func<T, R> f)
+        public static Func<I1, I2, I3, I4, I5, R> Map<I1, I2, I3, I4, I5, T, R>(this Func<I1, I2, I3, I4, I5, T> self,
+            Func<T, R> f)
             => (i1, i2, i3, i4, i5) => f(self(i1, i2, i3, i4, i5));
 
-        public static Func<I1, I2, I3, I4, I5, I6, R> Map<I1, I2, I3, I4, I5, I6, T, R>(this Func<I1, I2, I3, I4, I5, I6, T> self, Func<T, R> f)
+        public static Func<I1, I2, I3, I4, I5, I6, R> Map<I1, I2, I3, I4, I5, I6, T, R>(
+            this Func<I1, I2, I3, I4, I5, I6, T> self, Func<T, R> f)
             => (i1, i2, i3, i4, i5, i6) => f(self(i1, i2, i3, i4, i5, i6));
 
-        public static Func<I1, I2, I3, I4, I5, I6, I7, R> Map<I1, I2, I3, I4, I5, I6, I7, T, R>(this Func<I1, I2, I3, I4, I5, I6, I7, T> self, Func<T, R> f)
+        public static Func<I1, I2, I3, I4, I5, I6, I7, R> Map<I1, I2, I3, I4, I5, I6, I7, T, R>(
+            this Func<I1, I2, I3, I4, I5, I6, I7, T> self, Func<T, R> f)
             => (i1, i2, i3, i4, i5, i6, i7) => f(self(i1, i2, i3, i4, i5, i6, i7));
     }
 }

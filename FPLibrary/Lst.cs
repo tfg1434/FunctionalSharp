@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static FPLibrary.F;
 using System.Diagnostics;
+using System.Linq;
 
 namespace FPLibrary {
-    using static F;
-
     public static partial class F {
         public static Lst<T> List<T>(IEnumerable<T> items) => Lst<T>.Create(items);
 
@@ -23,23 +18,23 @@ namespace FPLibrary {
         public static Lst<T> Empty => default;
 
         private readonly Maybe<Node> head;
-        public T Head {
-            get => head.GetOrElse(
+
+        public T Head =>
+            head.GetOrElse(
                 () => throw new InvalidOperationException()
             ).Value;
-        }
-        public Maybe<T> HeadSafe {
-            get => head.Map(node => node.Value);
-        }
 
-        public Lst<T> Tail {
-            get => new(head.GetOrElse(
+        public Maybe<T> HeadSafe => head.Map(node => node.Value);
+
+        public Lst<T> Tail =>
+            new(head.GetOrElse(
                 () => throw new InvalidOperationException()
             ).Next, Count - 1);
-        }
+
         public Maybe<Lst<T>> TailSafe {
             get {
                 int count = Count;
+
                 return head.Map<Node, Lst<T>>(_head => new(_head.Next, count - 1));
             }
         }
@@ -59,12 +54,12 @@ namespace FPLibrary {
                 .Aggregate<T, (Node Node, int Count)>(
                     (default!, 0),
                     (acc, t)
-                        => (new Node(t) {
-                            Next = acc.Node
+                        => (new(t) {
+                            Next = acc.Node,
                         }, acc.Count + 1)
                 );
 
-            return new Lst<T>(head.Node, head.Count);
+            return new(head.Node, head.Count);
 
             //(Node? Node, int Count) head = items
             //    .Reverse()
