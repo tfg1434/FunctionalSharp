@@ -62,16 +62,30 @@ namespace FPLibrary {
     }
 
     public sealed partial class Map<K, V> where K : notnull {
-        public static readonly Map<K, V> Empty = new();
-
         private readonly Node _root;
 
-        private Func<Node, int, Map<K, V>> Wrap => (root, adjustedCount) => {
-            if (_root != root)
-                return root.IsEmpty ? Clear() : new(root, adjustedCount, KeyComparer, ValComparer);
+        #region Ctors
 
-            return this;
-        };
+        //default comparer overload
+        private Map() => _root = Node.EmptyNode;
+
+        private Map(Node root, int count) {
+            root.Freeze();
+            _root = root;
+            Count = count;
+        }
+
+        #endregion
+
+        #region Properties
+
+        public int Count { get; }
+        public bool IsEmpty => Count == 0;
+        public IComparer<K> KeyComparer { get; init; } = Comparer<K>.Default;
+        public IEqualityComparer<V> ValComparer { get; init; } = EqualityComparer<V>.Default;
+        public static Map<K, V> Empty => new();
+
+        #endregion
 
         public bool ContainsKey(K key) {
             if (key is null) throw new ArgumentNullException(nameof(key));
@@ -143,9 +157,9 @@ namespace FPLibrary {
             if (keyComparer == KeyComparer) //structure doesn't depend on valComparer, so just one new node
                 return valComparer == ValComparer
                     ? this
-                    : new(_root, Count, KeyComparer, valComparer);
+                    : new(_root, Count) { KeyComparer = KeyComparer, ValComparer = valComparer };
 
-            return new Map<K, V>(Node.EmptyNode, 0, keyComparer, valComparer)
+            return new Map<K, V>(Node.EmptyNode, 0) { KeyComparer = keyComparer, ValComparer = valComparer }
                 .AddRange(this, false, true);
         }
 
@@ -185,35 +199,14 @@ namespace FPLibrary {
 
             return Wrap(res.Root, res.Count);
         }
+        
+        private Func<Node, int, Map<K, V>> Wrap => (root, adjustedCount) => {
+            if (_root != root)
+                return root.IsEmpty 
+                    ? Clear() 
+                    : new(root, adjustedCount) { KeyComparer = KeyComparer, ValComparer = ValComparer };
 
-        #region Ctors
-
-        //default comparer overload
-        private Map() {
-            _root = Node.EmptyNode;
-            KeyComparer = Comparer<K>.Default;
-            ValComparer = EqualityComparer<V>.Default;
-        }
-
-        private Map(Node root, int count, IComparer<K> keyComparer, IEqualityComparer<V> valComparer) {
-            root.Freeze();
-            this._root = root;
-            Count = count;
-            KeyComparer = keyComparer;
-            ValComparer = valComparer;
-        }
-
-        #endregion
-
-        #region Properties
-
-        public int Count { get; }
-
-        public bool IsEmpty => Count == 0;
-        public IComparer<K> KeyComparer { get; }
-
-        public IEqualityComparer<V> ValComparer { get; }
-
-        #endregion
+            return this;
+        };
     }
 }

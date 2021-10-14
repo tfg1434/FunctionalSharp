@@ -232,7 +232,7 @@ namespace FPLibrary.Tests.Map {
 
         [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
         public void Clear_NoComparer_NoComparer(Map<int, bool> map) {
-            Assert.Same(Map<int, bool>.Empty, map.Clear());
+            Assert.Equal(Map<int, bool>.Empty, map.Clear());
         }
         
         [Fact]
