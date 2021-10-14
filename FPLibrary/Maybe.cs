@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Unit = System.ValueTuple;
+using static FPLibrary.F;
 
 namespace FPLibrary {
-    using static F;
-
     public static partial class F {
         public static NothingType Nothing => default;
 
@@ -15,13 +14,11 @@ namespace FPLibrary {
 
     public readonly struct NothingType { }
 
-    public readonly struct Maybe<T> : IEquatable<NothingType>, IEquatable<Maybe<T>> {
+    public readonly partial struct Maybe<T> : IEquatable<NothingType>, IEquatable<Maybe<T>> {
         private readonly T? _value;
 
-        public bool IsJust { get; }
-
         public bool IsNothing => !IsJust;
-
+        public bool IsJust { get; }
 
         internal Maybe(T t) {
             IsJust = true;
@@ -38,23 +35,6 @@ namespace FPLibrary {
 
         public IEnumerable<T> AsEnumerable() {
             if (IsJust) yield return _value!;
-        }
-
-        public T IfNothing(T val) {
-            if (val is null) throw new ArgumentNullException(nameof(val));
-
-            return IsJust ? _value! : val;
-        }
-
-        public T IfNothing(Func<T> f)
-            => (IsJust
-                ? _value
-                : f()) ?? throw new InvalidOperationException();
-
-        public Unit IfNothing(Action f) {
-            if (IsNothing) f();
-
-            return Unit();
         }
 
         public bool Equals(Maybe<T> other)
