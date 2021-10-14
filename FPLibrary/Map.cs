@@ -138,6 +138,10 @@ namespace FPLibrary {
                         .Apply(Count - 1));
         }
 
+        public Map<K, V> RemoveRange(IEnumerable<K> keys) {
+            
+        }
+
         public Map<K, V> SetItem((K Key, V Val) pair) {
             if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
 

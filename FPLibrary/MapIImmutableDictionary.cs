@@ -19,7 +19,7 @@ namespace FPLibrary {
         IImmutableDictionary<K, V> IImmutableDictionary<K, V>.Remove(K key) => Remove(key);
 
         IImmutableDictionary<K, V> IImmutableDictionary<K, V>.RemoveRange(IEnumerable<K> keys)
-            => throw new NotImplementedException();
+            => RemoveRange(keys);
 
         IImmutableDictionary<K, V> IImmutableDictionary<K, V>.SetItem(K key, V value) => SetItem((key, value));
 
