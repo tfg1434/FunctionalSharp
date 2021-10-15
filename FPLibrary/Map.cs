@@ -139,15 +139,24 @@ namespace FPLibrary {
         }
 
         public Map<K, V> RemoveRange(IEnumerable<K> keys) {
-            
+            if (keys is null) throw new ArgumentNullException(nameof(keys));
+
+            (Node Res, int Count) seed = (_root, Count);
+            (Node Res, int Count) removed = keys.Aggregate(seed, (acc, key) => {
+                (var res, int count) = acc;
+                (Node node, bool mutated) = res.Remove(KeyComparer, key);
+
+                return (node, mutated ? count - 1 : count);
+            });
+
+            return Wrap(removed.Res, removed.Count);
         }
 
         public Map<K, V> SetItem((K Key, V Val) pair) {
             if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
 
             (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValComparer, pair);
-
-            //replaced: false
+            
             return Wrap(newRoot, replaced ? Count : Count + 1);
         }
 

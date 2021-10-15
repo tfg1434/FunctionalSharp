@@ -232,6 +232,7 @@ namespace FPLibrary.Tests.Map {
 
         [Property(Arbitrary = new[] { typeof(ArbitraryMap) })]
         public void Clear_NoComparer_NoComparer(Map<int, bool> map) {
+            // ReSharper disable once ArrangeMethodOrOperatorBody
             Assert.Equal(Map<int, bool>.Empty, map.Clear());
         }
         
@@ -248,6 +249,17 @@ namespace FPLibrary.Tests.Map {
             var map = dict.ToMap();
 
             Assert.Equal(dict.ContainsKey(key), map.Get(key).IsJust);
+        }
+        
+        [Fact]
+        public void RemoveRange_IntBool_Works() {
+            var actual = Map<int, bool>((5, true), (3, false)).RemoveRange(new[] { 5 });
+            var expected = Map<int, bool>((3, false));
+            Assert.Equal(expected, actual);
+
+            actual = Map<int, bool>((-1, false), (6, true), (4, true)).RemoveRange(4, 6);
+            expected = Map<int, bool>((-1, false));
+            Assert.Equal(expected, actual);
         }
     }
 }

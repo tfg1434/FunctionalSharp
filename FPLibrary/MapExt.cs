@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FPLibrary {
@@ -94,6 +95,9 @@ namespace FPLibrary {
 
         public bool Contains(Tuple<K, V> tup)
             => Contains(ToValueTuple(tup));
+
+        public Map<K, V> RemoveRange(params K[] items)
+            => RemoveRange((IEnumerable<K>) items);
 
         public Map<K, V> SetItem(K key, V val) => SetItem((key, val));
 
