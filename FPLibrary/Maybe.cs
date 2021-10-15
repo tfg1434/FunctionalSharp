@@ -14,7 +14,7 @@ namespace FPLibrary {
 
     public readonly struct NothingType { }
 
-    public readonly partial struct Maybe<T> : IEquatable<NothingType>, IEquatable<Maybe<T>> {
+    public readonly partial struct Maybe<T> {
         private readonly T? _value;
 
         public bool IsNothing => !IsJust;
@@ -36,21 +36,6 @@ namespace FPLibrary {
         public IEnumerable<T> AsEnumerable() {
             if (IsJust) yield return _value!;
         }
-
-        public bool Equals(Maybe<T> other)
-            => IsJust == other.IsJust && (!IsJust || _value!.Equals(other._value));
-
-        public bool Equals(NothingType _) => !IsJust;
-
-        public override bool Equals(object? other)
-            => other is Maybe<T> && Equals(other);
-
-        public override int GetHashCode()
-            => IsJust ? _value!.GetHashCode() : 0;
-
-        public static bool operator ==(Maybe<T> self, Maybe<T> other) => self.Equals(other);
-
-        public static bool operator !=(Maybe<T> self, Maybe<T> other) => !(self == other);
 
         public override string ToString() => IsJust ? $"Just({_value})" : "Nothing";
     }
