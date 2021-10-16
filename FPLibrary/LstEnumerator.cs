@@ -41,9 +41,9 @@ namespace FPLibrary {
                     return false;
                 }
 
-                Node _next = next.GetOrElse(() => default!);
-                current = _next.Value;
-                next = _next.Next;
+                Node n = next.GetOr(() => default!);
+                current = n.Value;
+                next = n.Next;
 
                 return true;
             }

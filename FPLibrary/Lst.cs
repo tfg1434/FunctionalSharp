@@ -19,23 +19,17 @@ namespace FPLibrary {
 
         private readonly Maybe<Node> head;
 
-        public T Head =>
-            head.GetOrElse(
-                () => throw new InvalidOperationException()
-            ).Value;
+        public T Head => head.NotNothing().Value;
 
         public Maybe<T> HeadSafe => head.Map(node => node.Value);
 
-        public Lst<T> Tail =>
-            new(head.GetOrElse(
-                () => throw new InvalidOperationException()
-            ).Next, Count - 1);
+        public Lst<T> Tail => new(head.NotNothing(), Count - 1);
 
         public Maybe<Lst<T>> TailSafe {
             get {
                 int count = Count;
 
-                return head.Map<Node, Lst<T>>(_head => new(_head.Next, count - 1));
+                return head.Map<Lst<T>>(h => new(h.Next, count - 1));
             }
         }
 
