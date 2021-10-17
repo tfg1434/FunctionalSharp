@@ -2,12 +2,20 @@
 using System.Collections.Generic;
 
 namespace FPLibrary {
-    // public class RangeInt : Range<int> {
-    //     protected RangeInt(int from, int? to, int step, Func<int, int, int> compare, Func<int, int, int> plus) 
-    //         : base(from, to, step, compare, plus) { }
-    //
-    //     internal static Range(int from, int? to, int step) {
-    //         RangeInt(from, to, step, Comparer<int>.Default, (x, y) => x + y);
-    //     }
-    // }
+    public class RangeInt : Range<int> {
+         private RangeInt(int from, int? to = null, int step = 1)
+             : base(from, to, step, 0, Comparer<int>.Default.Compare, (x, y) => x + y) { }
+
+         public static IEnumerable<int> Of(int from, int? second = null, int? to = null) 
+             => (second is null, to is null) switch {
+                 //from
+                 (false, false) => new RangeInt(from),
+                 //from, to
+                 (false, true) => new(from, to),
+                 //from, second
+                 (true, false) => new(from, step: second!.Value - from),
+                 //from, second, to
+                 (true, true) => new(from, to, second!.Value - from),
+             };
+    }
 }
