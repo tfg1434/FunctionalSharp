@@ -28,10 +28,10 @@ namespace FPLibrary {
         }
 
         public static Maybe<Range> Of(string range) {
-            const string pattern_from_second_to = @"^(?<from>[0-9]+)(?:,(?<second>[0-9]+))\.\.(?<to>[0-9]+)$";
-            const string pattern_from_second    = @"^(?<from>[0-9]+)(?:,(?<second>[0-9]+))\.\.$";
-            const string pattern_from_to        = @"^(?<from>[0-9]+)\.\.(?<to>[0-9]+)$";
-            const string pattern_from           = @"^(?<from>[0-9]+)\.\.$";
+            const string pattern_from_second_to = @"^(?<from>-?[0-9]+)(?:,(?<second>-?[0-9]+))\.\.(?<to>-?[0-9]+)$";
+            const string pattern_from_second    = @"^(?<from>-?[0-9]+)(?:,(?<second>-?[0-9]+))\.\.$";
+            const string pattern_from_to        = @"^(?<from>-?[0-9]+)\.\.(?<to>-?[0-9]+)$";
+            const string pattern_from           = @"^(?<from>-?[0-9]+)\.\.$";
 
             var match = Regex.Match(range, pattern_from_second_to);
 
