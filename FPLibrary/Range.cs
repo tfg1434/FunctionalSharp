@@ -11,8 +11,14 @@ namespace FPLibrary {
             => FPLibrary.Range.Of(range).IfNothing(
                 () => throw new ArgumentException("Invalid range.", nameof(range)));
     }
+
+    public interface IRange<T> where T : IRange<T> 
+    {
+        abstract static T operator +(T t1, T t2);
+    }
     
-    public class Range : IEnumerable<int> {
+    
+    public class Range<T> : IEnumerable<T> where T : IRange<T> {
         private readonly int _from;
         private readonly int? _to;
         private readonly int _step;
@@ -54,7 +60,7 @@ namespace FPLibrary {
             });
         }
 
-        public IEnumerable<int> AsEnumerable() {
+        public IEnumerable<T> AsEnumerable() {
             if (_isAscending)
                 for (int x = _from; isInfinite || x <= _to; x += _step)
                     yield return x;
@@ -63,7 +69,7 @@ namespace FPLibrary {
                     yield return x;
         }
         
-        public IEnumerator<int> GetEnumerator() => AsEnumerable().GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => AsEnumerable().GetEnumerator();
         
         IEnumerator IEnumerable.GetEnumerator() => AsEnumerable().GetEnumerator();
     }
