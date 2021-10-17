@@ -28,48 +28,30 @@ namespace FPLibrary {
         }
 
         public static Maybe<Range> Of(string range) {
-            const string pattern_from_second_to = @"^(?<from>-?[0-9]+)(?:,(?<second>-?[0-9]+))\.\.(?<to>-?[0-9]+)$";
-            const string pattern_from_second    = @"^(?<from>-?[0-9]+)(?:,(?<second>-?[0-9]+))\.\.$";
-            const string pattern_from_to        = @"^(?<from>-?[0-9]+)\.\.(?<to>-?[0-9]+)$";
-            const string pattern_from           = @"^(?<from>-?[0-9]+)\.\.$";
+            const string type_pattern = @"[0-9]+";
+            const string pattern = $@"^(?<from>-?{type_pattern})(?:,(?<second>-?{type_pattern}))?\.\.(?<to>-?{type_pattern})?$";
 
-            var match = Regex.Match(range, pattern_from_second_to);
+            var match = Regex.Match(range, pattern);
 
-            if (match.Success) {
-                var from = int.Parse(match.Groups["from"].Value);
-                var second = int.Parse(match.Groups["second"].Value);
-                var to = int.Parse(match.Groups["to"].Value);
-                
-                return new Range(from, to, second - from);
-            }
+            Group from = match.Groups["from"];
+            
+            if (!from.Success)
+                return Nothing;
+            
+            int fromInt = int.Parse(from.Value);
+            Group second = match.Groups["second"];
+            Group to = match.Groups["to"];
 
-            match = Regex.Match(range, pattern_from_second);
-
-            if (match.Success) {
-                var from = int.Parse(match.Groups["from"].Value);
-                var second = int.Parse(match.Groups["second"].Value);
-
-                return new Range(from, null, second - from);
-            }
-
-            match = Regex.Match(range, pattern_from_to);
-
-            if (match.Success) {
-                var from = int.Parse(match.Groups["from"].Value);
-                var to = int.Parse(match.Groups["to"].Value);
-
-                return new Range(from, to);
-            }
-
-            match = Regex.Match(range, pattern_from);
-
-            if (match.Success) {
-                var from = int.Parse(match.Groups["from"].Value);
-
-                return new Range(from, null);
-            }
-
-            return Nothing;
+            return Just<Range>((second.Success, to.Success) switch {
+                //from, second, to
+                (true, true) => new(fromInt, int.Parse(to.Value), int.Parse(second.Value) - fromInt),
+                //from, second
+                (true, false) => new(fromInt, null, int.Parse(second.Value) - fromInt),
+                //from, to
+                (false, true) => new(fromInt, int.Parse(to.Value)),
+                //from
+                (false, false) => new(fromInt, null),
+            });
         }
 
         public IEnumerable<int> AsEnumerable() {
