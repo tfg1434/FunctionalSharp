@@ -29,10 +29,10 @@ namespace FPLibrary {
 
         public IEnumerable<T> AsEnumerable() {
             if (_isAscending)
-                for (T x = _from; isInfinite || _compare(x, _to!) <= 0; x = _add(x, _step))
+                for (T x = _from; isInfinite || _compare(x, _to!.Value) <= 0; x = _add(x, _step))
                     yield return x;
             else
-                for (T x = _from; isInfinite || _compare(x, _to!) >= 0; x = _add(x, _step))
+                for (T x = _from; isInfinite || _compare(x, _to!.Value) >= 0; x = _add(x, _step))
                     yield return x;
         }
         
