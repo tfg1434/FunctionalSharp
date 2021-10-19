@@ -11,20 +11,18 @@ namespace FPLibrary {
         private readonly T? _to;
         private readonly T _step;
         private readonly bool _isAscending;
-        private readonly T _empty;
         private readonly Func<T, T, int> _compare;
         private readonly Func<T, T, T> _add;
 
         private bool isInfinite => _to is null;
 
-        protected Range(T from, T? to, T step, T empty, Func<T, T, int> compare, Func<T, T, T> add) {
+        protected Range(T from, T? to, T step, Func<T, T, int> compare, Func<T, T, T> add) {
             _from = from;
             _to = to;
             _step = step;
             _compare = compare;
             _add = add;
-            _empty = empty;
-            _isAscending = _compare(_step, _empty) > 0;
+            _isAscending = _compare(_step, default) > 0;
         }
 
         public IEnumerable<T> AsEnumerable() {
