@@ -7,7 +7,7 @@ public static partial class F {
     public static IEnumerable<int> Range(int from, int? second = null, int? to = null)
         => IntRange.Of(from, second, to);
         
-    public static IEnumerable<char> Range(char from, char? second = null, char? to = null)
+    public static IEnumerable<char> Range(char from, char? second = null, char to = char.MaxValue)
         => CharRange.Of(from, second, to);
     
     public static IEnumerable<double> Range(double from, double? second = null, double? to = null)
@@ -50,17 +50,17 @@ class DoubleRange : Range<double> {
 
 class CharRange : Range<char> {
     private static char Add(char x, char y) => unchecked((char) (x + y));
-    private static char Subtract(char x, char y) => unchecked((char) (x - y));
-        
-    private CharRange(char from, char? to = null, char step = (char)1)
+
+    private CharRange(char from, char to = char.MaxValue, char step = (char)1)
         : base(from, to, step, Comparer<char>.Default.Compare, Add) { }
 
-    internal static IEnumerable<char> Of(char from, char? second = null, char? to = null)
-        => (second is null, to is null) switch {
-            (false, false) => new CharRange(from),
-            (false, true) => new(from, to),
-            (true, false) => new(from, step: Subtract(second!.Value, from)),
-            (true, true) => new(from, to, Subtract(second!.Value, from)),
+    //char is bounded
+    internal static IEnumerable<char> Of(char from, char? second = null, char to = char.MaxValue)
+        => (second is not null) switch {
+            //from...
+            false => new CharRange(from, to),
+            //from, second...
+            true => new(from, to, Add(second!.Value, from)),
         };
 }
 
