@@ -15,8 +15,8 @@ public class CharTests {
         
         Assert.Equal(expected, actual);
         
-        expected = new[] { 'B', 'Å', 'ň', 'ǋ', 'Ɏ' };
-        actual = F.Range(from: 'B', second: 'A').Take(5);
+        expected = new[] { 'x', 'w', 'v', 'u', 't' };
+        actual = F.Range(from: 'x', second: 'w').Take(5);
         
         Assert.Equal(expected, actual);
     }
@@ -26,6 +26,6 @@ public class CharTests {
         IEnumerable<char> range = F.Range((char) 0);
         var r = ((Range<char>)F.Range((char)0));
 
-        Assert.Equal(range.Count(), char.MaxValue);
+        Assert.Equal(char.MaxValue + 1, range.Count());
     }
 }

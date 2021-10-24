@@ -35,15 +35,15 @@ namespace FPLibrary {
                 var isGtOrEqual = _isAscending ? _isGtOrEqual : _isGtOrEqual.Flip();
                 
                 while (true) {
-                    //if (x < y            || to < x)
+                    //if (x < y            || x > to)
                     if (!isGtOrEqual(x, y) || !isGtOrEqual(_to, x))
                         yield break;
                     
                     yield return x;
                     
-                    x = _add(x, _step);
-
                     y = x;
+                    
+                    x = _add(x, _step);
                 }
 
                 // T x = _from;

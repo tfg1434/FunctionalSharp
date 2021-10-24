@@ -65,7 +65,7 @@ class CharRange : Range<char> {
             //from...
             false => new CharRange(from, to.Value, (char) 1, isAscending),
             //from, second...
-            true => new(from, to.Value, Add(second!.Value, from), isAscending),
+            true => new(from, to.Value, Add(second!.Value, (char) -from), isAscending),
         };
     }
 }
