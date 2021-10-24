@@ -2,12 +2,11 @@
 using Xunit;
 using System.Collections.Generic;
 using FPLibrary;
-using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
 using static FPLibrary.F;
 
 namespace FPLibrary.Tests.Range;
 
-public class RangeTests {
+public class IntTests {
     [Fact]
     public void Range_From_Int() {
         IEnumerable<int> expected = new[] { 1, 2, 3, 4, 5 };

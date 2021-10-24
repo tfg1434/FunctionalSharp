@@ -8,14 +8,14 @@ using static FPLibrary.F;
 namespace FPLibrary {
     public class Range<T> : IEnumerable<T> where T : struct {
         private readonly T _from;
-        private readonly T _to;
+        private readonly T? _to;
         private readonly T _step;
         private readonly bool _isAscending;
         private readonly bool _isInfinite;
         private readonly Func<T, T, bool> _isGtOrEqual;
         private readonly Func<T, T, T> _add;
 
-        protected Range(T from, T to, T step, bool isInfinite, bool isAscending, Func<T, T, bool> isGtOrEqual, Func<T, T, T> add) {
+        protected Range(T from, T? to, T step, bool isInfinite, bool isAscending, Func<T, T, bool> isGtOrEqual, Func<T, T, T> add) {
             _from = from;
             _to = to;
             _step = step;
@@ -36,7 +36,7 @@ namespace FPLibrary {
                 
                 while (true) {
                     //if (x < y            || x > to)
-                    if (!isGtOrEqual(x, y) || !isGtOrEqual(_to, x))
+                    if (!isGtOrEqual(x, y) || !isGtOrEqual(_to!.Value, x))
                         yield break;
                     
                     yield return x;
