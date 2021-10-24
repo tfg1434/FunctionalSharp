@@ -45,43 +45,7 @@ namespace FPLibrary {
                     
                     x = _add(x, _step);
                 }
-
-                // T x = _from;
-                // T add = _from;
-                //
-                // while (_isAscending ? _isGtOrEqual(add = _add(add, _step), x) : _isGtOrEqual(x, add = _add(add, _step))) {
-                //     yield return x;
-                //     
-                //     //to check if less than, check if not greater than or equal
-                //     //then invert the if
-                //     //if (to < add)
-                //     if (!_isGtOrEqual(_to, add)) yield break;
-                //
-                //     x = add;
-                // }
             }
-            
-            /*
-            x <- from
-            prev <- compare x to
-            -- second bigger than first = negative comp
-            
-            loop {
-                comp <- compare x to
-                
-                if (_isAscending)
-                    advance = comp <= 0 && prev == comp
-                else
-                    advance = comp >= 0 && prev == comp
-                
-                if (!advance) break;
-                
-                yield x
-                
-                x <- add x step
-                prev <- comp
-            }
-            */
         }
         
         public IEnumerator<T> GetEnumerator() => AsEnumerable().GetEnumerator();

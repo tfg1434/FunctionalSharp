@@ -24,7 +24,6 @@ public class CharTests {
     [Fact]
     public void Range_Char_IsBounded() {
         IEnumerable<char> range = F.Range((char) 0);
-        var r = ((Range<char>)F.Range((char)0));
 
         Assert.Equal(char.MaxValue + 1, range.Count());
     }

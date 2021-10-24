@@ -2,6 +2,7 @@
 using Xunit;
 using System.Collections.Generic;
 using FPLibrary;
+using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
 using static FPLibrary.F;
 
 namespace FPLibrary.Tests.Range;
@@ -50,6 +51,19 @@ public class RangeTests {
 
         expected = Enumerable.Empty<int>();
         actual = F.Range(from: 5, second: 4, to: 6);
+        
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Range_Int_IsBounded() {
+        int expected = 3;
+        int actual = F.Range(from: int.MaxValue - 2).Count();
+        
+        Assert.Equal(expected, actual);
+
+        expected = 3;
+        actual = F.Range(from: int.MinValue + 2, second: int.MinValue + 1).Count();
         
         Assert.Equal(expected, actual);
     }
