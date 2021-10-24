@@ -15,13 +15,13 @@ namespace FPLibrary {
         private readonly Func<T, T, bool> _isGtOrEqual;
         private readonly Func<T, T, T> _add;
 
-        protected Range(T from, T to, T step, bool isInfinite, Func<T, T, bool> isGtOrEqual, Func<T, T, T> add) {
+        protected Range(T from, T to, T step, bool isInfinite, bool isAscending, Func<T, T, bool> isGtOrEqual, Func<T, T, T> add) {
             _from = from;
             _to = to;
             _step = step;
             _isGtOrEqual = isGtOrEqual;
             _add = add;
-            _isAscending = _isGtOrEqual(step, default);
+            _isAscending = isAscending;
             _isInfinite = isInfinite;
         }
 
@@ -31,13 +31,34 @@ namespace FPLibrary {
                     yield return x;
             } else {
                 T x = _from;
-                T add = _from;
+                T y = _from;
+                var isGtOrEqual = _isAscending ? _isGtOrEqual : _isGtOrEqual.Flip();
                 
-                while (_isAscending ? _isGtOrEqual(add = _add(add, _step), x) : _isGtOrEqual(x, add = _add(add, _step))) {
+                while (true) {
+                    //if (x < y            || to < x)
+                    if (!isGtOrEqual(x, y) || !isGtOrEqual(_to, x))
+                        yield break;
+                    
                     yield return x;
+                    
+                    x = _add(x, _step);
 
-                    x = add;
+                    y = x;
                 }
+
+                // T x = _from;
+                // T add = _from;
+                //
+                // while (_isAscending ? _isGtOrEqual(add = _add(add, _step), x) : _isGtOrEqual(x, add = _add(add, _step))) {
+                //     yield return x;
+                //     
+                //     //to check if less than, check if not greater than or equal
+                //     //then invert the if
+                //     //if (to < add)
+                //     if (!_isGtOrEqual(_to, add)) yield break;
+                //
+                //     x = add;
+                // }
             }
             
             /*
