@@ -12,11 +12,10 @@ namespace FPLibrary {
         private readonly T _step;
         private readonly bool _isAscending;
         private readonly bool _isInfinite;
-        private readonly bool _prev = false; //for use with bounded types
         private readonly Func<T, T, int> _compare;
         private readonly Func<T, T, T> _add;
 
-        protected Range(T from, T? to, T step, Func<T, T, int> compare, Func<T, T, T> add) {
+        protected Range(T from, T to, T step, Func<T, T, int> compare, Func<T, T, T> add, int? count = null) {
             _from = from;
             _to = to;
             _step = step;
@@ -27,31 +26,32 @@ namespace FPLibrary {
         }
 
         public IEnumerable<T> AsEnumerable() {
-            T x = _from;
+            /*
+            x <- from
+            prev <- compare x to
+            -- second bigger than first = negative comp
             
-            while (true) {
-                int comp = _compare(x, _to!.Value);
-                bool advance = _isAscending ? comp <= 0 : comp >= 0;
+            loop {
+                comp <- compare x to
                 
+                if (_isAscending)
+                    advance = comp <= 0 && prev == comp
+                else
+                    advance = comp >= 0 && prev == comp
                 
+                if (!advance) break;
+                
+                yield x
+                
+                x <- add x step
+                prev <- comp
             }
+            */
 
-            // if (_isAscending)
-            //     for (T x = _from; _isInfinite || _compare(x, _to!.Value) <= 0; x = _add(x, _step)) {
-            //         if (prev) {
-            //             int breakpoint = 10;
-            //         }
-            //         
-            //         if (x.Equals(_to!.Value)) {
-            //             prev = true;
-            //         }
-            //
-            //         yield return x;
-            //     }
-            //         
-            // else
-            //     for (T x = _from; _isInfinite || _compare(x, _to!.Value) >= 0; x = _add(x, _step))
-            //         yield return x;
+            T x = _from;
+            int prevComp = _compare(x, );
+            
+            
         }
         
         public IEnumerator<T> GetEnumerator() => AsEnumerable().GetEnumerator();
