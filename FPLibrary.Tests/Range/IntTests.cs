@@ -29,7 +29,7 @@ public class RangeTests {
 
         expected = new[] { -5 };
         actual = F.Range(from: -5, to: -5);
-            
+
         Assert.Equal(expected, actual);
     }
 
