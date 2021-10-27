@@ -10,18 +10,18 @@ namespace FPLibrary {
         private readonly T _from;
         private readonly T? _to;
         private readonly T _step;
-        private readonly bool _isAscending;
+        private readonly bool _isSecondAscending;
         private readonly bool _isInfinite;
         private readonly Func<T, T, bool> _isGtOrEqual;
         private readonly Func<T, T, T> _add;
 
-        protected Range(T from, T? to, T step, bool isInfinite, bool isAscending, Func<T, T, bool> isGtOrEqual, Func<T, T, T> add) {
+        protected Range(T from, T? to, T step, bool isInfinite, bool isSecondAscending, Func<T, T, bool> isGtOrEqual, Func<T, T, T> add) {
             _from = from;
             _to = to;
             _step = step;
             _isGtOrEqual = isGtOrEqual;
             _add = add;
-            _isAscending = isAscending;
+            _isSecondAscending = isSecondAscending;
             _isInfinite = isInfinite;
         }
 
@@ -32,7 +32,7 @@ namespace FPLibrary {
             } else {
                 T x = _from;
                 T y = _from;
-                var isGtOrEqual = _isAscending ? _isGtOrEqual : _isGtOrEqual.Flip();
+                var isGtOrEqual = _isSecondAscending ? _isGtOrEqual : _isGtOrEqual.Flip();
 
                 while (true) {
                     //if (x < y            || x > to)
