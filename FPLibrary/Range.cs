@@ -33,7 +33,7 @@ namespace FPLibrary {
                 T x = _from;
                 T y = _from;
                 var isGtOrEqual = _isAscending ? _isGtOrEqual : _isGtOrEqual.Flip();
-                
+
                 while (true) {
                     //if (x < y            || x > to)
                     if (!isGtOrEqual(x, y) || !isGtOrEqual(_to!.Value, x))

@@ -25,7 +25,7 @@ class IntRange : Range<int> {
             static (x, y) => x + y) { }
 
     internal static IEnumerable<int> Of(int from, int? second, int? to = null) {
-        bool isAscending = second is null || second > from;
+        bool isAscending = IsAscending(from, second, to);
         to ??= isAscending ? int.MaxValue : int.MinValue;
         
         return (second is not null) switch {
@@ -43,7 +43,7 @@ class DoubleRange : Range<double> {
             static (x, y) => x + y) { }
     
     internal static IEnumerable<double> Of(double from, double? second, double? to = null) {
-        bool isAscending = second is null || second > from;
+        bool isAscending = IsAscending(from, second, to);
         to ??= isAscending ? double.MaxValue : double.MinValue;
         
         return (second is not null) switch {
@@ -63,7 +63,7 @@ class CharRange : Range<char> {
 
     //char is bounded
     internal static IEnumerable<char> Of(char from, char? second, char? to = null) {
-        bool isAscending = second is null || second > from;
+        bool isAscending = IsAscending(from, second, to);
         to ??= isAscending ? char.MaxValue : char.MinValue;
         
         return (second is not null) switch {
@@ -77,34 +77,36 @@ class CharRange : Range<char> {
 
 class BigIntRange : Range<BigInteger> {
     private BigIntRange(BigInteger from, BigInteger? to, BigInteger step, bool isAscending)
-        : base(from, null, step, to is null, isAscending, 
+        : base(from, to, step, to is null, isAscending, 
             static (x, y) => x >= y, static (x, y) => x + y) { }
     
     public static IEnumerable<BigInteger> Of(BigInteger from, BigInteger? second, BigInteger? to) {
-        bool isAscending = (second, to) switch {
-            (null, null) => true,
-            ({ }, null) when second > from => true,
-            (null, { }) or ({ }, { }) when to > from => true,
-            (_, _) => throw new ArgumentException("wtf"),
-        };
-        //bool isAscending = IsAscending(from, second, to);
+        // bool isAscending = (second, to) switch {
+        //     (null, null) => true,
+        //     ({ }, null) => second.Value > from,
+        //     (null, { }) or ({ }, { }) => to > from,
+        // };
+        bool isAscending = second is null || second > from;
 
-        return (second is not null) switch {
-            //from...
-            false => new BigIntRange(from, null, (char) 1, isAscending),
-            //from, second...
-            true => new(from, null, second!.Value - from, isAscending),
+        return second switch {
+            null => new BigIntRange(from, to, (char) 1, isAscending),
+            { } => new(from, to, second.Value - from, isAscending),
+            // //from...
+            // false => new BigIntRange(from, null, (char) 1, isAscending),
+            // //from, second...
+            // true => new(from, null, second!.Value - from, isAscending),
         };
     }
 }
 
 static class RangeUtils {
     public static bool IsAscending<T>(T from, T? second, T? to) where T : struct, IComparisonOperators<T, T>
-        => (second, to) switch {
-            (null, null) => true,
-            ({ }, null) when second.Value > from => true,
-            (null, { }) or ({ }, { }) when to > from => true,
-            (_, _) => throw new ArgumentException("wtf"),
-        };
+        => second is null || second > from;
+    // => (second, to) switch {
+    //     (null, null) => true,
+    //     ({ }, null) => second.Value > from,
+    //     (null, { }) or ({ }, { }) => to > from,
+    //     //(_, _) => false,
+    // };
 }
 
