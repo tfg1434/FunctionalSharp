@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -61,6 +62,8 @@ namespace FPLibrary {
         #endregion
     }
 
+    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(ImmutableMapDebuggerProxy<,>))]
     public sealed partial class Map<K, V> where K : notnull {
         private readonly Node _root;
 
