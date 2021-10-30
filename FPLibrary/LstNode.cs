@@ -5,7 +5,7 @@
 
             internal Node(T value) => Value = value;
 
-            internal Maybe<Node> Next { get; init; }
+            internal Node? Next { get; init; }
 
             public override string ToString() => $"Value: {Value} Next: {Next}";
         }

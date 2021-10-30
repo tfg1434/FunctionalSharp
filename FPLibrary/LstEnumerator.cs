@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace FPLibrary {
     public readonly partial struct Lst<T> : IEnumerable<T> {
-        public Enumerator GetEnumerator() => new(head);
+        public Enumerator GetEnumerator() => new(_head);
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 
