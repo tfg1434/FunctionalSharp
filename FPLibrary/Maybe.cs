@@ -10,6 +10,9 @@ namespace FPLibrary {
 
         public static Maybe<T> Just<T>([NotNull] T? value)
             => new(value ?? throw new ArgumentNullException(nameof(value)));
+
+        public static Maybe<T> JustIfNotNull<T>(T? value)
+            => value is null ? Nothing : new Maybe<T>(value);
     }
 
     public readonly struct NothingType { }
