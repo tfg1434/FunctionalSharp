@@ -2,6 +2,10 @@
 
 namespace FPLibrary; 
 
+public static partial class F {
+    public static IO<T> IO<T>(Func<T> f) => new(() => f());
+}
+
 public class IO<T> {
     private readonly Func<Exceptional<T>> _f;
 
