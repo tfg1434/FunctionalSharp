@@ -4,7 +4,7 @@ using static FPLibrary.F;
 
 namespace FPLibrary {
     public static partial class F {
-        public static Exceptional<T> Exceptional<T>(T t) => new(t);
+        public static Exceptional<T> Exceptional<T>(T t) => t;
     }
 
     public readonly struct Exceptional<T> {
