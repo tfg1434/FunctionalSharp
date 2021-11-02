@@ -22,10 +22,4 @@ public record class Error(string Message, Exception? Ex) {
     public override string ToString() => Message;
 }
 
-public record class IOError(string Message, Exception? Ex) : Error(Message, Ex) {
-    
-}
-    
-// public record Error(int Code, string Message, Exception Exception) {
-//     public override string ToString() => $"Error({Message})";
-// }
+
