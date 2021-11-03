@@ -5,6 +5,7 @@ using static FPLibrary.F;
 
 namespace FPLibrary; 
 
+//TODO: make ctor private
 public record class Error(string Message, Exception? Ex) {
     public Maybe<Exception> Exception => JustIfNotNull(Ex);
 

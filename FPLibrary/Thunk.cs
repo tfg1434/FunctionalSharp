@@ -27,6 +27,38 @@ public class Thunk<T> {
     public static Thunk<T> OfFail(Error e) => new(Thunk.Fail, e);
 
     public static Thunk<T> OfCancelled() => new(Thunk.Cancelled, new CancelledError());
+
+    private Result<T> Eval() {
+        if (_state == Thunk.NotEvaluated) {
+            try {
+                var res = _f();
+
+                if (res.IsFail) {
+                    _error = res.Error;
+                    _state = Thunk.Fail;
+
+                    return res;
+                }
+
+                _value = res.Value;
+                _state = Thunk.Succ;
+
+                return res;
+            } catch (Exception e) {
+                _error = Error.Of(e);
+                
+            }
+        }
+    }
+    
+    /*
+    Interlocked.CompareExchange(ref state, Thunk.Evaluating, Thunk.NotEvaluated) == Thunk.NotEvaluated
+    
+    if (state == notEvaluated)
+        do shit
+        
+    if (state == not evaluated) then state = evaluating
+     */
     
 }
 

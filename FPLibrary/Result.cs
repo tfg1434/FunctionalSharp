@@ -27,6 +27,8 @@ public readonly struct Result<T> {
 
     public bool IsSucc { get; }
     public bool IsFail => !IsSucc;
+    internal Error? Error => _error;
+    internal T? Value => _value;
     
     public R Match<R>(Func<Error, R> fail, Func<T, R> succ)
         => IsSucc ? succ(_value!) : fail(_error!);
