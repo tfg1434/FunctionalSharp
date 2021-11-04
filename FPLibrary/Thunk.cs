@@ -28,6 +28,8 @@ public class Thunk<T> {
 
     public static Thunk<T> OfCancelled() => new(Thunk.Cancelled, new CancelledError());
 
+    public Result<T> Value() => Eval();
+    
     private Result<T> Eval() {
         if (_state == Thunk.NotEvaluated) {
             try {
@@ -44,29 +46,38 @@ public class Thunk<T> {
                 _state = Thunk.Succ;
 
                 return res;
+                
             } catch (Exception e) {
                 _error = Error.Of(e);
-                
+
+                _state = Thunk.Fail;
+
+                return _error;
             }
         }
+
+        return _state switch {
+            Thunk.Succ => _value!,
+            Thunk.Cancelled => new CancelledError(),
+            Thunk.Fail => _error!,
+            _ => throw new InvalidOperationException("wtf"),
+        };
     }
-    
-    /*
-    Interlocked.CompareExchange(ref state, Thunk.Evaluating, Thunk.NotEvaluated) == Thunk.NotEvaluated
-    
-    if (state == notEvaluated)
-        do shit
-        
-    if (state == not evaluated) then state = evaluating
-     */
-    
+
+    public override string ToString() 
+        => _state switch {
+            Thunk.NotEvaluated => "NotEvaluated",
+            Thunk.Succ => $"Succ({_value})",
+            Thunk.Cancelled => "Cancelled",
+            Thunk.Fail => $"Fail({_error})",
+            _ => throw new InvalidOperationException("wtf"),
+        };
 }
 
 public static class Thunk {
     public const int NotEvaluated = 0;
-    public const int Evaluating = 1;
-    public const int Succ = 2;
-    public const int Fail = 4;
-    public const int Cancelled = 8;
+    public const int Succ = 1;
+    public const int Fail = 2;
+    public const int Cancelled = 4;
     public const int IsEvaluated = Succ | Fail | Cancelled;
 }
