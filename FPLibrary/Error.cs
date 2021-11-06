@@ -7,7 +7,7 @@ namespace FPLibrary;
 
 //TODO: make ctor private
 public record class Error(string Message, Exception? Ex) {
-    public Maybe<Exception> Exception => JustIfNotNull(Ex);
+    public Maybe<Exception> Exception => Jull(Ex);
 
     public static Error Of(string message, Exception ex) => new(message, ex);
 

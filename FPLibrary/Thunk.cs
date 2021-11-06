@@ -3,7 +3,7 @@
 namespace FPLibrary;
 
 public class Thunk<T> {
-    private readonly Func<Result<T>> _f;
+    private readonly Func<Result<T>>? _f;
     private Error? _error;
     private T? _value;
     private int _state;
@@ -18,7 +18,8 @@ public class Thunk<T> {
         _error = e;
     }
 
-    private Thunk(Func<Result<T>> f) => _f = f;
+    private Thunk(Func<Result<T>> f) 
+        => _f = f ?? throw new ArgumentNullException(nameof(f));
 
     public static Thunk<T> OfSucc(Func<Result<T>> f) => new(f);
 
@@ -26,14 +27,44 @@ public class Thunk<T> {
 
     public static Thunk<T> OfFail(Error e) => new(Thunk.Fail, e);
 
-    public static Thunk<T> OfCancelled() => new(Thunk.Cancelled, new CancelledError());
+    public static Thunk<T> OfCancelled() => new(Thunk.Cancelled, CancelledError.Of());
 
     public Result<T> Value() => Eval();
+
+    public Result<T> ReValue() {
+        if (_f is not null)
+            _state = Thunk.NotEvaluated;
+
+        return Eval();
+    }
+    
+    public Thunk<T> Clone()
+        => _f is null
+            ? new(_state, _error!)
+            : new(_f);
+
+    public Thunk<R> Map<R>(Func<T, R> f) {
+        try {
+            switch (_state) {
+                case Thunk.Succ:
+                    return Thunk<R>.OfSucc(f(_value!));
+                case Thunk.NotEvaluated:
+                    return Thunk<R>.OfSucc(() => {
+                        Result<T> res = Eval();
+
+                        if (res.IsSucc)
+                            return f(res.Value);
+                        
+                        return res.
+                    });
+            }
+        }
+    }
     
     private Result<T> Eval() {
         if (_state == Thunk.NotEvaluated) {
             try {
-                var res = _f();
+                var res = _f!();
 
                 if (res.IsFail) {
                     _error = res.Error;

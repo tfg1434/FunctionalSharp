@@ -2,7 +2,7 @@
 using static FPLibrary.F;
 using Unit = System.ValueTuple;
 
-namespace FPLibrary; 
+namespace FPLibrary;
 
 //TODO: refactor these discriminated unions
 public readonly struct Result<T> {
@@ -20,6 +20,10 @@ public readonly struct Result<T> {
         _value = value;
         IsSucc = true;
     }
+
+    public static Result<T> Succ(T value) => new(value);
+
+    public static Result<T> Fail(Error e) => new(e);
 
     public static implicit operator Result<T>(Error e) => new(e);
 
@@ -64,6 +68,13 @@ public readonly struct Result<T> {
             t => bind(t).Match(
                 ex => new Result<PR>(ex),
                 r => proj(t, r)));
+    
+    internal Result<R> Cast<R>()
+        => IsSucc
+            ? F.Cast<R>(Value)
+                .Map(Result<R>.Succ)
+                .IfNothing(() => Result<R>.Fail(Error.Of()))
+            : _error;
 }
 
 public static class ResultExt {
