@@ -5,22 +5,21 @@ using static FPLibrary.F;
 
 namespace FPLibrary; 
 
-//TODO: make ctor private
-public record class Error(string Message, Exception? Ex) {
-    public Maybe<Exception> Exception => Jull(Ex);
-
-    public static Error Of(string message, Exception ex) => new(message, ex);
-
-    public static Error Of(Exception ex) => new(ex.Message, ex);
-
-    public static Error Of(string message) => new(message, null);
-        
-    public Exception ToException()
-        => Ex ?? throw new InvalidOperationException("Error does not contain an exception");
-
-    public bool IsEx<E>() where E : Exception => Ex is E;
+public record class Error(string Message) {
+    public Error() : this("") { }
+    
+    //public Error(string message...)
 
     public override string ToString() => Message;
 }
 
+public record class ExError : Error {
+    public ExError(Exception ex) : base(ex.Message) => Ex = ex;
+    
+    public ExError(string message, Exception ex) : base(message) => Ex = ex;
+
+    public Exception Ex { get; init; }
+    
+    public override string ToString() => $"{Message} {Ex}";
+}
 

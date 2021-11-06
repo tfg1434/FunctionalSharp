@@ -2,8 +2,14 @@
 
 namespace FPLibrary;
 
-public record class CancelledError() : Error("Cancelled", null);
+public record class CancelledError : Error {
+    public CancelledError() : base("Cancelled") { }
+    
+    public CancelledError(string message) : base(message) { }
+}
 
-public record class IOError(string Message, Exception? Ex) : Error(Message, Ex);
+public record class IOError(string Message, Exception? Ex) : ExError {
+    
+}
 
 
