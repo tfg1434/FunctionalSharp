@@ -8,7 +8,7 @@ public record class CancelledError : Error {
     public CancelledError(string message) : base(message) { }
 }
 
-public record class IOError : MaybeExError {
+public record class IOError : Error {
     public IOError() : base("IO error occurred") { }
     
     public IOError(string message) : base(message) { }
