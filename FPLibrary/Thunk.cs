@@ -65,11 +65,11 @@ public class Thunk<T> {
                     throw new InvalidOperationException("wtf");
             }
         } catch (Exception e) {
-            return Thunk<R>.OfFail(new MaybeExError(e));
+            return Thunk<R>.OfFail(new Error(e));
         }
     }
 
-    public Thunk<R> BiMap<R>(Func<T, R> succ, Func<MaybeExError, MaybeExError> fail) {
+    public Thunk<R> BiMap<R>(Func<T, R> succ, Func<Error, Error> fail) {
         try {
             return _state switch {
                 Thunk.Succ => Thunk<R>.OfSucc(succ(_value!)),
@@ -103,7 +103,7 @@ public class Thunk<T> {
                 return res;
                 
             } catch (Exception e) {
-                _error = new MaybeExError(e);
+                _error = new Error(e);
 
                 _state = Thunk.Fail;
 

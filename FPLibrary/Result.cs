@@ -6,10 +6,10 @@ namespace FPLibrary;
 
 //TODO: refactor these discriminated unions
 public readonly struct Result<T> {
-    private readonly MaybeExError? _error;
+    private readonly Error? _error;
     private readonly T? _value;
 
-    internal Result(MaybeExError error) {
+    internal Result(Error error) {
         _error = error;
         _value = default;
         IsSucc = false;
@@ -31,13 +31,13 @@ public readonly struct Result<T> {
 
     public bool IsSucc { get; }
     public bool IsFail => !IsSucc;
-    internal MaybeExError? Error => _error;
+    internal Error? Error => _error;
     internal T? Value => _value;
     
-    public R Match<R>(Func<MaybeExError, R> fail, Func<T, R> succ)
+    public R Match<R>(Func<Error, R> fail, Func<T, R> succ)
         => IsSucc ? succ(_value!) : fail(_error!);
 
-    public Unit Match(Action<MaybeExError> fail, Action<T> succ)
+    public Unit Match(Action<Error> fail, Action<T> succ)
         => Match(fail.ToFunc(), succ.ToFunc());
 
     public override string ToString()
@@ -73,7 +73,7 @@ public readonly struct Result<T> {
         => IsSucc
             ? F.Cast<R>(Value!)
                 .Map(Result<R>.Succ)
-                .IfNothing(() => Result<R>.Fail(new MaybeExError(
+                .IfNothing(() => Result<R>.Fail(new(
                     $"Can't cast success value of type {nameof(T)} to {nameof(R)}")))
             : Result<R>.Fail(_error!);
 }
