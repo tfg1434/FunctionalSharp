@@ -23,3 +23,22 @@ public record class ExError : Error {
     public override string ToString() => $"{Message} {Ex}";
 }
 
+public record class MaybeExError : Error {
+    public MaybeExError() { }
+    
+    public MaybeExError(string message) : base(message) { }
+
+    public MaybeExError(Exception ex) : base(ex.Message) => Ex = ex;
+    
+    public MaybeExError(string message, Exception ex) : base(message) => Ex = ex;
+
+    public Maybe<Exception> Ex { get; init; }
+
+    public Exception ToException()
+        => Ex.Match(() => throw new InvalidOperationException("Error does not contain an exception"),
+            ex => ex);
+
+    public bool Is<E>() where E : Exception
+        => Ex.Map(ex => ex is E).GetOr(false);
+}
+
