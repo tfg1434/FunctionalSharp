@@ -53,7 +53,7 @@ public class Thunk<T> {
                         Result<T> res = Eval();
 
                         if (res.IsSucc)
-                            return f(res.Value);
+                            return f(res.Value!);
 
                         return res.Cast<R>();
                     });
@@ -61,7 +61,11 @@ public class Thunk<T> {
                     return Thunk<R>.OfCancelled();
                 case Thunk.Fail:
                     return Thunk<R>.OfFail(_error!);
+                default:
+                    throw new InvalidOperationException("wtf");
             }
+        } catch (Exception e) {
+            return Thunk<R>.OfFail(new MaybeExError(e));
         }
     }
     

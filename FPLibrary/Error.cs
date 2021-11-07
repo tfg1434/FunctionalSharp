@@ -34,7 +34,9 @@ public record class MaybeExError : Error {
 
     public Maybe<Exception> Ex { get; init; }
 
-    public Exception ToException()
+    public bool HasEx => Ex.IsJust;
+
+    public Exception ToEx()
         => Ex.Match(() => throw new InvalidOperationException("Error does not contain an exception"),
             ex => ex);
 
