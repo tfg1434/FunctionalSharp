@@ -68,6 +68,22 @@ public class Thunk<T> {
             return Thunk<R>.OfFail(new MaybeExError(e));
         }
     }
+
+    public Thunk<R> BiMap<R>(Func<T, R> succ, Func<MaybeExError, MaybeExError> fail) {
+        try {
+            return _state switch {
+                Thunk.Succ => Thunk<R>.OfSucc(succ(_value!)),
+                Thunk.NotEvaluated => Thunk<R>.OfSucc(() => {
+                    Result<T> res = Eval();
+
+                    return res.IsSucc
+                        ? Result<R>.Succ(succ(res.Value!))
+                        : Result<R>.Fail(fail(res.Error!));
+                }),
+                Thunk.Cancelled => Thunk<R>.OfFail(fail(new CancelledError())),
+            };
+        }
+    }
     
     private Result<T> Eval() {
         if (_state == Thunk.NotEvaluated) {
@@ -87,7 +103,7 @@ public class Thunk<T> {
                 return res;
                 
             } catch (Exception e) {
-                _error = Error.Of(e);
+                _error = new MaybeExError(e);
 
                 _state = Thunk.Fail;
 
