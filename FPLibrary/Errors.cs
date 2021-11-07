@@ -8,8 +8,14 @@ public record class CancelledError : Error {
     public CancelledError(string message) : base(message) { }
 }
 
-public record class IOError(string Message, Exception? Ex) : ExError {
+public record class IOError : MaybeExError {
+    public IOError() : base("IO error occurred") { }
     
+    public IOError(string message) : base(message) { }
+
+    public IOError(Exception ex) : base(ex) { }
+    
+    public IOError(string message, Exception ex) : base(message, ex) { }
 }
 
 

@@ -27,7 +27,7 @@ public class Thunk<T> {
 
     public static Thunk<T> OfFail(Error e) => new(Thunk.Fail, e);
 
-    public static Thunk<T> OfCancelled() => new(Thunk.Cancelled, CancelledError.Of());
+    public static Thunk<T> OfCancelled() => new(Thunk.Cancelled, new CancelledError());
 
     public Result<T> Value() => Eval();
 
@@ -54,9 +54,13 @@ public class Thunk<T> {
 
                         if (res.IsSucc)
                             return f(res.Value);
-                        
-                        return res.
+
+                        return res.Cast<R>();
                     });
+                case Thunk.Cancelled:
+                    return Thunk<R>.OfCancelled();
+                case Thunk.Fail:
+                    return Thunk<R>.OfFail(_error!);
             }
         }
     }
