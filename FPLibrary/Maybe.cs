@@ -14,9 +14,9 @@ namespace FPLibrary {
         public static Maybe<T> Jull<T>(T? value)
             => value is null ? Nothing : new Maybe<T>(value);
 
-        public static Maybe<T> Cast<T>(in object value) {
+        public static Maybe<R> Cast<R>(in object value) {
             try {
-                return (T) value;
+                return (R) value;
             } catch {
                 return Nothing;
             }

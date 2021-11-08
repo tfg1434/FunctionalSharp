@@ -45,25 +45,19 @@ public class Thunk<T> {
 
     public Thunk<R> Map<R>(Func<T, R> f) {
         try {
-            switch (_state) {
-                case Thunk.Succ:
-                    return Thunk<R>.OfSucc(f(_value!));
-                case Thunk.NotEvaluated:
-                    return Thunk<R>.OfSucc(() => {
-                        Result<T> res = Eval();
-
-                        if (res.IsSucc)
-                            return f(res.Value!);
-
-                        return res.Cast<R>();
-                    });
-                case Thunk.Cancelled:
-                    return Thunk<R>.OfCancelled();
-                case Thunk.Fail:
-                    return Thunk<R>.OfFail(_error!);
-                default:
-                    throw new InvalidOperationException("wtf");
-            }
+            return _state switch {
+                Thunk.Succ => Thunk<R>.OfSucc(f(_value!)),
+                Thunk.NotEvaluated => Thunk<R>.OfSucc(() => {
+                    Result<T> res = Eval();
+                    
+                    if (res.IsSucc) return f(res.Value!);
+                    
+                    return res.Cast<R>();
+                }),
+                Thunk.Cancelled => Thunk<R>.OfCancelled(),
+                Thunk.Fail => Thunk<R>.OfFail(_error!),
+                _ => throw new InvalidOperationException("wtf"),
+            };
         } catch (Exception e) {
             return Thunk<R>.OfFail(new Error(e));
         }
