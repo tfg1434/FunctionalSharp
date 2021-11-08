@@ -81,7 +81,11 @@ public class Thunk<T> {
                         : Result<R>.Fail(fail(res.Error!));
                 }),
                 Thunk.Cancelled => Thunk<R>.OfFail(fail(new CancelledError())),
+                Thunk.Fail => Thunk<R>.OfFail(fail(_error!)),
+                _ => throw new InvalidOperationException("wtf"),
             };
+        } catch (Exception e) {
+            return Thunk<R>.OfFail(fail(new(e)));
         }
     }
     
