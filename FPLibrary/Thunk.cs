@@ -71,8 +71,8 @@ public class Thunk<T> {
                     Result<T> res = Eval();
 
                     return res.IsSucc
-                        ? Result<R>.Succ(succ(res.Value!))
-                        : Result<R>.Fail(fail(res.Error!));
+                        ? new(succ(res.Value!))
+                        : new(fail(res.Error!));
                 }),
                 Thunk.Cancelled => Thunk<R>.OfFail(fail(new CancelledError())),
                 Thunk.Fail => Thunk<R>.OfFail(fail(_error!)),

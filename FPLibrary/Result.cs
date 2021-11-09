@@ -9,21 +9,21 @@ public readonly struct Result<T> {
     private readonly Error? _error;
     private readonly T? _value;
 
-    internal Result(Error error) {
+    public Result(Error error) {
         _error = error;
         _value = default;
         IsSucc = false;
     }
 
-    internal Result(T value) {
+    public Result(T value) {
         _error = default;
         _value = value;
         IsSucc = true;
     }
+    
+    public static Result<T> Of(T value) => new(value);
 
-    public static Result<T> Succ(T value) => new(value);
-
-    public static Result<T> Fail(Error e) => new(e);
+    public static Result<T> Of(Error e) => new(e);
 
     public static implicit operator Result<T>(Error e) => new(e);
 
@@ -72,10 +72,10 @@ public readonly struct Result<T> {
     internal Result<R> Cast<R>()
         => IsSucc
             ? F.Cast<R>(Value!)
-                .Map(Result<R>.Succ)
-                .IfNothing(() => Result<R>.Fail(new(
+                .Map(Result<R>.Of)
+                .IfNothing(() => new(new Error(
                     $"Can't cast success value of type {nameof(T)} to {nameof(R)}")))
-            : Result<R>.Fail(_error!);
+            : new(_error!);
 }
 
 public static class ResultExt {
