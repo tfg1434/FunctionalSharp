@@ -72,10 +72,30 @@ public class ThunkTests {
         expected = new(new Error());
         Assert.Equal(expected, thunk.Value());
     }
-    
+
+    [Property(Arbitrary = new[] { typeof(ArbitrarySuccThunk) })]
+    public void BiMap_Identity_Holds(Thunk<int> expected) {
+        Thunk<int> actual = expected.BiMap(x => x, x => x);
+        
+        Assert.Equal(expected.Value(), actual.Value());
+    }
+
+    [Property(Arbitrary = new[] { typeof(ArbitraryThunk) })]
+    public void BiMap_Composition_Holds(Thunk<int> thunk) {
+        Func<int, int> f = Times2;
+        Func<int, int> g = Plus5;
+        Func<Error, Error> h = e => e;
+        Func<Error, Error> i = e => e;
+
+        Thunk<int> expected = thunk.BiMap(x => f(g(x)), x => h(i(x)));
+        Thunk<int> actual = thunk.BiMap(g, i).BiMap(f, h);
+
+        Assert.Equal(expected.Value(), actual.Value());
+    }
+
     //map ident == ident
     [Property(Arbitrary = new[] { typeof(ArbitraryThunk) })]
-    public void IdentityHolds(Thunk<int> thunk) {
+    public void Map_Identity_Holds(Thunk<int> thunk) {
         Thunk<int> expected = thunk;
         Thunk<int> actual = thunk.Map(x => x);
 
@@ -84,8 +104,8 @@ public class ThunkTests {
     
     //fmap (f . g) == fmap f . fmap g
     [Property(Arbitrary = new[] { typeof(ArbitraryThunk) })]
-    public void CompositionHolds(Thunk<int> thunk) {
-        Thunk<int> expected = thunk.Map(Times2).Map(Plus5));
+    public void Map_Composition_Holds(Thunk<int> thunk) {
+        Thunk<int> expected = thunk.Map(Times2).Map(Plus5);
         Thunk<int> actual = thunk.Map(x => Plus5(Times2(x)));
 
         Assert.Equal(expected.Value(), actual.Value());
