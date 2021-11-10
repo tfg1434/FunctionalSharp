@@ -10,6 +10,17 @@ namespace FPLibrary {
 
         public static Maybe<T> Just<T>([NotNull] T? value)
             => new(value ?? throw new ArgumentNullException(nameof(value)));
+
+        public static Maybe<T> Jull<T>(T? value)
+            => value is null ? Nothing : new Maybe<T>(value);
+
+        public static Maybe<R> Cast<R>(in object value) {
+            try {
+                return (R) value;
+            } catch {
+                return Nothing;
+            }
+        }
     }
 
     public readonly struct NothingType { }

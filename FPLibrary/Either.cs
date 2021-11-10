@@ -75,7 +75,8 @@ namespace FPLibrary {
             => self.Match<Either<L, RR>>(l => Left(l), r => Right(f(r)));
 
         //modify both Left and Right
-        //called biftor or biMap
+        //called bifunctor or biMap
+        //TODO: Rename to BiMap + add BiMap to other types
         public static Either<LL, RR> Map<L, LL, R, RR>(this Either<L, R> self, Func<L, LL> left, Func<R, RR> right)
             => self.Match<Either<LL, RR>>(l => Left(left(l)), r => Right(right(r)));
 
