@@ -21,6 +21,27 @@ static class ArbitraryThunk {
 
         return gen.ToArbitrary();
     }
+    
+    public static Arbitrary<Thunk<T>> SuccThunk<T>() {
+        Gen<Thunk<T>> gen = from value in Arb.Generate<T>()
+                            select FPLibrary.Thunk<T>.OfSucc(value);
+
+        return gen.ToArbitrary();
+    }
+    
+    public static Arbitrary<Thunk<T>> FailThunk<T>() {
+        Gen<Thunk<T>> gen = from ex in Arb.Generate<Exception>()
+                            select FPLibrary.Thunk<T>.OfFail(new Error(ex));
+
+        return gen.ToArbitrary();
+    }
+    
+    public static Arbitrary<Thunk<T>> CancelledThunk<T>() {
+        Gen<Thunk<T>> gen = from _ in Arb.Generate<bool>()
+                            select FPLibrary.Thunk<T>.OfCancelled();
+
+        return gen.ToArbitrary();
+    }
 }
 
 public class ThunkTests {
