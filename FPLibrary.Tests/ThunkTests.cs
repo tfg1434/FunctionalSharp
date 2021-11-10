@@ -1,9 +1,27 @@
 ﻿using System;
+using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
+using FPLibrary;
+using static FPLibrary.F;
 using static FPLibrary.Tests.Utils;
 
-namespace FPLibrary.Tests; 
+namespace FPLibrary.Tests;
+
+static class ArbitraryThunk {
+    public static Arbitrary<Thunk<T>> Thunk<T>() {
+        Gen<Thunk<T>> gen = from cancelled in Arb.Generate<bool>()
+                            from isFail in Arb.Generate<bool>()
+                            from value in Arb.Generate<T>()
+                            select (cancelled, isFail) switch {
+                                (true, _) => FPLibrary.Thunk<T>.OfCancelled(),
+                                (_, false) => FPLibrary.Thunk<T>.OfFail(new Error()),
+                                _ => FPLibrary.Thunk<T>.OfSucc(value),
+                            };
+
+        return gen.ToArbitrary();
+    }
+}
 
 public class ThunkTests {
     [Property]
@@ -16,10 +34,10 @@ public class ThunkTests {
         Assert.Equal(expected, thunk.Value());
     }
 
-    [Property]
+    [Fact]
     public void Value_Fail_Error() {
-        var thunk = Thunk<int>.OfSucc(() => new Error("e"));
-        var expected = new Result<int>(new Error("e"));
+        var thunk = Thunk<int>.OfSucc(() => new(new Error()));
+        var expected = new Result<int>(new Error());
         
         Assert.Equal(expected, thunk.Value());
 
@@ -27,4 +45,8 @@ public class ThunkTests {
         expected = new(new Error());
         Assert.Equal(expected, thunk.Value());
     }
+    
+    //map ident == ident
+    [Fact]
+    public void IdentityHolds()
 }
