@@ -21,22 +21,28 @@ static class ArbitraryThunk {
 
         return gen.ToArbitrary();
     }
-    
-    public static Arbitrary<Thunk<T>> SuccThunk<T>() {
+}
+
+static class ArbitrarySuccThunk {
+    public static Arbitrary<Thunk<T>> Thunk<T>() {
         Gen<Thunk<T>> gen = from value in Arb.Generate<T>()
                             select FPLibrary.Thunk<T>.OfSucc(value);
 
         return gen.ToArbitrary();
     }
-    
-    public static Arbitrary<Thunk<T>> FailThunk<T>() {
+}
+
+static class ArbitraryFailThunk {
+    public static Arbitrary<Thunk<T>> Thunk<T>() {
         Gen<Thunk<T>> gen = from ex in Arb.Generate<Exception>()
                             select FPLibrary.Thunk<T>.OfFail(new Error(ex));
 
         return gen.ToArbitrary();
     }
-    
-    public static Arbitrary<Thunk<T>> CancelledThunk<T>() {
+}
+
+static class ArbitraryCancelledThunk {
+    public static Arbitrary<Thunk<T>> Thunk<T>() {
         Gen<Thunk<T>> gen = from _ in Arb.Generate<bool>()
                             select FPLibrary.Thunk<T>.OfCancelled();
 
@@ -68,6 +74,20 @@ public class ThunkTests {
     }
     
     //map ident == ident
-    [Fact]
-    public void IdentityHolds()
+    [Property(Arbitrary = new[] { typeof(ArbitraryThunk) })]
+    public void IdentityHolds(Thunk<int> thunk) {
+        Thunk<int> expected = thunk;
+        Thunk<int> actual = thunk.Map(x => x);
+
+        Assert.Equal(expected.Value(), actual.Value());
+    }
+    
+    //fmap (f . g) == fmap f . fmap g
+    [Property(Arbitrary = new[] { typeof(ArbitraryThunk) })]
+    public void CompositionHolds(Thunk<int> thunk) {
+        Thunk<int> expected = thunk.Map(Times2).Map(Plus5));
+        Thunk<int> actual = thunk.Map(x => Plus5(Times2(x)));
+
+        Assert.Equal(expected.Value(), actual.Value());
+    }
 }
