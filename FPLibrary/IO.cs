@@ -61,6 +61,36 @@ public readonly struct IO<T> {
         }));
     }
 
+    public IO<T> IfFail(Func<Error, T> f) {
+        var @this = this;
+        
+        return IO(() => {
+            var res = @this.ReRun();
+            
+            return res.IsSucc ? res : Result<T>.Of(f(res.Error!));
+        });
+    }
+
+    public IO<T> IfFail(Func<T> f) {
+        var @this = this;
+        
+        return IO(() => {
+            var res = @this.ReRun();
+            
+            return res.IsSucc ? res : Result<T>.Of(f());
+        });
+    }
+    
+    public IO<T> IfFail(T value) {
+        var @this = this;
+        
+        return IO(() => {
+            var res = @this.ReRun();
+            
+            return res.IsSucc ? res : Result<T>.Of(value);
+        });
+    }
+
     public IO<R> Select<R>(Func<T, R> f) => Map(f);
     
     public IO<PR> SelectMany<R, PR>(Func<T, IO<R>> bind, Func<T, R, PR> proj)
