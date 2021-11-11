@@ -42,6 +42,46 @@ public class Thunk<E, T> {
             ? new Thunk<E, T>(_state, _error!)
             : new(_f);
 
+    public Thunk<E, R> Map<R>(Func<T, R> f) {
+        try {
+            return _state switch {
+                Thunk.Succ => Thunk<E, R>.OfSucc(f(_value!)),
+                Thunk.NotEvaluated => Thunk<E, R>.Of(env => {
+                    Result<T> res = Eval(env);
+
+                    if (res.IsSucc) return f(res.Value!);
+
+                    return res.Cast<R>();
+                }),
+                Thunk.Cancelled => Thunk<E, R>.OfCancelled(),
+                Thunk.Fail => Thunk<E, R>.OfFail(_error!),
+                _ => throw new InvalidOperationException("wtf"),
+            };
+        } catch (Exception e) {
+            return Thunk<E, R>.OfFail(new Error(e));
+        }
+    }
+
+    public Thunk<E, R> BiMap<R>(Func<T, R> succ, Func<Error, Error> fail) {
+        try {
+            return _state switch {
+                Thunk.Succ => Thunk<E, R>.OfSucc(succ(_value!)),
+                Thunk.NotEvaluated => Thunk<E, R>.Of(env => {
+                    Result<T> res = Eval(env);
+
+                    return res.IsSucc
+                        ? new(succ(res.Value!))
+                        : new(fail(res.Error!));
+                }),
+                Thunk.Cancelled => Thunk<E, R>.OfFail(fail(new CancelledError())),
+                Thunk.Fail => Thunk<E, R>.OfFail(fail(_error!)),
+                _ => throw new InvalidOperationException("wtf"),
+            };
+        } catch (Exception e) {
+            return Thunk<E, R>.OfFail(fail(new(e)));
+        }
+    }
+
     private Result<T> Eval(E env) {
         if (_state == Thunk.NotEvaluated) {
             try {
