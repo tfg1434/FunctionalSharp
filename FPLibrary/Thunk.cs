@@ -18,14 +18,13 @@ public class Thunk<T> {
         _error = e;
     }
 
-    private Thunk(Func<Result<T>> f) 
-        => _f = f ?? throw new ArgumentNullException(nameof(f));
+    private Thunk(Func<Result<T>> f) => _f = f;
 
     public static Thunk<T> Of(Func<Result<T>> f) => new(f);
 
     public static Thunk<T> OfSucc(T value) => new(value);
 
-    public static Thunk<T> OfFail(Error e) => new(Thunk.Fail, e);
+    public static Thunk<T> OfFail(Error error) => new(Thunk.Fail, error);
 
     public static Thunk<T> OfCancelled() => new(Thunk.Cancelled, new CancelledError());
 
@@ -86,7 +85,7 @@ public class Thunk<T> {
     private Result<T> Eval() {
         if (_state == Thunk.NotEvaluated) {
             try {
-                var res = _f!();
+                Result<T> res = _f!();
 
                 if (res.IsFail) {
                     _error = res.Error;
@@ -101,8 +100,7 @@ public class Thunk<T> {
                 return res;
                 
             } catch (Exception e) {
-                _error = new Error(e);
-
+                _error = new(e);
                 _state = Thunk.Fail;
 
                 return _error;
