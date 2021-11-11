@@ -21,7 +21,7 @@ public class Thunk<T> {
     private Thunk(Func<Result<T>> f) 
         => _f = f ?? throw new ArgumentNullException(nameof(f));
 
-    public static Thunk<T> OfSucc(Func<Result<T>> f) => new(f);
+    public static Thunk<T> Of(Func<Result<T>> f) => new(f);
 
     public static Thunk<T> OfSucc(T value) => new(value);
 
@@ -47,7 +47,7 @@ public class Thunk<T> {
         try {
             return _state switch {
                 Thunk.Succ => Thunk<R>.OfSucc(f(_value!)),
-                Thunk.NotEvaluated => Thunk<R>.OfSucc(() => {
+                Thunk.NotEvaluated => Thunk<R>.Of(() => {
                     Result<T> res = Eval();
                     
                     if (res.IsSucc) return f(res.Value!);
@@ -67,7 +67,7 @@ public class Thunk<T> {
         try {
             return _state switch {
                 Thunk.Succ => Thunk<R>.OfSucc(succ(_value!)),
-                Thunk.NotEvaluated => Thunk<R>.OfSucc(() => {
+                Thunk.NotEvaluated => Thunk<R>.Of(() => {
                     Result<T> res = Eval();
 
                     return res.IsSucc

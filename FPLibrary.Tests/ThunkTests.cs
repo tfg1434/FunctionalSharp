@@ -53,7 +53,7 @@ static class ArbitraryCancelledThunk {
 public class ThunkTests {
     [Property]
     public void Value_Succ_Int(int value) {
-        var thunk = Thunk<int>.OfSucc(() => value);
+        var thunk = Thunk<int>.Of(() => value);
         var expected = new Result<int>(value);
         
         Assert.Equal(expected, thunk.Value());
@@ -63,7 +63,7 @@ public class ThunkTests {
 
     [Fact]
     public void Value_Fail_Error() {
-        var thunk = Thunk<int>.OfSucc(() => new(new Error()));
+        var thunk = Thunk<int>.Of(() => new(new Error()));
         var expected = new Result<int>(new Error());
         
         Assert.Equal(expected, thunk.Value());
