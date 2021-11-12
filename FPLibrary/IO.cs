@@ -8,13 +8,13 @@ public static partial class F {
     public static IO<T> IO<T>(Func<Result<T>> f) 
         => new(Thunk<T>.Of(f));
 
-    public static IO<T> IO<T>(Func<T> f)
+    public static IO<T> IOLazy<T>(Func<T> f)
         => new(Thunk<T>.Of(() => new(f())));
 
-    public static IO<T> IO<T>(T value)
+    public static IO<T> IOSucc<T>(T value)
         => new(Thunk<T>.OfSucc(value));
 
-    public static IO<T> IO<T>(Error error)
+    public static IO<T> IOFail<T>(Error error)
         => new(Thunk<T>.OfFail(error));
 }
 
@@ -39,11 +39,11 @@ public readonly struct IO<T> {
     public IO<R> Match<R>(Func<T, R> succ, Func<Error, R> fail) {
         var @this = this;
         
-        return IO(() => {
+        return IOLazy(() => {
             Result<T> res = @this.ReRun();
 
-            return res.IsSucc
-                ? succ(res.Value!)
+            return res.IsSucc 
+                ? succ(res.Value!) 
                 : fail(res.Error!);
         });
     }
