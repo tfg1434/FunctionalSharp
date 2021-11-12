@@ -61,8 +61,8 @@ public readonly struct Eff<T> {
         
         return Eff(() => {
             var res = @this.ReRun();
-            
-            return res.IsSucc ? res : Result<T>.Of(f(res.Error!));
+
+            return res.Match(e => Result<T>.Of(f(e)), t => t);
         });
     }
 
@@ -72,7 +72,7 @@ public readonly struct Eff<T> {
         return Eff(() => {
             var res = @this.ReRun();
             
-            return res.IsSucc ? res : Result<T>.Of(f());
+            return res.Match(_ => Result<T>.Of(f()), t => t);
         });
     }
     
@@ -82,7 +82,7 @@ public readonly struct Eff<T> {
         return Eff(() => {
             var res = @this.ReRun();
             
-            return res.IsSucc ? res : Result<T>.Of(value);
+            return res.Match(_ => Result<T>.Of(value), t => t);
         });
     }
 

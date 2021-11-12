@@ -54,4 +54,39 @@ public readonly struct IO<E, T> where E : struct {
             return res.Match(Result<R>.Of, t => f(t).Run(env));
         }));
     }
+
+    public IO<E, T> IfFail(Func<Error, T> f) {
+        var @this = this;
+    
+        return IO<E, T>(env => {
+            var res = @this.ReRun(env);
+    
+            return res.Match(e => Result<T>.Of(f(e)), t => t);
+        });
+    }
+
+    public IO<E, T> IfFail(Func<T> f) {
+        var @this = this;
+    
+        return IO<E, T>(env => {
+            var res = @this.ReRun(env);
+    
+            return res.Match(_ => Result<T>.Of(f()), t => t);
+        });
+    }
+
+    public IO<E, T> IfFail(T value) {
+        var @this = this;
+        
+        return IO<E, T>(env => {
+            var res = @this.ReRun(env);
+    
+            return res.Match(_ => Result<T>.Of(value), t => t);
+        });
+    }
+
+    public IO<E, R> Select<R>(Func<T, R> f) => Map(f);
+    
+    public IO<E, PR> SelectMany<R, PR>(Func<T, IO<E, R>> bind, Func<T, R, PR> proj)
+        => Bind(t => bind(t).Map(r => proj(t, r)));
 }
