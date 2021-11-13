@@ -6,7 +6,7 @@ using FPLibrary;
 using static FPLibrary.F;
 using static FPLibrary.Tests.Utils;
 
-namespace FPLibrary.Tests;
+namespace FPLibrary.Tests.Thunk;
 
 static class ArbitraryThunk {
     public static Arbitrary<Thunk<T>> Thunk<T>() {
