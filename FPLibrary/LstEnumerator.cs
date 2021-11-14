@@ -3,8 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace FPLibrary {
-    public readonly partial struct Lst<T> : IEnumerable<T> {
+    public readonly partial struct Lst<T> {
         public Enumerator GetEnumerator() => new(_head);
+
+        public IEnumerable<T> AsEnumerable() {
+            foreach (T item in this)
+                yield return item;
+        }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 

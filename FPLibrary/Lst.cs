@@ -7,11 +7,11 @@ using static FPLibrary.F;
 
 namespace FPLibrary {
     public static partial class F {
-        // public static Lst<T> List<T>(IEnumerable<T> items) => Lst<T>.Create(items);
-        //
-        // public static Lst<T> List<T>(params T[] items) => Lst<T>.Create(items);
+        public static Lst<T> List<T>(IEnumerable<T> items) => Lst<T>.Of(items);
+        
+        public static Lst<T> List<T>(params T[] items) => Lst<T>.Of(items);
 
-        // public static Lst<T> ToLst<T>(this IEnumerable<T> src) => List(src);
+        public static Lst<T> ToLst<T>(this IEnumerable<T> src) => List(src);
     }
 
     [DebuggerDisplay("Count = {Count}")]
