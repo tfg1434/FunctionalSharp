@@ -62,10 +62,50 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
     }
 
     public Maybe<Lst<T>> TailSafe => IsEmpty ? Nothing : new Lst<T>(_head!.Next, _count - 1);
-        
+    
+    #region Operations
+    
     public R Match<R>(Func<R> empty, Func<T, Lst<T>, R> cons)
         => IsEmpty ? empty() : cons(Head, Tail);
 
+    public bool Contains(T value, IEqualityComparer<T>? comparer = null) {
+        comparer ??= EqualityComparer<T>.Default;
+        
+        for (Node? curr = _head; curr is not null; curr = curr.Next)
+            if (comparer.Equals(curr.Value, value)) return true;
+        
+        return false;
+    }
+
+    public Lst<T> Prepend(T value) => new(new(value) { Next = _head }, _count + 1);
+
+    public Lst<T> Prepend(IEnumerable<T> values) {
+        if (_count == 0) return Of(values);
+        if (values is Lst<T> list) return Prepend(list);
+        if (values is null) throw new ArgumentNullException(nameof(values));
+
+        using var enumerator = values.GetEnumerator();
+
+        if (!enumerator.MoveNext()) return this;
+        
+        Node head = new(enumerator.Current);
+        Node last = head;
+        int count = 1;
+        
+        while (enumerator.MoveNext()) {
+            last = last.Next = new(enumerator.Current);
+            count++;
+        }
+        
+        last.Next = _head;
+        
+        return new(head, count + _count);
+    }
+
+    #endregion
+    
+    #region Equality
+    
     public override bool Equals(object? obj)
         => obj is Lst<T> lst && Equals(lst);
         
@@ -81,6 +121,8 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
     //no caching, readonly struct :/
     public override int GetHashCode()
         => FNV1A.Hash(AsEnumerable());
+    
+    #endregion
 
     private static void ThrowEmpty() => throw new InvalidOperationException("Lst is empty");
 }

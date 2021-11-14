@@ -5,7 +5,7 @@
 
             internal Node(T value) => Value = value;
 
-            internal Node? Next { get; init; }
+            internal Node? Next { get; set; }
 
             public override string ToString() => $"Value: {Value} Next: {Next}";
         }

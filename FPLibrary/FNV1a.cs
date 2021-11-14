@@ -8,7 +8,8 @@ static class FNV1A {
     public const int OffsetBasis = unchecked((int) 2166136261);
     public const int Prime = 16777619;
 
-    public static int Hash<T>(IEnumerable<T> items) where T : notnull {
+    //TODO: null deref?
+    public static int Hash<T>(IEnumerable<T> items) {
         unchecked {
             return items.Aggregate(OffsetBasis,
                 (hash, item) => (hash ^ item.GetHashCode()) * 16777619);

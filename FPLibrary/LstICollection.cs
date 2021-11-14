@@ -10,6 +10,8 @@ public readonly partial struct Lst<T> : ICollection<T> {
 
     void ICollection<T>.Clear() => throw new NotSupportedException();
 
+    bool ICollection<T>.Contains(T value) => Contains(value);
+    
     public void CopyTo(T[] array, int arrayIndex) {
         if (arrayIndex < 0 || arrayIndex > array.Length || arrayIndex + Count > array.Length)
             throw new ArgumentOutOfRangeException(nameof(arrayIndex), arrayIndex, "out of range");
