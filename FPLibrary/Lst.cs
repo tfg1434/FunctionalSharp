@@ -77,14 +77,14 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
         return false;
     }
 
-    public Lst<T> Prepend(T value) => new(new(value) { Next = _head }, _count + 1);
+    public Lst<T> Prepend(T item) => new(new(item) { Next = _head }, _count + 1);
 
-    public Lst<T> Prepend(IEnumerable<T> values) {
-        if (_count == 0) return Of(values);
-        if (values is Lst<T> list) return Prepend(list);
-        if (values is null) throw new ArgumentNullException(nameof(values));
+    public Lst<T> Prepend(IEnumerable<T> items) {
+        if (_count == 0) return Of(items);
+        if (items is Lst<T> list) return Prepend(list);
+        if (items is null) throw new ArgumentNullException(nameof(items));
 
-        using var enumerator = values.GetEnumerator();
+        using var enumerator = items.GetEnumerator();
 
         if (!enumerator.MoveNext()) return this;
         
@@ -100,6 +100,16 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
         last.Next = _head;
         
         return new(head, count + _count);
+    }
+
+    public Lst<T> Prepend(Lst<T> list) {
+        if (list._count == 0) return this;
+        if (_count == 0) return list;
+
+        (Node newHead, Node newLast) = CopyNonEmptyRange(list._head!, null);
+        newLast.Next = _head;
+
+        return new Lst<T>(newHead, _count + list._count);
     }
 
     #endregion
@@ -125,4 +135,14 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
     #endregion
 
     private static void ThrowEmpty() => throw new InvalidOperationException("Lst is empty");
+
+    private static (Node NewHead, Node NewLast) CopyNonEmptyRange(Node head, Node? last) {
+        Node newHead;
+        Node newLast = newHead = new(head.Value);
+        
+        for (Node? curr = head.Next; curr != last; curr = curr.Next)
+            newLast = newLast.Next = new(curr!.Value);
+
+        return (newHead, newLast);
+    }
 }
