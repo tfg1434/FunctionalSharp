@@ -4,7 +4,7 @@ using static FPLibrary.F;
 namespace FPLibrary.Wrappers.IO;
 
 public readonly struct LiveFileIO : IFileIO {
-    public static readonly IFileIO Default = new FileIO();
+    public static readonly IFileIO Default = new LiveFileIO();
 
     public Unit AppendAllLines(string path, IEnumerable<string> lines) { 
         File.AppendAllLines(path, lines);
