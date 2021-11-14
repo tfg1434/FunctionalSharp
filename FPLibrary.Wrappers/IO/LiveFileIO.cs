@@ -24,12 +24,9 @@ public readonly struct LiveFileIO : IFileIO {
         return Unit();
     }
     
-    public Unit Create(string path) {
-        File.Create(path);
+    public FileStream Create(string path)
+        => File.Create(path);
 
-        return Unit();
-    }
-    
     public StreamWriter CreateText(string path) 
         => File.CreateText(path);
 

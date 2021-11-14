@@ -20,11 +20,11 @@ public interface IFileIO {
     
     Unit Copy(string from, string to, bool overwrite = false);
 
-    Unit Create(string path);
+    FileStream Create(string path);
 
-    //Unit Create(string path, int bufferSize);
+    //FileStream Create(string path, int bufferSize);
     
-    //Unit Create(string path, int bufferSize, FileOptions options);
+    //FileStream Create(string path, int bufferSize, FileOptions options);
 
     StreamWriter CreateText(string path);
 
