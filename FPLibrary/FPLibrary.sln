@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FPTest", "..\FPTest\FPTest.csproj", "{3ABB1FF0-C13B-460B-AA15-A6A1632A8D91}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FPLibrary.Wrappers", "..\FPLibrary.Wrappers\FPLibrary.Wrappers.csproj", "{7BFB4242-6030-446C-B152-4DFD58090996}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{3ABB1FF0-C13B-460B-AA15-A6A1632A8D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ABB1FF0-C13B-460B-AA15-A6A1632A8D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ABB1FF0-C13B-460B-AA15-A6A1632A8D91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BFB4242-6030-446C-B152-4DFD58090996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BFB4242-6030-446C-B152-4DFD58090996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BFB4242-6030-446C-B152-4DFD58090996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BFB4242-6030-446C-B152-4DFD58090996}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
