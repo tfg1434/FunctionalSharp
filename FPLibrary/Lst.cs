@@ -7,11 +7,11 @@ using static FPLibrary.F;
 
 namespace FPLibrary {
     public static partial class F {
-        public static Lst<T> List<T>(IEnumerable<T> items) => Lst<T>.Create(items);
+        // public static Lst<T> List<T>(IEnumerable<T> items) => Lst<T>.Create(items);
+        //
+        // public static Lst<T> List<T>(params T[] items) => Lst<T>.Create(items);
 
-        public static Lst<T> List<T>(params T[] items) => Lst<T>.Create(items);
-
-        public static Lst<T> ToLst<T>(this IEnumerable<T> src) => List(src);
+        // public static Lst<T> ToLst<T>(this IEnumerable<T> src) => List(src);
     }
 
     [DebuggerDisplay("Count = {Count}")]
@@ -64,6 +64,22 @@ namespace FPLibrary {
         
         public R Match<R>(Func<R> empty, Func<T, Lst<T>, R> cons)
             => IsEmpty ? empty() : cons(Head, Tail);
+
+        public override bool Equals(object? obj)
+            => obj is Lst<T> lst && Equals(lst);
+        
+        public bool Equals(Lst<T> other) 
+            => Count == other.Count && this.SequenceEqual(other);
+
+        public static bool operator ==(Lst<T> self, Lst<T> other)
+            => self.Equals(other);
+
+        public static bool operator !=(Lst<T> self, Lst<T> other)
+            => !(self == other);
+
+        //no caching, readonly struct :/
+        public override int GetHashCode()
+            => FNV1A.Hash(AsEnumerable());
 
         private static void ThrowEmpty() => throw new InvalidOperationException("Lst is empty");
     }

@@ -11,44 +11,42 @@ namespace FPLibrary {
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public struct Enumerator : IEnumerator<T> {
-            private Maybe<Node> next;
+            private Node? _next;
 
-            private T? current;
+            private T? _current;
 
             public T Current {
                 get {
-                    if (current is not null)
-                        return current;
+                    if (_current is not null)
+                        return _current;
 
                     throw new InvalidOperationException();
                 }
             }
 
-            internal Enumerator(Maybe<Node> first) {
-                next = first;
-                current = default!;
+            internal Enumerator(Node? first) {
+                _next = first;
+                _current = default!;
             }
-
 
             object? IEnumerator.Current => Current;
 
             public void Dispose() { }
 
             public bool MoveNext() {
-                if (next.IsNothing) {
-                    current = default;
+                if (_next is null) {
+                    _current = default;
 
                     return false;
                 }
-
-                Node n = next.GetOr(() => default!);
-                current = n.Value;
-                next = n.Next;
+                
+                _current = _next.Value;
+                _next = _next.Next;
 
                 return true;
             }
 
-            public void Reset() => throw new NotSupportedException();
+            void IEnumerator.Reset() => throw new NotSupportedException();
         }
     }
 }
