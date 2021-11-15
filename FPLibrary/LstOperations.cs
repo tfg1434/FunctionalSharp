@@ -16,6 +16,26 @@ public readonly partial struct Lst<T> {
         
         return false;
     }
+    
+    public bool SequenceEqual(Lst<T> other, IEqualityComparer<T>? comparer = null) {
+        if (_count != other._count) return false;
+
+        comparer ??= EqualityComparer<T>.Default;
+
+        Node? selfCurr = _head;
+        Node? otherCurr = other._head;
+
+        while (true) {
+            //ref equals
+            if (selfCurr == otherCurr) return true;
+            //we pre-validated counts
+            if (selfCurr is null || !comparer.Equals(selfCurr.Value, otherCurr!.Value)) return false;
+            
+            selfCurr = selfCurr.Next;
+            otherCurr = otherCurr.Next;
+        }
+    }
+
 
     #region Prepend
     
