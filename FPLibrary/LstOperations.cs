@@ -95,4 +95,16 @@ public readonly partial struct Lst<T> {
     }
     
     #endregion
+    
+    #region RemoveAt
+
+    public Lst<T> RemoveAt(int index) => RemoveAt(index).List;
+
+    public (Lst<T> List, T Removed) RemoveAt(int index) {
+        if (index < 0 || index >= _count) throw new ArgumentOutOfRangeException(nameof(index));
+        
+        if (index == 0)
+    }
+
+    #endregion
 }
