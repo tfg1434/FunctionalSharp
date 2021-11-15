@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FPLibrary; 
 
@@ -98,12 +99,51 @@ public readonly partial struct Lst<T> {
     
     #region RemoveAt
 
-    public Lst<T> RemoveAt(int index) => RemoveAt(index).List;
+    public Lst<T> RemoveAt(int index) => RemoveAtRet(index).List;
 
-    public (Lst<T> List, T Removed) RemoveAt(int index) {
+    public (Lst<T> List, T Removed) RemoveAtRet(int index) {
         if (index < 0 || index >= _count) throw new ArgumentOutOfRangeException(nameof(index));
         
         if (index == 0)
+            return (new(_head!.Next, _count - 1), _head!.Value);
+
+        Node? curr = _head!.Next;
+        for (int i = 1; i < index; i++) curr = curr!.Next;
+
+        (Node newHead, Node newLast) = CopyNonEmptyRange(_head, curr);
+        newLast.Next = curr!.Next;
+
+        return (new(newHead, _count - 1), curr.Value);
+    }
+
+    public Lst<T> RemoveAll(Func<T, bool> pred) {
+        //remove prefix as it doesn't require copying
+        var noPrefix = this.SkipWhile(pred);
+
+        if (noPrefix._count == 0) return Empty;
+        
+        Node newHead = noPrefix._head!;
+        Node last = newHead;
+        int count = 0;
+        Node? curr = newHead.Next;
+
+        while (curr is not null) {
+            if (pred(curr.Value)) {
+                if (count == 0)
+                    (newHead, last) = CopyNonEmptyRange(newHead, curr);
+
+                count++;
+            } else if (count != 0)
+                //if copied, make a new Node
+                last = last.Next = new(curr.Value);
+            else
+                //if not copied, just skip
+                last = curr;
+
+            curr = curr.Next;
+        }
+        
+        return new(newHead, noPrefix._count - count);
     }
 
     #endregion
