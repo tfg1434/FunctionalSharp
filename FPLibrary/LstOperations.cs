@@ -71,4 +71,28 @@ public readonly partial struct Lst<T> {
     public Lst<T> Add(Lst<T> list) => list.Prepend(this);
 
     #endregion
+    
+    #region Remove
+
+    public Lst<T> Remove(T item, IEqualityComparer<T>? comparer = null) {
+        comparer ??= EqualityComparer<T>.Default;
+
+        for (Node? curr = _head; curr is not null; curr = curr.Next) {
+            if (!comparer.Equals(curr.Value, item)) continue;
+
+            if (curr == _head)
+                return new(_head!.Next, _count - 1);
+                
+            //copy everything up to curr
+            (Node newHead, Node newLast) = CopyNonEmptyRange(_head!, curr);
+            //skip curr, and go to curr.Next instead
+            newLast.Next = curr.Next;
+
+            return new(newHead, _count - 1);
+        }
+
+        return this;
+    }
+    
+    #endregion
 }
