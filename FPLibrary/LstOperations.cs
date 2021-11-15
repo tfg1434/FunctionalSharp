@@ -194,4 +194,22 @@ public readonly partial struct Lst<T> {
     }
     
     #endregion
+
+    public Lst<T> Slice(int index, int count) {
+        if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        if (index + count > _count) throw new ArgumentOutOfRangeException($"{nameof(index)} {nameof(count)}");
+
+        if (count == 0) return Empty;
+
+        Lst<T> skipped = Skip(index);
+
+        if (count == skipped.Count) return skipped;
+
+        Node? curr = skipped._head!.Next;
+        for (int i = 1; i < count; i++) curr = curr!.Next;
+        (Node head, _) = CopyNonEmptyRange(skipped._head, curr);
+
+        return new(head, count);
+    }
 }
