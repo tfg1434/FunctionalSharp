@@ -8,6 +8,8 @@ using static FPLibrary.F;
 namespace FPLibrary; 
 
 public static partial class F {
+    public static Lst<T> List<T>(T item) => Lst<T>.Of(item);
+    
     public static Lst<T> List<T>(IEnumerable<T> items) => Lst<T>.Of(items);
         
     public static Lst<T> List<T>(params T[] items) => Lst<T>.Of(items);
@@ -26,6 +28,8 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
         _count = count;
     }
 
+    public static Lst<T> Of(T value) => new(new(value), 1);
+    
     public static Lst<T> Of(IEnumerable<T> items) {
         if (items is Lst<T> list) return list;
 
@@ -62,58 +66,7 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
     }
 
     public Maybe<Lst<T>> TailSafe => IsEmpty ? Nothing : new Lst<T>(_head!.Next, _count - 1);
-    
-    #region Operations
-    
-    public R Match<R>(Func<R> empty, Func<T, Lst<T>, R> cons)
-        => IsEmpty ? empty() : cons(Head, Tail);
 
-    public bool Contains(T value, IEqualityComparer<T>? comparer = null) {
-        comparer ??= EqualityComparer<T>.Default;
-        
-        for (Node? curr = _head; curr is not null; curr = curr.Next)
-            if (comparer.Equals(curr.Value, value)) return true;
-        
-        return false;
-    }
-
-    public Lst<T> Prepend(T item) => new(new(item) { Next = _head }, _count + 1);
-
-    public Lst<T> Prepend(IEnumerable<T> items) {
-        if (_count == 0) return Of(items);
-        if (items is Lst<T> list) return Prepend(list);
-        if (items is null) throw new ArgumentNullException(nameof(items));
-
-        using var enumerator = items.GetEnumerator();
-
-        if (!enumerator.MoveNext()) return this;
-        
-        Node head = new(enumerator.Current);
-        Node last = head;
-        int count = 1;
-        
-        while (enumerator.MoveNext()) {
-            last = last.Next = new(enumerator.Current);
-            count++;
-        }
-        
-        last.Next = _head;
-        
-        return new(head, count + _count);
-    }
-
-    public Lst<T> Prepend(Lst<T> list) {
-        if (list._count == 0) return this;
-        if (_count == 0) return list;
-
-        (Node newHead, Node newLast) = CopyNonEmptyRange(list._head!, null);
-        newLast.Next = _head;
-
-        return new Lst<T>(newHead, _count + list._count);
-    }
-
-    #endregion
-    
     #region Equality
     
     public override bool Equals(object? obj)
