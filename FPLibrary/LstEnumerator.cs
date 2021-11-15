@@ -17,21 +17,13 @@ namespace FPLibrary {
 
         public struct Enumerator : IEnumerator<T> {
             private Node? _next;
-
-            private T? _current;
-
-            public T Current {
-                get {
-                    if (_current is not null)
-                        return _current;
-
-                    throw new InvalidOperationException();
-                }
-            }
+            
+            //behaviour is undefined before enumeration begins and after ends
+            public T Current { get; private set; }
 
             internal Enumerator(Node? first) {
                 _next = first;
-                _current = default!;
+                Current = default!;
             }
 
             object? IEnumerator.Current => Current;
@@ -40,12 +32,12 @@ namespace FPLibrary {
 
             public bool MoveNext() {
                 if (_next is null) {
-                    _current = default;
+                    Current = default!;
 
                     return false;
                 }
                 
-                _current = _next.Value;
+                Current = _next.Value;
                 _next = _next.Next;
 
                 return true;

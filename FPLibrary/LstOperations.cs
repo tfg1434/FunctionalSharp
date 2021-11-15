@@ -79,7 +79,7 @@ public readonly partial struct Lst<T> {
 
     #region Add
 
-    public Lst<T> Add(T item) {
+    public Lst<T> Append(T item) {
         if (_count == 0) return Of(item);
 
         (Node newHead, Node newLast) = CopyNonEmptyRange(_head!, null);
@@ -88,9 +88,9 @@ public readonly partial struct Lst<T> {
         return new(newHead, _count + 1);
     }
 
-    public Lst<T> Add(IEnumerable<T> items) => Add(Of(items));
+    public Lst<T> Append(IEnumerable<T> items) => Append(Of(items));
 
-    public Lst<T> Add(Lst<T> list) => list.Prepend(this);
+    public Lst<T> Append(Lst<T> list) => list.Prepend(this);
 
     #endregion
     
