@@ -16,7 +16,7 @@ public readonly partial struct Lst<T> {
         
         return false;
     }
-    
+
     public bool SequenceEqual(Lst<T> other, IEqualityComparer<T>? comparer = null) {
         if (_count != other._count) return false;
 
@@ -28,9 +28,10 @@ public readonly partial struct Lst<T> {
         while (true) {
             //ref equals
             if (selfCurr == otherCurr) return true;
+
             //we pre-validated counts
             if (selfCurr is null || !comparer.Equals(selfCurr.Value, otherCurr!.Value)) return false;
-            
+
             selfCurr = selfCurr.Next;
             otherCurr = otherCurr.Next;
         }
@@ -115,10 +116,6 @@ public readonly partial struct Lst<T> {
         return this;
     }
     
-    #endregion
-    
-    #region RemoveAt
-
     public Lst<T> RemoveAt(int index) => RemoveAtRet(index).List;
 
     public (Lst<T> List, T Removed) RemoveAtRet(int index) {
@@ -165,6 +162,36 @@ public readonly partial struct Lst<T> {
         
         return new(newHead, noPrefix._count - count);
     }
+    
+    #endregion
+    
+    #region Skip
 
+    public Lst<T> Skip(int count) {
+        if (count > _count) return Empty;
+
+        int skipped = 0;
+        Node? curr = _head;
+
+        while (curr is not null && skipped < count) {
+            skipped++;
+            curr = curr.Next;
+        }
+
+        return new(curr, _count - skipped);
+    }
+
+    public Lst<T> SkipWhile(Func<T, bool> pred) {
+        Node? newHead = _head;
+        int count = 0;
+        
+        while (newHead is not null && pred(newHead.Value)) {
+            count++;
+            newHead = newHead.Next;
+        }
+
+        return new(newHead, _count - count);
+    }
+    
     #endregion
 }
