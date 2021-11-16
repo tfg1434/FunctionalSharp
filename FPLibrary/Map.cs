@@ -90,6 +90,16 @@ namespace FPLibrary {
 
         #endregion
 
+        public static Map<K, V> operator +(Map<K, V> lhs, Map<K, V> rhs)
+            => lhs.Append(rhs);
+        
+        public Map<K, V> Append(Map<K, V> rhs) {
+            if (Count == 0) return rhs;
+            if (rhs.Count == 0) return this;
+
+            return AddRange(rhs.AsEnumerable());
+        }
+        
         public bool ContainsKey(K key) {
             if (key is null) throw new ArgumentNullException(nameof(key));
 
