@@ -68,5 +68,16 @@ public class LstTests {
         Assert.Equal(List(1, 2, 3, 4), List(1).Append(new[] { 2, 3, 4 }));
         Assert.Equal(List(1, 2, 3, 4), List(1).Append(List(2, 3, 4)));
     }
+
+    [Fact]
+    public void Remove_AtAll_Removes() {
+        Assert.Empty(Lst<int>.Empty.Remove(0));
+        Assert.Equal(List(1, 3), List(1, 2, 3).Remove(2));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => List(1, 2, 3).RemoveAt(-1));
+        Assert.Equal(List(1, 2, 3), List(1, 2, 3, 4).RemoveAt(3));
+        
+        Assert.Equal(List(1, 2, 3), List(Enumerable.Range(1, 10)).RemoveAll(x => x > 3));
+    }
     
 }
