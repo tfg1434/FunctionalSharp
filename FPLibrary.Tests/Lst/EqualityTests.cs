@@ -22,6 +22,14 @@ public class EqualityTests {
     }
     
     [Fact]
+    public void HashCode_Duplicates_Matters() {
+        int expected = List(1, 2, 3).GetHashCode();
+        int actual = List(1, 2, 3, 3).GetHashCode();
+        
+        Assert.NotEqual(expected, actual);
+    }
+    
+    [Fact]
     public void Equals_Comparer_Uses() {
         //TODO: Implement
     }
