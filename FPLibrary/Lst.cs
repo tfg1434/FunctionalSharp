@@ -43,6 +43,18 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
         return new(node, count);
     }
         
+    public T this[int index] {
+        get {
+            if (index < 0 || index >= Count)
+                throw new IndexOutOfRangeException();
+
+            Node? curr = _head!.Next;
+            for (int i = 1; i < index; i++) curr = curr!.Next;
+            
+            return curr!.Value;
+        }
+    }
+    
     private bool IsEmpty => Count == 0;
     public int Count => _count;
     public static Lst<T> Empty => default;

@@ -93,4 +93,11 @@ public class LstTests {
         
         Assert.Empty(Lst<int>.Empty.SkipWhile((_, index) => true));
     }
+
+    [Fact]
+    public void Index_Is_Supported() {
+        Assert.Equal(3, List(1, 2, 3)[^1]);
+        Assert.Equal(List(1, 2, 3), List(1, 2, 3)[0..^0]);
+        Assert.Equal(List(1, 2), List(1, 2, 3)[..^1]);
+    }
 }
