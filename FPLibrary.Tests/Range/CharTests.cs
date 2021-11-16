@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using FPLibrary;
 using static FPLibrary.F;
 
-//TODO: add tests to namespaces
 namespace FPLibrary.Tests.Range;
 
 public class CharTests {

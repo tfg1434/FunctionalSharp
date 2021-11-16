@@ -4,7 +4,7 @@ using static FPLibrary.F;
 using static FPLibrary.Tests.Utils;
 
 namespace FPLibrary.Tests {
-    public class TryTests {
+    public class Try {
         private Try<Uri> CreateUri(string uri) => Try(() => new Uri(uri));
 
         [Fact]
