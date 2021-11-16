@@ -79,5 +79,18 @@ public class LstTests {
         
         Assert.Equal(List(1, 2, 3), List(Enumerable.Range(1, 10)).RemoveAll(x => x > 3));
     }
+
+    [Fact]
+    public void Skip_Skips_EqualsEnumerable() {
+        Assert.Equal(new[] { 1 }.Skip(-1), List(1).Skip(-1));
+        Assert.Equal(new[] { 1 }.Skip(2), List(1).Skip(2));
+    }
     
+    [Fact]
+    public void Skip_While_Skips() {
+        Assert.Empty(Lst<int>.Empty.SkipWhile(_ => true));
+        Assert.Equal(List(1, 2, 3), List(1, 2, 3).SkipWhile(_ => false));
+        
+        Assert.Empty(Lst<int>.Empty.SkipWhile((_, index) => true));
+    }
 }
