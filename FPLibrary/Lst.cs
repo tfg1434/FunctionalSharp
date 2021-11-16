@@ -73,7 +73,7 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
         => obj is Lst<T> lst && Equals(lst);
         
     public bool Equals(Lst<T> other) 
-        => Count == other.Count && SequenceEqual(other);
+        => SequenceEqual(other);
 
     public static bool operator ==(Lst<T> self, Lst<T> other)
         => self.Equals(other);
