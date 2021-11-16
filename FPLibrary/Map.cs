@@ -15,17 +15,17 @@ namespace FPLibrary {
             IEqualityComparer<V>? valComparer = null) where K : notnull
             => FPLibrary.Map<K, V>.Empty.WithComparers(keyComparer, valComparer);
 
-        public static Map<K, V> Map<K, V>(params (K Key, V Val)[] items) where K : notnull
-            => Map((IEnumerable<(K Key, V Val)>) items);
+        public static Map<K, V> Map<K, V>(params (K Key, V Value)[] items) where K : notnull
+            => Map((IEnumerable<(K Key, V Value)>) items);
 
         public static Map<K, V> MapWithComparers<K, V>(IComparer<K>? keyComparer = null,
-            IEqualityComparer<V>? valComparer = null, params (K Key, V Val)[] items) where K : notnull
+            IEqualityComparer<V>? valComparer = null, params (K Key, V Value)[] items) where K : notnull
             => MapWithComparers(keyComparer, valComparer).AddRange(items);
 
-        public static Map<K, V> Map<K, V>(IEnumerable<(K Key, V Val)> items) where K : notnull
+        public static Map<K, V> Map<K, V>(IEnumerable<(K Key, V Value)> items) where K : notnull
             => Map<K, V>().AddRange(items);
 
-        public static Map<K, V> MapWithComparers<K, V>(IEnumerable<(K Key, V Val)> items,
+        public static Map<K, V> MapWithComparers<K, V>(IEnumerable<(K Key, V Value)> items,
             IComparer<K>? keyComparer = null, IEqualityComparer<V>? valComparer = null) where K : notnull
             => MapWithComparers(keyComparer, valComparer).AddRange(items);
 
@@ -34,7 +34,7 @@ namespace FPLibrary {
         #region ToMap
 
         //to Map with no projections and default comparers
-        public static Map<K, V> ToMap<K, V>(this IEnumerable<(K Key, V Val)> src) where K : notnull
+        public static Map<K, V> ToMap<K, V>(this IEnumerable<(K Key, V Value)> src) where K : notnull
             => Map(src);
 
         //to Map with both key and value projections
@@ -43,7 +43,7 @@ namespace FPLibrary {
             => src.ToMapWithComparers(keyProj, valProj);
 
         //to Map with key and value comparers
-        public static Map<K, V> ToMapWithComparers<K, V>(this IEnumerable<(K Key, V Val)> src,
+        public static Map<K, V> ToMapWithComparers<K, V>(this IEnumerable<(K Key, V Value)> src,
             IComparer<K>? keyComparer = null, IEqualityComparer<V>? valComparer = null) where K : notnull {
             if (src is null) throw new ArgumentNullException(nameof(src));
 
@@ -109,13 +109,13 @@ namespace FPLibrary {
         }
 
         //util
-        private static KeyValuePair<K, V> ToKeyValuePair((K Key, V Val) pair)
-            => new(pair.Key, pair.Val);
+        private static KeyValuePair<K, V> ToKeyValuePair((K Key, V Value) pair)
+            => new(pair.Key, pair.Value);
 
-        private static (K Key, V Val) ToValueTuple(KeyValuePair<K, V> kv)
+        private static (K Key, V Value) ToValueTuple(KeyValuePair<K, V> kv)
             => (kv.Key, kv.Value);
 
-        private static (K Key, V Val) ToValueTuple(Tuple<K, V> tup)
+        private static (K Key, V Value) ToValueTuple(Tuple<K, V> tup)
             => (tup.Item1, tup.Item2);
 
         public Map<K, V> Clear()
@@ -155,7 +155,7 @@ namespace FPLibrary {
             return Wrap(removed.Res, removed.Count);
         }
 
-        public Map<K, V> SetItem((K Key, V Val) pair) {
+        public Map<K, V> SetItem((K Key, V Value) pair) {
             if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
 
             (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValComparer, pair);
@@ -163,7 +163,7 @@ namespace FPLibrary {
             return Wrap(newRoot, replaced ? Count : Count + 1);
         }
 
-        public Map<K, V> SetItems(IEnumerable<(K Key, V Val)> items)
+        public Map<K, V> SetItems(IEnumerable<(K Key, V Value)> items)
             => AddRange(items, true, false);
 
         public Map<K, V> WithComparers(IComparer<K>? keyComparer = null, IEqualityComparer<V>? valComparer = null) {
@@ -179,23 +179,23 @@ namespace FPLibrary {
                 .AddRange(this, false, true);
         }
 
-        public Map<K, V> Add((K Key, V Val) pair) {
+        public Map<K, V> Add((K Key, V Value) pair) {
             (Node res, _) = _root.Add(KeyComparer, ValComparer, pair);
 
             return Wrap(res, Count + 1);
         }
 
-        public Map<K, V> AddRange(IEnumerable<(K Key, V Val)> items)
+        public Map<K, V> AddRange(IEnumerable<(K Key, V Value)> items)
             => AddRange(items, false, false);
 
-        public bool Contains((K Key, V Val) pair)
+        public bool Contains((K Key, V Value) pair)
             => _root.Contains(KeyComparer, ValComparer, pair);
 
         public bool ContainsVal(V val) => _root.ContainsVal(ValComparer, val);
 
         //TODO: avoidMap
         // ReSharper disable once UnusedParameter.Local
-        private Map<K, V> AddRange(IEnumerable<(K Key, V Val)> items, bool overwrite, bool avoidMap) {
+        private Map<K, V> AddRange(IEnumerable<(K Key, V Value)> items, bool overwrite, bool avoidMap) {
             if (items is null) throw new ArgumentNullException(nameof(items));
 
             //not in terms of Add so no need for new wrapper per item

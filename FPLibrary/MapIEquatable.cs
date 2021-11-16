@@ -22,7 +22,7 @@ namespace FPLibrary {
                 iterOther.MoveNext();
 
                 if (KeyComparer.Compare(iterThis.Current.Key, iterOther.Current.Key) != 0) return false;
-                if (!ValComparer.Equals(iterThis.Current.Val, iterOther.Current.Val)) return false;
+                if (!ValComparer.Equals(iterThis.Current.Value, iterOther.Current.Value)) return false;
             }
 
             return true;

@@ -5,12 +5,12 @@ using System.Diagnostics;
 using System.Linq;
 
 namespace FPLibrary {
-    public sealed partial class Map<K, V> : IEnumerable<(K Key, V Val)> where K : notnull {
+    public sealed partial class Map<K, V> : IEnumerable<(K Key, V Value)> where K : notnull {
         #region IEnumerable<Tuple> Methods
 
-        IEnumerator<(K Key, V Val)> IEnumerable<(K Key, V Val)>.GetEnumerator()
+        IEnumerator<(K Key, V Value)> IEnumerable<(K Key, V Value)>.GetEnumerator()
             => IsEmpty
-                ? Enumerable.Empty<(K Key, V Val)>().GetEnumerator()
+                ? Enumerable.Empty<(K Key, V Value)>().GetEnumerator()
                 : GetEnumerator();
 
         #endregion
@@ -24,12 +24,12 @@ namespace FPLibrary {
 
         #endregion
 
-        public IEnumerable<(K Key, V Val)> AsEnumerable() {
-            foreach ((K Key, V Val) item in this)
+        public IEnumerable<(K Key, V Value)> AsEnumerable() {
+            foreach ((K Key, V Value) item in this)
                 yield return item;
         }
 
-        public struct Enumerator : IEnumerator<(K Key, V Val)> {
+        public struct Enumerator : IEnumerator<(K Key, V Value)> {
             // 1) Create an empty stack S.
             // 2) Initialize current node as root
             // 3) Push the current node to S and set current = current->left until current is NULL
@@ -57,7 +57,7 @@ namespace FPLibrary {
                 LeftToStack(root);
             }
 
-            public (K Key, V Val) Current
+            public (K Key, V Value) Current
                 => _current?.Value ?? throw new InvalidOperationException();
 
             object IEnumerator.Current => Current;

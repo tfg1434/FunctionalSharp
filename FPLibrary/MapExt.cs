@@ -76,7 +76,7 @@ namespace FPLibrary {
         public Map<K, V> Add(Tuple<K, V> tup) => Add(ToValueTuple(tup));
 
         public Map<K, V> AddRange(params (K, V)[] items)
-            => AddRange((IEnumerable<(K Key, V Val)>) items);
+            => AddRange((IEnumerable<(K Key, V Value)>) items);
 
         public Map<K, V> AddRange(IEnumerable<KeyValuePair<K, V>> items)
             => AddRange(items.Map(ToValueTuple));
@@ -105,8 +105,8 @@ namespace FPLibrary {
 
         public Map<K, V> SetItem(Tuple<K, V> tup) => SetItem(ToValueTuple(tup));
 
-        public Map<K, V> SetItems(params (K Key, V Val)[] items)
-            => SetItems((IEnumerable<(K Key, V Val)>) items);
+        public Map<K, V> SetItems(params (K Key, V Value)[] items)
+            => SetItems((IEnumerable<(K Key, V Value)>) items);
 
         public Map<K, V> SetItems(params KeyValuePair<K, V>[] items)
             => SetItems(items.Map(ToValueTuple));
