@@ -30,17 +30,17 @@ namespace FPLibrary.Tests.Map {
         //https://stackoverflow.com/questions/7278136/create-hash-value-on-a-list
         [Fact(Skip = "dont think this applies for maps")]
         public void HashCode_Order_Matters() {
-            var expected = Map<string, int>(("foo", 0), ("bar", 0), ("spam", 0)).GetHashCode();
-            var actual = Map<string, int>(("spam", 0), ("bar", 0), ("foo", 0)).GetHashCode();
+            int expected = Map<string, int>(("foo", 0), ("bar", 0), ("spam", 0)).GetHashCode();
+            int actual = Map<string, int>(("spam", 0), ("bar", 0), ("foo", 0)).GetHashCode();
             
             Assert.NotEqual(expected, actual);
         }
 
         [Fact(Skip = "dont think this applies for maps")]
         public void HashCode_Duplicates_Matter() {
-            var a = Map<string, int>(("foo", 0), ("bar", 0), ("spam", 0)).GetHashCode();
-            var b = Map<string, int>(("foo", 0), ("bar", 0), ("spam", 0), ("foo", 0), ("foo", 0)).GetHashCode();
-            var c = Map<string, int>(("foo", 0), ("bar", 0), ("spam", 0), ("foo", 0), ("foo", 0), ("spam", 0), ("foo", 0), ("spam", 0), ("foo", 0)).GetHashCode();
+            int a = Map<string, int>(("foo", 0), ("bar", 0), ("spam", 0)).GetHashCode();
+            int b = Map<string, int>(("foo", 0), ("bar", 0), ("spam", 0), ("foo", 0), ("foo", 0)).GetHashCode();
+            int c = Map<string, int>(("foo", 0), ("bar", 0), ("spam", 0), ("foo", 0), ("foo", 0), ("spam", 0), ("foo", 0), ("spam", 0), ("foo", 0)).GetHashCode();
             
             Assert.False(a == b && b == c && a == c);
         }
@@ -79,7 +79,7 @@ namespace FPLibrary.Tests.Map {
 
         [Fact]
         public void Equals_Comparer_Uses() {
-            
+            //TODO: Implement
         }
     }
 }

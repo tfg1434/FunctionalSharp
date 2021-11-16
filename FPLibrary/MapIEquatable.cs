@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
@@ -31,20 +32,16 @@ namespace FPLibrary {
         public override int GetHashCode() {
             if (_hashCode != default) return _hashCode;
 
-            HashCode hash = new();
-            AsEnumerable().ForEach(item => hash.Add(item));
-            hash.Add(KeyComparer);
-            hash.Add(ValComparer);
-
-            return _hashCode = hash.ToHashCode();
-
-            // int hash = -2128831035;
+            // HashCode hash = new();
+            // AsEnumerable().ForEach(item => hash.Add(item));
+            // hash.Add(KeyComparer);
+            // hash.Add(ValComparer);
             //
-            // unchecked {
-            //     return (hashCode = AsEnumerable().Aggregate(hash, 
-            //             (acc, item) => (item.GetHashCode() ^ acc) * 16777619), 
-            //         keyComparer, valComparer).GetHashCode();
-            // }
+            // return _hashCode = hash.ToHashCode();
+            
+            unchecked {
+                return _hashCode = (FNV1A.Hash(AsEnumerable()), KeyComparer, ValComparer).GetHashCode();
+            }
 
             // const int seed = 487;
             // const int modifier = 31;
