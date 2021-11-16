@@ -54,7 +54,13 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
             return curr!.Value;
         }
     }
-    
+
+    public static Lst<T> operator +(Lst<T> lhs, Lst<T> rhs) => lhs.Append(rhs);
+
+    public static Lst<T> operator +(Lst<T> lhs, T rhs) => lhs.Append(rhs);
+
+    public static Lst<T> operator +(T lhs, Lst<T> rhs) => rhs.Prepend(lhs);
+
     private bool IsEmpty => Count == 0;
     public int Count => _count;
     public static Lst<T> Empty => default;

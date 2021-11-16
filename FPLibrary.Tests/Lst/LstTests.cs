@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using FsCheck.Xunit;
+using System.Collections.Generic;
 using Xunit;
 using static FPLibrary.F;
 
@@ -99,5 +101,10 @@ public class LstTests {
         Assert.Equal(3, List(1, 2, 3)[^1]);
         Assert.Equal(List(1, 2, 3), List(1, 2, 3)[0..^0]);
         Assert.Equal(List(1, 2), List(1, 2, 3)[..^1]);
+    }
+    
+    [Property(Arbitrary = new[] { typeof(ArbitraryIEnumerable) })]
+    public void OpPlus_Equals_Concat(IEnumerable<int> lhs, IEnumerable<int> rhs) {
+        Assert.Equal(lhs.Concat(rhs), lhs.ToLst() + rhs.ToLst());
     }
 }
