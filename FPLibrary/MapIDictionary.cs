@@ -7,7 +7,7 @@ namespace FPLibrary {
         #region IDictionary<K, V> Properties
 
         ICollection<K> IDictionary<K, V>.Keys => new MapKeysCollectionAccessor<K, V>(this);
-        ICollection<V> IDictionary<K, V>.Values => new MapValsCollectionAccessor<K, V>(this);
+        ICollection<V> IDictionary<K, V>.Values => new MapValuesCollectionAccessor<K, V>(this);
 
         V IDictionary<K, V>.this[K key] {
             get => this[key];
@@ -32,7 +32,7 @@ namespace FPLibrary {
 
         ICollection IDictionary.Keys => new MapKeysCollectionAccessor<K, V>(this);
 
-        ICollection IDictionary.Values => new MapValsCollectionAccessor<K, V>(this);
+        ICollection IDictionary.Values => new MapValuesCollectionAccessor<K, V>(this);
 
         #endregion
 

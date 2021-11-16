@@ -6,10 +6,10 @@ using System.Diagnostics;
 
 namespace FPLibrary {
     //make inner key/value enumerable an ICollection
-    abstract class MapKeysValsCollectionAccessor<K, V, T> : ICollection<T>, ICollection where K : notnull {
+    abstract class MapKeysValuesCollectionAccessor<K, V, T> : ICollection<T>, ICollection where K : notnull {
         private readonly IEnumerable<T> innerEnumerable;
 
-        protected MapKeysValsCollectionAccessor(IImmutableDictionary<K, V> map, IEnumerable<T> enumerable) {
+        protected MapKeysValuesCollectionAccessor(IImmutableDictionary<K, V> map, IEnumerable<T> enumerable) {
             Map = map ?? throw new ArgumentNullException(nameof(enumerable));
             innerEnumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
         }
@@ -55,15 +55,15 @@ namespace FPLibrary {
         public bool Remove(T item) => throw new NotSupportedException();
     }
 
-    sealed class MapKeysCollectionAccessor<K, V> : MapKeysValsCollectionAccessor<K, V, K> where K : notnull {
+    sealed class MapKeysCollectionAccessor<K, V> : MapKeysValuesCollectionAccessor<K, V, K> where K : notnull {
         internal MapKeysCollectionAccessor(IImmutableDictionary<K, V> map)
             : base(map, map.Keys) { }
 
         public override bool Contains(K item) => Map.ContainsKey(item);
     }
 
-    sealed class MapValsCollectionAccessor<K, V> : MapKeysValsCollectionAccessor<K, V, V> where K : notnull {
-        internal MapValsCollectionAccessor(IImmutableDictionary<K, V> map)
+    sealed class MapValuesCollectionAccessor<K, V> : MapKeysValuesCollectionAccessor<K, V, V> where K : notnull {
+        internal MapValuesCollectionAccessor(IImmutableDictionary<K, V> map)
             : base(map, map.Values) { }
 
         public override bool Contains(V item) => (Map as Map<K, V>)!.ContainsVal(item);
