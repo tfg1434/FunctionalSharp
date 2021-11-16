@@ -193,6 +193,20 @@ public readonly partial struct Lst<T> {
         return new(newHead, _count - count);
     }
     
+    public Lst<T> SkipWhile(Func<T, int, bool> pred) {
+        Node? newHead = _head;
+        int index = 0;
+        int count = 0;
+        
+        while (newHead is not null && pred(newHead.Value, index)) {
+            count++;
+            index++;
+            newHead = newHead.Next;
+        }
+
+        return new(newHead, _count - count);
+    }
+    
     #endregion
 
     public Lst<T> Slice(int index, int count) {
