@@ -34,7 +34,7 @@ public interface IConsoleIO {
 
     Maybe<int> Read();
     
-    Maybe<ConsoleKeyInfo> ReadKey();
+    ConsoleKeyInfo ReadKey();
     
     // Maybe<ConsoleKeyInfo> ReadKey(bool intercept);
 
