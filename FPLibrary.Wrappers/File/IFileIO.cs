@@ -3,7 +3,7 @@ using System.Text;
 using FPLibrary;
 using Unit = System.ValueTuple;
 
-namespace FPLibrary.Wrappers.IO;
+namespace FPLibrary.Wrappers.File;
 
 public interface IHasFile<E> where E : struct {
     IO<E, IFileIO> FileIO { get; }

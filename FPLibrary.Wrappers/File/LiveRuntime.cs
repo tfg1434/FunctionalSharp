@@ -1,6 +1,6 @@
 ﻿using static FPLibrary.F;
 
-namespace FPLibrary.Wrappers.IO; 
+namespace FPLibrary.Wrappers.File; 
 
 public readonly struct LiveRuntime : IHasFile<LiveRuntime> {
     private LiveRuntime(LiveRuntimeEnv env)

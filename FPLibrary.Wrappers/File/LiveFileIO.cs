@@ -1,82 +1,82 @@
 ﻿using Unit = System.ValueTuple;
 using static FPLibrary.F;
 
-namespace FPLibrary.Wrappers.IO;
+namespace FPLibrary.Wrappers.File;
 
 public readonly struct LiveFileIO : IFileIO {
     public static readonly IFileIO Default = new LiveFileIO();
 
     public Unit AppendAllLines(string path, IEnumerable<string> lines) { 
-        File.AppendAllLines(path, lines);
+        System.IO.File.AppendAllLines(path, lines);
 
         return Unit();
     }
     
     public Unit AppendAllText(string path, string contents) {
-        File.AppendAllText(path, contents);
+        System.IO.File.AppendAllText(path, contents);
 
         return Unit();
     }
     
     public Unit Copy(string from, string to, bool overwrite = false) {
-        File.Copy(from, to, overwrite);
+        System.IO.File.Copy(from, to, overwrite);
 
         return Unit();
     }
     
     public FileStream Create(string path)
-        => File.Create(path);
+        => System.IO.File.Create(path);
 
     public StreamWriter CreateText(string path) 
-        => File.CreateText(path);
+        => System.IO.File.CreateText(path);
 
     public Unit Delete(string path) {
-        File.Delete(path);
+        System.IO.File.Delete(path);
         
         return Unit();
     }
     
     public bool Exists(string? path) 
-        => File.Exists(path);
+        => System.IO.File.Exists(path);
     
     public FileStream Open(string path, FileMode mode)
-        => File.Open(path, mode);
+        => System.IO.File.Open(path, mode);
     
     public FileStream OpenRead(string path)
-        => File.OpenRead(path);
+        => System.IO.File.OpenRead(path);
     
     public StreamReader OpenText(string path)
-        => File.OpenText(path);
+        => System.IO.File.OpenText(path);
     
     public FileStream OpenWrite(string path)
-        => File.OpenWrite(path);
+        => System.IO.File.OpenWrite(path);
     
     public byte[] ReadAllBytes(string path)
-        => File.ReadAllBytes(path);
+        => System.IO.File.ReadAllBytes(path);
     
     public string[] ReadAllLines(string path)
-        => File.ReadAllLines(path);
+        => System.IO.File.ReadAllLines(path);
 
     public string ReadAllText(string path) 
-        => File.ReadAllText(path);
+        => System.IO.File.ReadAllText(path);
     
     public IEnumerable<string> ReadLines(string path)
-        => File.ReadLines(path);
+        => System.IO.File.ReadLines(path);
     
     public Unit WriteAllBytes(string path, byte[] bytes) {
-        File.WriteAllBytes(path, bytes);
+        System.IO.File.WriteAllBytes(path, bytes);
 
         return Unit();
     }
     
     public Unit WriteAllLines(string path, IEnumerable<string> lines) {
-        File.WriteAllLines(path, lines);
+        System.IO.File.WriteAllLines(path, lines);
 
         return Unit();
     }
 
     public Unit WriteAllText(string path, string? contents) {
-        File.WriteAllText(path, contents);
+        System.IO.File.WriteAllText(path, contents);
 
         return Unit();
     }

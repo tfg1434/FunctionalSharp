@@ -1,7 +1,7 @@
 ﻿using Unit = System.ValueTuple;
 using FPLibrary;
 
-namespace FPLibrary.Wrappers.IO;
+namespace FPLibrary.Wrappers.File;
 
 public static class File<E> where E : struct, IHasFile<E> {
     // private static IO<E, R> MapEnv<R>(Func<IFileIO, R> f)
