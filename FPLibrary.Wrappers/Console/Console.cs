@@ -9,7 +9,7 @@ public static class Console<E> where E : struct, IHasConsole<E> {
     
     public static IO<E, int> Read()
         => default(E).ConsoleIO
-            .Map(env => env.Read()
+            .Bind(env => env.Read()
                 .Match(
                     () => EffFail<int>(new IOError("End of stream")),
                     EffSucc<int>));
