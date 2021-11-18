@@ -40,13 +40,17 @@ public interface IConsoleIO {
 
     Maybe<string> ReadLine();
 
-    // Unit ResetColour();
+    Unit ResetColour();
 
+    Unit SetBgColour(ConsoleColor colour);
+    
     // Unit SetBufferSize(int width, int height);
 
     // Unit SetCursorPosition(int left, int top);
     
     // Unit SetError(TextWriter newError);
+    
+    Unit SetFgColour(ConsoleColor colour);
     
     // Unit SetIn(TextReader newIn);
     

@@ -15,7 +15,7 @@ public static class Console<E> where E : struct, IHasConsole<E> {
     
     public static IO<E, int> Read()
         => default(E).ConsoleIO
-            .Bind(env => env.Read()
+            .Bind<int>(env => env.Read()
                 .Match(
                     () => EffFail<int>(new IOError("End of stream")),
                     EffSucc<int>));
@@ -25,7 +25,7 @@ public static class Console<E> where E : struct, IHasConsole<E> {
 
     public static IO<E, string> ReadLine()
         => default(E).ConsoleIO
-            .Bind(env => env.ReadLine()
+            .Bind<string>(env => env.ReadLine()
                 .Match(() => EffFail<string>(new IOError("no more characters available")),
                     EffSucc<string>));
     

@@ -28,6 +28,24 @@ public readonly struct ConsoleIO : IConsoleIO {
     public Maybe<string> ReadLine()
         => Jull(System.Console.ReadLine());
 
+    public Unit ResetColour() {
+        System.Console.ResetColor();
+
+        return Unit();
+    }
+    
+    public Unit SetBgColour(ConsoleColor colour) {
+        System.Console.BackgroundColor = colour;
+
+        return Unit();
+    }
+    
+    public Unit SetFgColour(ConsoleColor colour) {
+        System.Console.ForegroundColor = colour;
+
+        return Unit();
+    }
+    
     public Unit Write(string value) {
         System.Console.Write(value);
 
