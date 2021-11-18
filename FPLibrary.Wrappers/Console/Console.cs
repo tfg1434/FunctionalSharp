@@ -28,6 +28,15 @@ public static class Console<E> where E : struct, IHasConsole<E> {
             .Bind<string>(env => env.ReadLine()
                 .Match(() => EffFail<string>(new IOError("no more characters available")),
                     EffSucc<string>));
+
+    public static IO<E, Unit> ResetColour()
+        => default(E).ConsoleIO.Map(env => env.ResetColour());
+    
+    public static IO<E, Unit> SetBgColour(ConsoleColor colour)
+        => default(E).ConsoleIO.Map(env => env.SetBgColour(colour));
+
+    public static IO<E, Unit> SetFgColour(ConsoleColor colour)
+        => default(E).ConsoleIO.Map(env => env.SetFgColour(colour));
     
     public static IO<E, Unit> Write(string value)
         => default(E).ConsoleIO.Map(env => env.Write(value));
