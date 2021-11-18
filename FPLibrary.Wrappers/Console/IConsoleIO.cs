@@ -58,7 +58,9 @@ public interface IConsoleIO {
 
     Unit Write(string value);
 
-    Unit WriteLine(string value);
+    Unit Write(char value);
+
+    Unit WriteLine(string line);
 
     Unit WriteLine();
 }

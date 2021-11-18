@@ -33,9 +33,15 @@ public readonly struct ConsoleIO : IConsoleIO {
 
         return Unit();
     }
-    
-    public Unit WriteLine(string value) {
-        System.Console.WriteLine(value);
+
+    public Unit Write(char value) {
+        System.Console.Write(value);
+
+        return Unit();
+    }
+
+    public Unit WriteLine(string line) {
+        System.Console.WriteLine(line);
 
         return Unit();
     }
