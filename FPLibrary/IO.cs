@@ -20,8 +20,10 @@ public static partial class F {
 
 public readonly struct IO<E, T> where E : struct {
     private readonly Thunk<E, T> _thunk;
-    
+
     internal IO(Thunk<E, T> thunk) => _thunk = thunk;
+
+    public static implicit operator IO<E, T>(Eff<T> eff) => IO<E, T>(_ => eff.ReRun());
 
     public Result<T> Run(E env) => _thunk.Value(env);
 
