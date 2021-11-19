@@ -6,6 +6,15 @@ namespace FPLibrary;
 
 public delegate (T Value, S State) Stateful<S, T>(S state);
 
+public static partial class F {
+    
+}
+
+public static class Stateful<S> {
+    public static Stateful<S, T> Return<T>(T value)
+        => state => (value, state);
+}
+
 public static class StatefulExt {
     public static T Run<S, T>(this Stateful<S, T> f, S state) 
         => f(state).Value;
@@ -31,9 +40,7 @@ public static class StatefulExt {
         Func<T, R, PR> proj)
         => self.Bind(t => bind(t).Map(r => proj(t, r)));
 
-    // public static IEnumerable<T> AsEnumerable<T, S>(this Stateful<T, S> self)
-
-    // public static Stateful<S, R> Bind<S, T, R>(this Stateful<S, T> self, Func<T, Stateful<S, R>> f)
-
-
+    public static IEnumerable<T> AsEnumerable<S, T>(this Stateful<S, T> self, S state) {
+        yield return self(state).Value;
+    }
 }
