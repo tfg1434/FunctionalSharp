@@ -48,7 +48,9 @@ public static class ArbitraryIEnumerable {
     public static Arbitrary<IEnumerable<T>> IEnumerable<T>()
         => GenIEnumerable<T>().ToArbitrary();
 }
-    
+
+#region Binary Tree
+
 public abstract record Tree<T>;
 
 internal record Leaf<T>(T Value) : Tree<T>;
@@ -101,3 +103,5 @@ public static class Tree {
                 return r.Aggregate(leftAcc, f);
             });
 }
+
+#endregion
