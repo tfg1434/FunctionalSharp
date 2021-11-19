@@ -7,6 +7,7 @@ using static FPLibrary.Tests.Utils;
 using Unit = System.ValueTuple;
 using FPLibrary;
 using FsCheck.Xunit;
+#pragma warning disable CS8619
 
 namespace FPLibrary.Tests.Maybe {
     static class ArbitraryMaybe {

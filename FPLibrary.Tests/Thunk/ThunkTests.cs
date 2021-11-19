@@ -5,19 +5,20 @@ using Xunit;
 using FPLibrary;
 using static FPLibrary.F;
 using static FPLibrary.Tests.Utils;
+#pragma warning disable CS8619
 
 namespace FPLibrary.Tests.Thunk;
 
 static class ArbitraryThunk {
     public static Arbitrary<Thunk<T>> Thunk<T>() {
-        Gen<Thunk<T>> gen = (from cancelled in Arb.Generate<bool>()
+        Gen<Thunk<T>> gen = from cancelled in Arb.Generate<bool>()
                              from isFail in Arb.Generate<bool>()
                              from value in Arb.Generate<T>()
                              select (cancelled, isFail) switch {
                                  (true, _) => FPLibrary.Thunk<T>.OfCancelled(),
                                  (_, false) => FPLibrary.Thunk<T>.OfFail(new Error()),
                                  _ => FPLibrary.Thunk<T>.OfSucc(value),
-                             })!;
+                             };
 
         return gen.ToArbitrary();
     }
@@ -25,8 +26,8 @@ static class ArbitraryThunk {
 
 static class ArbitrarySuccThunk {
     public static Arbitrary<Thunk<T>> Thunk<T>() {
-        Gen<Thunk<T>> gen = (from value in Arb.Generate<T>()
-                             select FPLibrary.Thunk<T>.OfSucc(value))!;
+        Gen<Thunk<T>> gen = from value in Arb.Generate<T>()
+                             select FPLibrary.Thunk<T>.OfSucc(value);
 
         return gen.ToArbitrary();
     }

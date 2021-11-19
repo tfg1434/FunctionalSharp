@@ -10,6 +10,7 @@ using Xunit;
 using FPLibrary;
 using static FPLibrary.F;
 using static FPLibrary.Tests.Utils;
+#pragma warning disable CS8619
 
 namespace FPLibrary.Tests.Map {
     public static class ArbitraryMap {
