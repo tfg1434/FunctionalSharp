@@ -1,8 +1,4 @@
-﻿using System;
-using Unit = System.ValueTuple;
-using static FPLibrary.F;
-
-namespace FPLibrary; 
+﻿namespace FPLibrary; 
 
 public static partial class F {
     public static Eff<T> Eff<T>(Func<Result<T>> f) 

@@ -1,8 +1,4 @@
-﻿using System;
-using Unit = System.ValueTuple;
-using static FPLibrary.F;
-
-namespace FPLibrary {
+﻿namespace FPLibrary {
     public static class Fluency {
         public static R Pipe<T, R>(this T self, Func<T, R> f)
             => f(self);

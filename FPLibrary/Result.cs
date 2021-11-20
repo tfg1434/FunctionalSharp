@@ -1,10 +1,5 @@
-﻿using System;
-using static FPLibrary.F;
-using Unit = System.ValueTuple;
+﻿namespace FPLibrary;
 
-namespace FPLibrary;
-
-//TODO: refactor these discriminated unions
 public readonly struct Result<T> {
     private readonly Error? _error;
     private readonly T? _value;
