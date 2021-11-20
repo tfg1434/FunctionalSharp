@@ -7,6 +7,8 @@ namespace FPLibrary;
 public readonly partial struct Lst<T> {
     public R Match<R>(Func<R> empty, Func<T, Lst<T>, R> cons)
         => IsEmpty ? empty() : cons(Head, Tail);
+    
+    public 
 
     public bool Contains(T value, IEqualityComparer<T>? comparer = null) {
         comparer ??= EqualityComparer<T>.Default;
@@ -227,3 +229,4 @@ public readonly partial struct Lst<T> {
         return new(head, count);
     }
 }
+

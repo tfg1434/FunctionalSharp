@@ -28,5 +28,8 @@ namespace FPLibrary {
 
             return Nothing;
         }
+
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable)
+            => enumerable.Bind(x => x);
     }
 }
