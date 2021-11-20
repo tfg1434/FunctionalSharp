@@ -20,7 +20,7 @@ public class IntTests {
         Assert.Equal(expected, actual);
 
         expected = new[] { 1, 2, 3, 4, 5, 6 };
-        actual = F.Range(1, 6);
+        actual = F.Range(from: 1, to: 6);
 
         Assert.Equal(expected, actual);
     }
