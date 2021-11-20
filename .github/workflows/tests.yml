@@ -31,4 +31,4 @@ jobs:
           dotnet-version: '6.x'
 
       - name: tests
-        run: dotnet test FPLibrary.Tests
+        run: dotnet test FunctionalSharp.Tests
