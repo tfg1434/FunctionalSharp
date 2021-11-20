@@ -66,7 +66,8 @@ namespace FPLibrary {
 
     public static class EitherExt {
         public static Either<L, RR> Map<L, R, RR>(this Either<L, R> self, Func<R, RR> f)
-            => self.Match<Either<L, RR>>(Left, r => Right(f(r)));
+            // ReSharper disable once ConvertClosureToMethodGroup
+            => self.Match<Either<L, RR>>(l => Left(l), r => Right(f(r)));
 
         //modify both Left and Right
         //called bifunctor or biMap
@@ -77,7 +78,8 @@ namespace FPLibrary {
             => either.Map(act.ToFunc());
 
         public static Either<L, RR> Bind<L, R, RR>(this Either<L, R> either, Func<R, Either<L, RR>> f)
-            => either.Match(Left, f);
+            // ReSharper disable once ConvertClosureToMethodGroup
+            => either.Match(l => Left(l), f);
 
         public static Maybe<R> ToMaybe<L, R>(this Either<L, R> self)
             => self.Match(_ => Nothing, Just);
@@ -85,9 +87,11 @@ namespace FPLibrary {
         //function application
         public static Either<L, RR> Apply<L, R, RR>(this Either<L, Func<R, RR>> self, Either<L, R> arg)
             => self.Match(
-                Left,
+                // ReSharper disable once ConvertClosureToMethodGroup
+                l => Left(l),
                 f => arg.Match<Either<L, RR>>(
-                    Left,
+                    // ReSharper disable once ConvertClosureToMethodGroup
+                    l => Left(l),
                     t => Right(f(t))));
 
         public static Either<L, Func<T2, R>> Apply<L, T1, T2, R>(this Either<L, Func<T1, T2, R>> self,
@@ -121,9 +125,11 @@ namespace FPLibrary {
         public static Either<L, RRR> SelectMany<L, R, RR, RRR>(this Either<L, R> self, Func<R, Either<L, RR>> bind,
             Func<R, RR, RRR> proj)
             => self.Match(
-                Left,
+                // ReSharper disable once ConvertClosureToMethodGroup
+                l => Left(l),
                 t => bind(t).Match<Either<L, RRR>>(
-                    Left,
+                    // ReSharper disable once ConvertClosureToMethodGroup
+                    l => Left(l),
                     r => proj(t, r)));
     }
 }
