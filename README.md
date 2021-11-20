@@ -5,7 +5,13 @@
 <p>
     <img width="48%" src="https://cdn.discordapp.com/attachments/818274903769481237/911613103748284426/carbon.png" alt="functional pic">
 &nbsp;
-    <img width="48%" src="https://cdn.discordapp.com/attachments/818274903769481237/911616626871369739/carbon_2.png" alt="TryParse pic">
+    <img width="48%" src="https://cdn.discordapp.com/attachments/818274903769481237/911616626871369739/carbon_2.png" alt="low level pic">
+</p>
+
+<p>
+    <img width="48%" src="https://cdn.discordapp.com/attachments/818274903769481237/911652636422471680/carbon_4.png" alt="functional pic">
+&nbsp;
+    <img width="48%" src="https://cdn.discordapp.com/attachments/818274903769481237/911652655212920902/carbon_3.png" alt="low level pic">
 </p>
 
 ### WIP C# functional programming library
