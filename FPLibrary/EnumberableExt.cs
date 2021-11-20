@@ -10,8 +10,10 @@ namespace FPLibrary {
         public static IEnumerable<R> Map<T, R>(this IEnumerable<T> enumerable, Func<T, R> f)
             => enumerable.Select(f);
 
-        public static void ForEach<T>(this IEnumerable<T> ts, Action<T> act) {
+        public static Unit ForEach<T>(this IEnumerable<T> ts, Action<T> act) {
             foreach (T t in ts) act(t);
+
+            return Unit();
         }
 
         public static IEnumerable<R> Bind<T, R>(this IEnumerable<T> ts, Func<T, IEnumerable<R>> f)

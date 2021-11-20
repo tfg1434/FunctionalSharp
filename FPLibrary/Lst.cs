@@ -117,8 +117,3 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
         return (newHead, newLast);
     }
 }
-
-public static class LstExt {
-    public static Lst<T> Flatten<T>(this Lst<Lst<T>> list)
-        => list.Bind(x => x);
-}
