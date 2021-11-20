@@ -1,0 +1,49 @@
+﻿int[] SeriesUp(int n) {
+    int[] res = new int[n * (n + 1) / 2];
+    int pos = 0;
+    int i = 1;
+
+    while (i <= n + 1) {
+        for (int j = 1; j < i; j++)
+            res[pos++] = j;
+        i++;
+    }
+
+    return res;
+}
+
+int[] SeriesUp(int n) {
+    var oneToN = (int x) => Range(from: 1, to: x);
+    
+    return Range(from: 1, to: n)
+        .Map(oneToN)
+        .Flatten()
+        .ToArray();
+}
+
+
+
+bool TryParseTemp(string json, [MaybeNullWhen(false)] out double temp, 
+    [MaybeNullWhen(true)] out Exception exception) {
+    
+    try {
+        object? obj = Parse(json);
+        Weather weather = CreateWeather(obj);
+        temp = weather.Temperature;
+        exception = null;
+        
+        return true;
+        
+    } catch (Exception ex) {
+        exception = ex;
+        temp = default;
+        
+        return false;
+    }
+}
+
+Try<double> ParseTemp(string json)
+    => from obj in Parse(json)
+       let weather = CreateWeather(obj)
+       from temp in weather.Map(w => w.Temperature)
+       select temp;
