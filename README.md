@@ -14,6 +14,12 @@
     <img width="48%" src="https://cdn.discordapp.com/attachments/818274903769481237/911652655212920902/carbon_3.png" alt="low level pic">
 </p>
 
+<p>
+    <img width="48%" src="https://cdn.discordapp.com/attachments/818274903769481237/911694727919853639/carbon_7.png" alt="functional pic">
+&nbsp;
+    <img width="48%" src="https://cdn.discordapp.com/attachments/818274903769481237/911694728213450762/carbon_6.png" alt="low level pic">
+</p>
+
 ### WIP C# functional programming library
 This library brings common functional programming patterns and types to C#
 
