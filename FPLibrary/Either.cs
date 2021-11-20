@@ -16,16 +16,11 @@ namespace FPLibrary {
         private readonly R? _right;
 
         private readonly bool _isRight;
-
-        // ReSharper disable once UnusedMember.Local
-        private bool IsLeft => !_isRight;
-
-        // ReSharper disable once MemberCanBePrivate.Global
+        
         internal Either(L l)
             => (_isRight, _left, _right)
                 = (false, l ?? throw new ArgumentNullException(nameof(l)), default);
-
-        // ReSharper disable once MemberCanBePrivate.Global
+        
         internal Either(R r)
             => (_isRight, _left, _right)
                 = (true, default, r ?? throw new ArgumentNullException(nameof(r)));
@@ -71,21 +66,18 @@ namespace FPLibrary {
 
     public static class EitherExt {
         public static Either<L, RR> Map<L, R, RR>(this Either<L, R> self, Func<R, RR> f)
-            // ReSharper disable once ConvertClosureToMethodGroup
-            => self.Match<Either<L, RR>>(l => Left(l), r => Right(f(r)));
+            => self.Match<Either<L, RR>>(Left, r => Right(f(r)));
 
         //modify both Left and Right
         //called bifunctor or biMap
-        //TODO: Rename to BiMap + add BiMap to other types
-        public static Either<LL, RR> Map<L, LL, R, RR>(this Either<L, R> self, Func<L, LL> left, Func<R, RR> right)
+        public static Either<LL, RR> BiMap<L, LL, R, RR>(this Either<L, R> self, Func<L, LL> left, Func<R, RR> right)
             => self.Match<Either<LL, RR>>(l => Left(left(l)), r => Right(right(r)));
 
         public static Either<L, Unit> ForEach<L, R>(this Either<L, R> either, Action<R> act)
             => either.Map(act.ToFunc());
 
         public static Either<L, RR> Bind<L, R, RR>(this Either<L, R> either, Func<R, Either<L, RR>> f)
-            // ReSharper disable once ConvertClosureToMethodGroup
-            => either.Match(l => Left(l), f);
+            => either.Match(Left, f);
 
         public static Maybe<R> ToMaybe<L, R>(this Either<L, R> self)
             => self.Match(_ => Nothing, Just);
@@ -93,9 +85,9 @@ namespace FPLibrary {
         //function application
         public static Either<L, RR> Apply<L, R, RR>(this Either<L, Func<R, RR>> self, Either<L, R> arg)
             => self.Match(
-                errF => Left(errF),
+                Left,
                 f => arg.Match<Either<L, RR>>(
-                    err => Left(err),
+                    Left,
                     t => Right(f(t))));
 
         public static Either<L, Func<T2, R>> Apply<L, T1, T2, R>(this Either<L, Func<T1, T2, R>> self,
@@ -129,9 +121,9 @@ namespace FPLibrary {
         public static Either<L, RRR> SelectMany<L, R, RR, RRR>(this Either<L, R> self, Func<R, Either<L, RR>> bind,
             Func<R, RR, RRR> proj)
             => self.Match(
-                l => Left(l),
+                Left,
                 t => bind(t).Match<Either<L, RRR>>(
-                    l => Left(l),
+                    Left,
                     r => proj(t, r)));
     }
 }

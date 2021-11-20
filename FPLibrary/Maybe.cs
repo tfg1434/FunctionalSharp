@@ -8,8 +8,8 @@ namespace FPLibrary {
     public static partial class F {
         public static NothingType Nothing => default;
 
-        public static Maybe<T> Just<T>([NotNull] T? value)
-            => new(value ?? throw new ArgumentNullException(nameof(value)));
+        public static Maybe<T> Just<T>(T value)
+            => new(value);
 
         public static Maybe<T> Jull<T>(T? value)
             => value is null ? Nothing : new Maybe<T>(value);

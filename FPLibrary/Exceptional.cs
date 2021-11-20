@@ -4,25 +4,24 @@ using static FPLibrary.F;
 
 namespace FPLibrary {
     public static partial class F {
-        public static Exceptional<T> Exceptional<T>(T t) => t;
+        public static Exceptional<T> Exceptional<T>(T t) => new(t);
     }
 
     public readonly struct Exceptional<T> {
         private readonly Exception? _ex;
         private readonly T? _value;
 
-        private readonly bool _isSuccess;
-        private bool isEx => !_isSuccess;
+        private readonly bool _isSucc;
 
         internal Exceptional(Exception ex) {
-            _isSuccess = false;
+            _isSucc = false;
             _ex = ex;
             _value = default;
         }
 
         internal Exceptional(T value) {
-            _isSuccess = true;
-            this._value = value;
+            _isSucc = true;
+            _value = value;
             _ex = default;
         }
 
@@ -31,7 +30,7 @@ namespace FPLibrary {
         public static implicit operator Exceptional<T>(T t) => new(t);
 
         public R Match<R>(Func<Exception, R> ex, Func<T, R> succ)
-            => isEx ? ex(_ex!) : succ(_value!);
+            => !_isSucc ? ex(_ex!) : succ(_value!);
 
         public Unit Match(Action<Exception> ex, Action<T> succ)
             => Match(ex.ToFunc(), succ.ToFunc());
@@ -49,22 +48,16 @@ namespace FPLibrary {
                 ex => new Exceptional<R>(ex),
                 r => f(r));
 
+        public static Exceptional<R> BiMap<T, R>(this Exceptional<T> self, Func<Exception, Exception> ex, 
+            Func<T, R> succ)
+            => self.Match<Exceptional<R>>(l => ex(l), r => succ(r));
+
         public static Exceptional<Unit> ForEach<T>(this Exceptional<T> self, Action<T> act)
             => Map(self, act.ToFunc());
 
         public static Exceptional<R> Bind<T, R>(this Exceptional<T> self, Func<T, Exceptional<R>> f)
             => self.Match(
                 ex => new(ex), f);
-
-        //monadic return
-        public static Func<T, Exceptional<T>> Return<T>()
-            => t => t;
-
-        public static Exceptional<R> Of<R>(Exception left)
-            => new(left);
-
-        public static Exceptional<R> Of<R>(R right)
-            => new(right);
 
         //applicative
         public static Exceptional<R> Apply<T, R>(this Exceptional<Func<T, R>> self, Exceptional<T> arg)
