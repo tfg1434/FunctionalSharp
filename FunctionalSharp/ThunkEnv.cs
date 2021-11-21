@@ -51,9 +51,9 @@ public class Thunk<E, T> {
     public static Thunk<E, T> OfFail(Error error) => new(Thunk.Fail, error);
     
     /// <summary>
-    /// Construct a failure thunk
+    /// Construct a cancelled thunk
     /// </summary>
-    /// <returns>Failure thunk</returns>
+    /// <returns>Cancelled thunk</returns>
     [Pure]
     public static Thunk<E, T> OfCancelled() => new(Thunk.Cancelled, new CancelledError());
 
