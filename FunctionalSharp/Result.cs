@@ -1,5 +1,11 @@
-﻿namespace FunctionalSharp;
+﻿using System.Diagnostics.Contracts;
 
+namespace FunctionalSharp;
+
+/// <summary>
+/// Semantic version of Either&lt;Error, A&gt;
+/// </summary>
+//TODO: Equality
 public readonly struct Result<T> {
     private readonly Error? _error;
     private readonly T? _value;
@@ -9,19 +15,33 @@ public readonly struct Result<T> {
         _value = default;
         IsSucc = false;
     }
-
+    
     public Result(T value) {
         _error = default;
         _value = value;
         IsSucc = true;
     }
     
+    /// <summary>
+    /// Construct a success result
+    /// </summary>
+    /// <param name="value">Success value</param>
+    /// <returns><see cref="Result{T}"/></returns>
+    [Pure]
     public static Result<T> Of(T value) => new(value);
 
+    /// <summary>
+    /// Construct a fail result
+    /// </summary>
+    /// <param name="e">Error value</param>
+    /// <returns><see cref="Result{T}"/></returns>
+    [Pure]
     public static Result<T> Of(Error e) => new(e);
 
+    [Pure]
     public static implicit operator Result<T>(Error e) => new(e);
 
+    [Pure]
     public static implicit operator Result<T>(T t) => new(t);
 
     public bool IsSucc { get; }
@@ -29,40 +49,80 @@ public readonly struct Result<T> {
     internal Error? Error => _error;
     internal T? Value => _value;
     
+    /// <summary>
+    /// Match
+    /// </summary>
+    /// <param name="fail">Fail function</param>
+    /// <param name="succ">Success function</param>
+    /// <typeparam name="R">Return type</typeparam>
+    [Pure]
     public R Match<R>(Func<Error, R> fail, Func<T, R> succ)
         => IsSucc ? succ(_value!) : fail(_error!);
 
+    /// <summary>
+    /// Side-effect Match
+    /// </summary>
+    /// <param name="fail">Fail Action</param>
+    /// <param name="succ">Success Action</param>
+    [Pure]
     public Unit Match(Action<Error> fail, Action<T> succ)
         => Match(fail.ToFunc(), succ.ToFunc());
-
-    public override string ToString()
-        => Match(
-            fail => $"Error({fail.Message})", 
-            succ => $"Succ({succ})");
-
+    
+    [Pure]
     public Maybe<T> ToMaybe()
         => Match(_ => Nothing, Just);
     
+    /// <summary>
+    /// Functor Map
+    /// </summary>
+    /// <param name="f">Map function</param>
+    /// <typeparam name="R">Resulting wrapped type</typeparam>
     public Result<R> Map<R>(Func<T, R> f)
         => Match(
             fail => new Result<R>(fail),
             succ => f(succ));
 
+    /// <summary>
+    /// Side-effect functor Map
+    /// </summary>
+    /// <param name="f">Action function</param>
     public Result<Unit> ForEach(Action<T> f)
         => Map(f.ToFunc());
 
+    /// <summary>
+    /// Monadic Bind
+    /// </summary>
+    /// <param name="f">Bind function</param>
+    /// <typeparam name="R">Bind return wrapped type</typeparam>
     public Result<R> Bind<R>(Func<T, Result<R>> f)
         => Match(fail => new(fail), f);
     
+    /// <summary>
+    /// Functor Map
+    /// </summary>
+    /// <param name="f">Map function</param>
+    /// <typeparam name="R">Resulting wrapped type</typeparam>
     public Result<R> Select<R>(Func<T, R> f)
         => Map(f);
 
+    /// <summary>
+    /// Monadic Bind with a projection
+    /// </summary>
+    /// <param name="bind">Bind function</param>
+    /// <param name="proj">Projection</param>
+    /// <typeparam name="R">Bind return wrapped type</typeparam>
+    /// <typeparam name="PR">Project return type</typeparam>
     public Result<PR> SelectMany<R, PR>(Func<T, Result<R>> bind, Func<T, R, PR> proj)
         => Match(
             ex => new(ex),
             t => bind(t).Match(
                 ex => new Result<PR>(ex),
                 r => proj(t, r)));
+    
+    public override string ToString()
+        => Match(
+            fail => $"Error({fail.Message})", 
+            succ => $"Succ({succ})");
     
     internal Result<R> Cast<R>()
         => IsSucc
