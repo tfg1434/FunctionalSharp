@@ -1,20 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Numerics;
 using static FunctionalSharp.RangeUtils;
 
 namespace FunctionalSharp; 
 
 public static partial class F {
+    /// <summary>
+    /// Construct an int Range
+    /// </summary>
+    /// <remarks>
+    /// Same syntax as Haskell's range. [from,second..to] https://riptutorial.com/haskell/example/9516/ranges
+    /// Supports infinite ranges
+    /// </remarks>
+    [Pure]
     public static IEnumerable<int> Range(int from, int? second = null, int? to = null) 
         => IntRange.Of(from, second, to);
 
+    /// <summary>
+    /// Construct a double Range
+    /// </summary>
+    /// <remarks>
+    /// Same syntax as Haskell's range. [from,second..to] https://riptutorial.com/haskell/example/9516/ranges
+    /// Supports infinite ranges
+    /// </remarks>
+    [Pure]
     public static IEnumerable<double> Range(double from, double? second = null, double? to = null) 
         => DoubleRange.Of(from, second, to);
 
+    /// <summary>
+    /// Construct a char Range
+    /// </summary>
+    /// <remarks>
+    /// Same syntax as Haskell's range. [from,second..to] https://riptutorial.com/haskell/example/9516/ranges
+    /// Supports infinite ranges
+    /// </remarks>
+    [Pure]
     public static IEnumerable<char> Range(char from, char? second = null, char? to = null) 
         => CharRange.Of(from, second, to);
 
+    /// <summary>
+    /// Construct a BigInt Range
+    /// </summary>
+    /// <remarks>
+    /// Same syntax as Haskell's range. [from,second..to] https://riptutorial.com/haskell/example/9516/ranges
+    /// Supports infinite ranges
+    /// </remarks>
+    [Pure]
     public static IEnumerable<BigInteger> Range(BigInteger from, BigInteger? second = null, BigInteger? to = null)
         => BigIntRange.Of(from, second, to);
 }
@@ -80,7 +113,7 @@ class BigIntRange : Range<BigInteger> {
         : base(from, to, step, to is null, isSecondAscending, 
             static (x, y) => x >= y, static (x, y) => x + y) { }
     
-    public static IEnumerable<BigInteger> Of(BigInteger from, BigInteger? second, BigInteger? to) {
+    internal static IEnumerable<BigInteger> Of(BigInteger from, BigInteger? second, BigInteger? to) {
         bool isSecondAscending = IsSecondAscending(static (x, y) => x > y, from, second);
 
         return second switch {
@@ -95,13 +128,7 @@ class BigIntRange : Range<BigInteger> {
 static class RangeUtils {
     public static bool IsSecondAscending<T>(T from, T? second) where T : struct, IComparisonOperators<T, T>
         => second is null || second > from;
-    // => (second, to) switch {
-    //     (null, null) => true,
-    //     ({ }, null) => second.Value > from,
-    //     (null, { }) or ({ }, { }) => to > from,
-    //     //(_, _) => false,
-    // };
-
+    
     public static bool IsSecondAscending<T>(Func<T, T, bool> isGt, T from, T? second) where T : struct
         => second is null || isGt(second.Value, from);
 }
