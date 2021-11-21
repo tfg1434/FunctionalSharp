@@ -1,4 +1,4 @@
-# FunctionalSharp: A lightweight functional programming library
+# A lightweight functional programming library
 
 ![example workflow](https://github.com/torontofangirl/FunctionalSharp/actions/workflows/tests.yml/badge.svg)
 
@@ -11,7 +11,15 @@
 | <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704205926998076/Untitled_4.jpeg" alt="functional pic"> | <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704206208028672/Untitled_5.jpeg" alt="low level pic"> |
 | <ul><li>List pattern matching</li><li>Functional style singly linked list</li></ul> | <ul><li>Mutates original collection</li></ul> |
 
+## Setup
+Install the package from nuget or add a reference to the dll to your project.
 
+Then, all you need to do is add 
+```cs
+global using FunctionalSharp;
+global using FunctionalSharp.F;
+```
+into a file for each project you want to use this lib in.
 
 [//]: # (<p>)
 
@@ -45,7 +53,5 @@
 
 [//]: # (</p>)
 
-### WIP C# functional programming library
-This library brings common functional programming patterns and types to C#
 
 
