@@ -5,6 +5,12 @@ namespace FunctionalSharp {
     public delegate Exceptional<T> Try<T>();
 
     public static partial class F {
+        /// <summary>
+        /// Construct a lazy Try monad
+        /// </summary>
+        /// <param name="f">Lazy function</param>
+        /// <typeparam name="T">Type of wrapped value</typeparam>
+        /// <returns>Try monad</returns>
         public static Try<T> Try<T>(Func<T> f) => () => f();
     }
 
