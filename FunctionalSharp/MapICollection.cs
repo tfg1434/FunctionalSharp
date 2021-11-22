@@ -20,7 +20,7 @@ public sealed partial class Map<K, V> where K : notnull {
 
     #region ICollection<KeyValuePair<K, V>> Methods
 
-    void ICollection<KeyValuePair<K, V>>.Add(KeyValuePair<K, V> item) => throw new NotSupportedException();
+    void ICollection<KeyValuePair<K, V>>.Append(KeyValuePair<K, V> item) => throw new NotSupportedException();
 
     void ICollection<KeyValuePair<K, V>>.Clear() => throw new NotSupportedException();
 

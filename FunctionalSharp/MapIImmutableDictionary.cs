@@ -4,11 +4,11 @@ using System.Collections.Immutable;
 namespace FunctionalSharp; 
 
 public sealed partial class Map<K, V> : IImmutableDictionary<K, V> where K : notnull {
-    IImmutableDictionary<K, V> IImmutableDictionary<K, V>.Add(K key, V value) 
-        => Add((key, value));
+    IImmutableDictionary<K, V> IImmutableDictionary<K, V>.Append(K key, V value) 
+        => Append((key, value));
 
-    IImmutableDictionary<K, V> IImmutableDictionary<K, V>.AddRange(IEnumerable<KeyValuePair<K, V>> items)
-        => AddRange(items.Map(x => (x.Key, x.Value)));
+    IImmutableDictionary<K, V> IImmutableDictionary<K, V>.Append(IEnumerable<KeyValuePair<K, V>> items)
+        => Append(items.Map(x => (x.Key, x.Value)));
 
     IImmutableDictionary<K, V> IImmutableDictionary<K, V>.Clear() 
         => Clear();

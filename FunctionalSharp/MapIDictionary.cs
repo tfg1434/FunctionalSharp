@@ -18,7 +18,7 @@ public sealed partial class Map<K, V> : IDictionary, IDictionary<K, V> where K :
 
     #region IDictionary<K, V> Methods
 
-    void IDictionary<K, V>.Add(K key, V value) => throw new NotSupportedException();
+    void IDictionary<K, V>.Append(K key, V value) => throw new NotSupportedException();
 
     bool IDictionary<K, V>.Remove(K key) => throw new NotSupportedException();
 
@@ -40,7 +40,7 @@ public sealed partial class Map<K, V> : IDictionary, IDictionary<K, V> where K :
 
     bool IDictionary.Contains(object key) => ContainsKey((K) key);
 
-    void IDictionary.Add(object key, object? value) => throw new NotSupportedException();
+    void IDictionary.Append(object key, object? value) => throw new NotSupportedException();
 
     void IDictionary.Clear() => throw new NotSupportedException();
 

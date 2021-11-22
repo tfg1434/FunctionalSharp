@@ -66,5 +66,5 @@ sealed class MapValuesCollectionAccessor<K, V> : MapKeysValuesCollectionAccessor
     internal MapValuesCollectionAccessor(IImmutableDictionary<K, V> map)
         : base(map, map.Values) { }
 
-    public override bool Contains(V item) => (Map as Map<K, V>)!.ContainsVal(item);
+    public override bool Contains(V item) => (Map as Map<K, V>)!.ContainsValue(item);
 }

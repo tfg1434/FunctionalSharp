@@ -21,7 +21,7 @@ namespace FunctionalSharp.Tests.Map {
             => from key in Arb.Generate<K>()
                from val in Arb.Generate<V>()
                from map in GenMap<K, V>()
-               select map.ContainsKey(key) ? map : map.Add(key, val);
+               select map.ContainsKey(key) ? map : map.Append(key, val);
         
         private static Gen<Map<K, V>> GenMap<K, V>() where K : notnull
             => from isEmpty in Arb.Generate<bool>()
@@ -57,7 +57,7 @@ namespace FunctionalSharp.Tests.Map {
             var actual = Map<int, bool>.Empty;
         
             foreach ((int key, bool val) in expected)
-                actual = actual.Add(key, val);
+                actual = actual.Append(key, val);
         
             Assert.Equal(expected.ToList(), actual.ToList<KeyValuePair<int, bool>>());
         }
@@ -67,7 +67,7 @@ namespace FunctionalSharp.Tests.Map {
             var actual = Map<int, bool>.Empty;
         
             foreach ((int key, bool val) in expected) {
-                actual = actual.Add(key, default);
+                actual = actual.Append(key, default);
                 actual = actual.SetItem(key, val);
             }
             
@@ -94,29 +94,29 @@ namespace FunctionalSharp.Tests.Map {
         [Property]
         public void Add_ExistingKeySameValue_Same(int key, bool val) {
             var map = Map<int, bool>();
-            map = map.Add(key, val);
+            map = map.Append(key, val);
             
-            Assert.Equal(map, map.Add(key, val));
+            Assert.Equal(map, map.Append(key, val));
         }
         
         [Property]
         public void Add_ExisitingKeyDiffValue_Throws(int key, bool val) {
             var map = Map<int, bool>();
-            map = map.Add(key, val);
+            map = map.Append(key, val);
             
-            Assert.Throws<ArgumentException>(() => map.Add(key, !val));
+            Assert.Throws<ArgumentException>(() => map.Append(key, !val));
         }
 
         [Fact]
         public void Add_NullKey_Throws() {
             Assert.Throws<ArgumentNullException>(
-                () => Map<string, bool>().Add(null!, default));
+                () => Map<string, bool>().Append((string) null!, default));
         }
         
         [Property]
         public void AddRange_ExistingKeySameValue_Same(int key, bool val) {
             var map = Map<int, bool>();
-            map = map.Add(key, val);
+            map = map.Append(key, val);
         
             Assert.Equal(map, map.AddRange((key, val)));
         }
@@ -124,7 +124,7 @@ namespace FunctionalSharp.Tests.Map {
         [Property]
         public void AddRange_ExistingKeyDiffValue_Throws(int key, bool val) {
             var map = Map<int, bool>();
-            map = map.Add(key, val);
+            map = map.Append(key, val);
         
             Assert.Throws<ArgumentException>(() => map.AddRange((key, !val)));
         }
@@ -169,13 +169,13 @@ namespace FunctionalSharp.Tests.Map {
         public void ContainsValue_IntBool_EqualsMutable(ImmutableSortedDictionary<int, bool> dict, bool val) {
             var map = dict.ToMap();
             
-            Assert.Equal(dict.ContainsValue(val), map.ContainsVal(val));
+            Assert.Equal(dict.ContainsValue(val), map.ContainsValue(val));
         }
 
         [Fact]
         public void Create() {
             IComparer<string> keyComparer = StringComparer.OrdinalIgnoreCase;
-            IEqualityComparer<string> valComparer = StringComparer.CurrentCulture;
+            IEqualityComparer<string> valueComparer = StringComparer.CurrentCulture;
             
             var map = Map<string, string>();
             Assert.Empty(map);
@@ -187,15 +187,15 @@ namespace FunctionalSharp.Tests.Map {
             Assert.Same(keyComparer, map.KeyComparer);
             Assert.Same(EqualityComparer<string>.Default, map.ValueComparer);
 
-            map = MapWithComparers<string, string>(valComparer: valComparer);
+            map = MapWithComparers<string, string>(valueComparer: valueComparer);
             Assert.Empty(map);
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
-            Assert.Same(valComparer, map.ValueComparer);
+            Assert.Same(valueComparer, map.ValueComparer);
             
-            map = MapWithComparers(keyComparer, valComparer);
+            map = MapWithComparers(keyComparer, valueComparer);
             Assert.Empty(map);
             Assert.Same(keyComparer, map.KeyComparer);
-            Assert.Same(valComparer, map.ValueComparer);
+            Assert.Same(valueComparer, map.ValueComparer);
 
             (string, string)[] pairs = { ("a", "b") };
             
@@ -209,15 +209,15 @@ namespace FunctionalSharp.Tests.Map {
             Assert.Same(keyComparer, map.KeyComparer);
             Assert.Same(EqualityComparer<string>.Default, map.ValueComparer);
             
-            map = MapWithComparers(pairs, valComparer: valComparer);
+            map = MapWithComparers(pairs, valueComparer: valueComparer);
             Assert.Single(map);
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
-            Assert.Same(valComparer, map.ValueComparer);
+            Assert.Same(valueComparer, map.ValueComparer);
             
-            map = MapWithComparers(pairs, keyComparer, valComparer);
+            map = MapWithComparers(pairs, keyComparer, valueComparer);
             Assert.Single(map);
             Assert.Same(keyComparer, map.KeyComparer);
-            Assert.Same(valComparer, map.ValueComparer);
+            Assert.Same(valueComparer, map.ValueComparer);
         }
         
         [Fact]
