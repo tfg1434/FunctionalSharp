@@ -5,17 +5,27 @@ namespace FunctionalSharp;
 /// <summary>
 /// Semantic version of Either&lt;Error, A&gt;
 /// </summary>
-//TODO: Equality
+//TODO: Equality, ForEach for all monads
 public readonly struct Result<T> {
     private readonly Error? _error;
     private readonly T? _value;
 
+    /// <summary>
+    /// Fail ctor
+    /// </summary>
+    /// <param name="error">Error value</param>
+    /// <returns><see cref="Result{T}"/> in an Error state</returns>
     public Result(Error error) {
         _error = error;
         _value = default;
         IsSucc = false;
     }
     
+    /// <summary>
+    /// Success ctor
+    /// </summary>
+    /// <param name="value">Success value</param>
+    /// <returns><see cref="Result{T}"/> in a Success state</returns>
     public Result(T value) {
         _error = default;
         _value = value;
