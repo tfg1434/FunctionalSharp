@@ -1,11 +1,26 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace FunctionalSharp; 
 
 public readonly partial struct Lst<T> {
+    /// <summary>
+    /// Match the two states of the list
+    /// </summary>
+    /// <param name="empty">Function to run if the list is empty</param>
+    /// <param name="cons">Ternary function to run if the list is cons</param>
+    /// <typeparam name="R">Return type of functions</typeparam>
+    [Pure]
     public R Match<R>(Func<R> empty, Func<T, Lst<T>, R> cons)
-        => IsEmpty ? empty() : cons(Head, Tail);
+        => IsEmpty ? empty() : cons(Head(), Tail());
 
+    /// <summary>
+    /// See if a value exists in the list
+    /// </summary>
+    /// <param name="value">Value to search for</param>
+    /// <param name="comparer">Comparer to use while searching. If null, uses <see cref="EqualityComparer{T}"/></param>
+    /// <returns>Whether <paramref name="value"/> exists in the list</returns>
+    [Pure]
     public bool Contains(T value, IEqualityComparer<T>? comparer = null) {
         comparer ??= EqualityComparer<T>.Default;
         
@@ -15,6 +30,13 @@ public readonly partial struct Lst<T> {
         return false;
     }
 
+    /// <summary>
+    /// Equate this list to another list quickly
+    /// </summary>
+    /// <param name="other"><see cref="Lst{T}"/> to equate to</param>
+    /// <param name="comparer">Comparer to use. If null, uses <see cref="EqualityComparer{T}"/></param>
+    /// <returns>Whether the two lists are equal.</returns>
+    [Pure]
     public bool SequenceEqual(Lst<T> other, IEqualityComparer<T>? comparer = null) {
         if (_count != other._count) return false;
 
@@ -28,22 +50,34 @@ public readonly partial struct Lst<T> {
             if (selfCurr == otherCurr) return true;
 
             //we pre-validated counts
-            if (selfCurr is null || !comparer.Equals(selfCurr.Value, otherCurr!.Value)) return false;
+            if (selfCurr is null || !comparer.Equals(selfCurr.Value, otherCurr!.Value)) 
+                return false;
 
             selfCurr = selfCurr.Next;
             otherCurr = otherCurr.Next;
         }
     }
-
-
+    
     #region Prepend
     
-    public Lst<T> Prepend(T item) => new(new(item) { Next = _head }, _count + 1);
+    /// <summary>
+    /// Prepend an item to the front of the list
+    /// </summary>
+    /// <param name="item">Item to prepend</param>
+    /// <returns>New list with <paramref name="item"/> prepended</returns>
+    [Pure]
+    public Lst<T> Prepend(T item) 
+        => new(new(item) { Next = _head }, _count + 1);
 
+    /// <summary>
+    /// Prepend an enumerable of items to the front of the list
+    /// </summary>
+    /// <param name="items">Items to prepend</param>
+    /// <returns>New list with <paramref name="items"/> prepended</returns>
+    [Pure]
     public Lst<T> Prepend(IEnumerable<T> items) {
         if (_count == 0) return Of(items);
         if (items is Lst<T> list) return Prepend(list);
-        if (items is null) throw new ArgumentNullException(nameof(items));
 
         using var enumerator = items.GetEnumerator();
 
@@ -63,6 +97,12 @@ public readonly partial struct Lst<T> {
         return new(head, count + _count);
     }
 
+    /// <summary>
+    /// Prepend a <see cref="Lst{T}"/> to the front of the list
+    /// </summary>
+    /// <param name="list"><see cref="Lst{T}"/> to prepend</param>
+    /// <returns>New list with <paramref name="list"/> prepended</returns>
+    [Pure]
     public Lst<T> Prepend(Lst<T> list) {
         if (list._count == 0) return this;
         if (_count == 0) return list;
@@ -77,6 +117,12 @@ public readonly partial struct Lst<T> {
 
     #region Append
 
+    /// <summary>
+    /// Append an item to the end of the list
+    /// </summary>
+    /// <param name="item">Item to append</param>
+    /// <returns>New list with <paramref name="item"/> appended</returns>
+    [Pure]
     public Lst<T> Append(T item) {
         if (_count == 0) return Of(item);
 
@@ -86,8 +132,20 @@ public readonly partial struct Lst<T> {
         return new(newHead, _count + 1);
     }
 
+    /// <summary>
+    /// Append an enumerable of items to the end of the list
+    /// </summary>
+    /// <param name="items">Items to append</param>
+    /// <returns>New list with <paramref name="items"/> appended</returns>
+    [Pure]
     public Lst<T> Append(IEnumerable<T> items) => Append(Of(items));
 
+    /// <summary>
+    /// Append a <see cref="Lst{T}"/> to the end of the list
+    /// </summary>
+    /// <param name="list"><see cref="Lst{T}"/> to append</param>
+    /// <returns>New list with <paramref name="list"/> appended</returns>
+    [Pure]
     public Lst<T> Append(Lst<T> list) => list.Prepend(this);
 
     #endregion

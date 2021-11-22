@@ -17,7 +17,7 @@ public class LstTests {
 
     [Fact]
     public void Head_Returns_FirstElement() {
-        Assert.Equal(1, List(1, 2, 3).Head);
+        Assert.Equal(1, List(1, 2, 3).Head());
         Assert.Throws<InvalidOperationException>(() => Lst<int>.Empty.Head);
         
         Assert.Equal(Just(1), List(1, 2, 3).HeadSafe);
@@ -26,8 +26,8 @@ public class LstTests {
     
     [Fact]
     public void Tail_Returns_AllButFirstElement() {
-        Assert.Equal(List(2, 3), List(1, 2, 3).Tail);
-        Assert.Throws<InvalidOperationException>(() => Lst<int>.Empty.Tail);
+        Assert.Equal(List(2, 3), List(1, 2, 3).Tail());
+        Assert.Throws<InvalidOperationException>(() => Lst<int>.Empty.Tail());
         
         Assert.Equal(Just(List(2, 3)), List(1, 2, 3).TailSafe);
         Assert.Equal(Nothing, Lst<int>.Empty.TailSafe);

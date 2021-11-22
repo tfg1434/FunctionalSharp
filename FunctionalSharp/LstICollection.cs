@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FunctionalSharp;
 
@@ -12,6 +11,12 @@ public readonly partial struct Lst<T> : ICollection<T> {
 
     bool ICollection<T>.Contains(T value) => Contains(value);
     
+    /// <summary>
+    /// Speedily copy this list to an array
+    /// </summary>
+    /// <param name="array">Array to copy to</param>
+    /// <param name="arrayIndex">Array index to copy to</param>
+    /// <exception cref="ArgumentOutOfRangeException">If arrayIndex is out of bounds</exception>
     public void CopyTo(T[] array, int arrayIndex) {
         if (arrayIndex < 0 || arrayIndex > array.Length || arrayIndex + Count > array.Length)
             throw new ArgumentOutOfRangeException(nameof(arrayIndex), arrayIndex, "out of range");

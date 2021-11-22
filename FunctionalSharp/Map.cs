@@ -374,6 +374,7 @@ public sealed partial class Map<K, V> where K : notnull {
 
     #endregion
 
+    //TODO: See Lst concats
     [Pure]
     public static Map<K, V> operator +(Map<K, V> lhs, Map<K, V> rhs)
         => lhs.Append(rhs);

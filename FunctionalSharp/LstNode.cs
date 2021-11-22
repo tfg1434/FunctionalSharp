@@ -1,13 +1,13 @@
-﻿namespace FunctionalSharp {
-    public readonly partial struct Lst<T> {
-        internal sealed class Node {
-            internal readonly T Value;
+﻿namespace FunctionalSharp; 
 
-            internal Node(T value) => Value = value;
+public readonly partial struct Lst<T> {
+    internal sealed class Node {
+        internal readonly T Value;
 
-            internal Node? Next { get; set; }
+        internal Node(T value) => Value = value;
 
-            public override string ToString() => $"Value: {Value} Next: {Next}";
-        }
+        internal Node? Next { get; set; }
+
+        public override string ToString() => $"Value: {Value} Next: {Next}";
     }
 }
