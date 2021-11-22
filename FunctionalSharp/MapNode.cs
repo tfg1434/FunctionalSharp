@@ -24,36 +24,26 @@ public sealed partial class Map<K, V> where K : notnull {
             _frozen = true;
         }
 
-        internal (Node Node, bool Mutated) Add(IComparer<K> keyComparer, IEqualityComparer<V> valueComparer,
-            (K Key, V Value) pair) {
-            if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
-            if (valueComparer is null) throw new ArgumentNullException(nameof(valueComparer));
-            if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
+        internal (Node Node, bool Mutated) Add(IComparer<K> keyComparer, IEqualityComparer<V> valueComparer, K key, 
+            V value) {
 
-            (Node node, _, bool mutated) = SetOrAdd(keyComparer, valueComparer, false, pair);
+            (Node node, _, bool mutated) = SetOrAdd(keyComparer, valueComparer, false, key, value);
 
             return (node, mutated);
         }
 
         internal (Node Node, bool Replaced, bool Mutated) Set(IComparer<K> keyComparer,
-            IEqualityComparer<V> valueComparer, (K Key, V Value) pair) {
-            if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
-            if (valueComparer is null) throw new ArgumentNullException(nameof(valueComparer));
-            if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
-
-            (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valueComparer, true, pair);
+            IEqualityComparer<V> valueComparer, K key, V value) {
+            
+            (Node node, bool replaced, bool mutated) = SetOrAdd(keyComparer, valueComparer, true, key, value);
 
             return (node, replaced, mutated);
         }
 
-        internal bool Contains(IComparer<K> keyComparer, IEqualityComparer<V> valueComparer, (K Key, V Value) pair) {
-            if (pair.Key is null) throw new ArgumentException($"{nameof(pair)}.{nameof(pair.Key)}");
-            if (keyComparer is null) throw new ArgumentNullException(nameof(keyComparer));
-            if (valueComparer is null) throw new ArgumentNullException(nameof(valueComparer));
+        internal bool Contains(IComparer<K> keyComparer, IEqualityComparer<V> valueComparer, K key, V value) {
+            Node res = Search(keyComparer, key);
 
-            Node res = Search(keyComparer, pair.Key);
-
-            return !res.IsEmpty && valueComparer.Equals(res._value, pair.Value);
+            return !res.IsEmpty && valueComparer.Equals(res._value, value);
         }
 
         internal bool ContainsKey(IComparer<K> keyComparer, K key) {
@@ -66,8 +56,8 @@ public sealed partial class Map<K, V> where K : notnull {
         internal bool ContainsValue(IEqualityComparer<V> valueComparer, V value) {
             if (valueComparer is null) throw new ArgumentNullException(nameof(valueComparer));
 
-            foreach ((_, V v) in this)
-                if (valueComparer.Equals(value, v))
+            foreach ((_, V curr) in this)
+                if (valueComparer.Equals(value, curr))
                     return true;
 
             return false;
@@ -157,25 +147,22 @@ public sealed partial class Map<K, V> where K : notnull {
         }
 
         private (Node Node, bool Replaced, bool Mutated) SetOrAdd(IComparer<K> keyComparer,
-            IEqualityComparer<V> valueComparer, bool overwrite, (K Key, V Value) pair) {
-            //
-            //TODO: mix assignment and creation in deconstruction and/or better chaining
+            IEqualityComparer<V> valueComparer, bool overwrite, K key, V value) {
 
             (Node Node, bool Replaced, bool Mutated) SetOrAddNode(Node node)
-                => node.SetOrAdd(keyComparer, valueComparer, overwrite, pair);
+                => node.SetOrAdd(keyComparer, valueComparer, overwrite, key, value);
 
             if (IsEmpty)
-                return (new(pair, this, this), false, true);
+                return (new(key, value, this, this), false, true);
 
             Node res = this;
             bool replaced = false;
             bool mutated;
 
-            switch (keyComparer.Compare(pair.Key, _key)) {
+            switch (keyComparer.Compare(key, _key)) {
                 case > 0:
                     //node goes on right 
-                    Node newRight;
-                    (newRight, replaced, mutated) = Right!.Pipe(SetOrAddNode);
+                    (Node newRight, replaced, mutated) = Right!.Pipe(SetOrAddNode);
 
                     if (mutated)
                         res = res.Mutate(right: newRight);
@@ -183,8 +170,7 @@ public sealed partial class Map<K, V> where K : notnull {
                     break;
                 case < 0:
                     //node goes on left
-                    Node newLeft;
-                    (newLeft, replaced, mutated) = Left!.Pipe(SetOrAddNode);
+                    (Node newLeft, replaced, mutated) = Left!.Pipe(SetOrAddNode);
 
                     if (mutated)
                         // ReSharper disable once ArgumentsStyleNamedExpression
@@ -192,18 +178,19 @@ public sealed partial class Map<K, V> where K : notnull {
 
                     break;
                 default:
-                    if (valueComparer.Equals(_value, pair.Value)) {
+                    if (valueComparer.Equals(_value, value)) {
                         //key and val are both the same
                         mutated = false;
 
                         return (this, replaced, mutated);
+                        
                     } else if (overwrite) {
                         //key exists, but val is different. mutate
                         mutated = replaced = true;
-                        res = new(pair, Left!, Right!);
+                        res = new(key, value, Left!, Right!);
+                        
                     } else
-                        throw new ArgumentException("Duplicate key: ",
-                            $"{nameof(pair)}.{nameof(pair.Key)}");
+                        throw new ArgumentException("Duplicate key: ", nameof(key));
 
                     break;
             }
@@ -305,12 +292,13 @@ public sealed partial class Map<K, V> where K : notnull {
 
         private Node() => _frozen = true;
 
-        private Node((K Key, V Value) pair, Node left, Node right, bool frozen = false) {
-            (_key, _value) = pair;
+        private Node(K key, V value, Node left, Node right, bool frozen = false) {
+            _key = key;
+            _value = value;
             Left = left;
             Right = right;
             _height = checked((byte) (1 + Math.Max(left._height, right._height)));
-            this._frozen = frozen;
+            _frozen = frozen;
         }
 
         #endregion

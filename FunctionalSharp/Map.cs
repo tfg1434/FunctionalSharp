@@ -365,38 +365,6 @@ public sealed partial class Map<K, V> where K : notnull {
         return _root.TryGetKey(KeyComparer, checkKey, out realKey);
     }
 
-    //util
-    private static KeyValuePair<K, V> ToKeyValuePair((K Key, V Value) pair)
-        => new(pair.Key, pair.Value);
-
-    private static (K Key, V Value) ToValueTuple(KeyValuePair<K, V> kv)
-        => (kv.Key, kv.Value);
-
-    private static (K Key, V Value) ToValueTuple(Tuple<K, V> tup)
-        => (tup.Item1, tup.Item2);
-
-    public Map<K, V> Clear()
-        => _root.IsEmpty
-            ? this
-            : Empty.WithComparers(KeyComparer, ValueComparer);
-
-    public Maybe<V> Get(K key) {
-        if (key is null) throw new ArgumentNullException(nameof(key));
-
-        return _root.Get(KeyComparer, key);
-    }
-
-    public Map<K, V> SetItem((K Key, V Value) pair) {
-        if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
-
-        (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValueComparer, pair);
-            
-        return Wrap(newRoot, replaced ? Count : Count + 1);
-    }
-
-    public Map<K, V> SetItems(IEnumerable<(K Key, V Value)> items)
-        => Append(items, true, false);
-
     public Map<K, V> WithComparers(IComparer<K>? keyComparer = null, IEqualityComparer<V>? valueComparer = null) {
         keyComparer ??= Comparer<K>.Default;
         valueComparer ??= EqualityComparer<V>.Default;
@@ -440,4 +408,13 @@ public sealed partial class Map<K, V> where K : notnull {
 
         return this;
     };
+    
+    private static KeyValuePair<K, V> ToKeyValuePair((K Key, V Value) pair)
+        => new(pair.Key, pair.Value);
+
+    private static (K Key, V Value) ToValueTuple(KeyValuePair<K, V> kv)
+        => (kv.Key, kv.Value);
+
+    private static (K Key, V Value) ToValueTuple(Tuple<K, V> tup)
+        => (tup.Item1, tup.Item2);
 }

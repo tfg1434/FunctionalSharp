@@ -175,21 +175,28 @@ public sealed partial class Map<K, V> where K : notnull {
 
     #region Remove
     
-    public Map<K, V> Remove(K key) {
-        if (key is null) throw new ArgumentNullException(nameof(key));
-
-        return _root
+    /// <summary>
+    /// Remove a key from the map
+    /// </summary>
+    /// <param name="key">Key to remove</param>
+    /// <returns>New map with key removed</returns>
+    [Pure]
+    public Map<K, V> Remove(K key) 
+        => _root
             .Remove(KeyComparer, key)
             .Node
             .Pipe(
                 Wrap
                     .Flip()
                     .Apply(Count - 1));
-    }
-    
-    public Map<K, V> RemoveRange(IEnumerable<K> keys) {
-        if (keys is null) throw new ArgumentNullException(nameof(keys));
 
+    /// <summary>
+    /// Remove multiple keys from the map
+    /// </summary>
+    /// <param name="keys">Keys to remove</param>
+    /// <returns>New map with keys removed</returns>
+    [Pure]
+    public Map<K, V> RemoveRange(IEnumerable<K> keys) {
         (Node Res, int Count) seed = (_root, Count);
         (Node Res, int Count) removed = keys.Aggregate(seed, (acc, key) => {
             (var res, int count) = acc;
@@ -201,29 +208,128 @@ public sealed partial class Map<K, V> where K : notnull {
         return Wrap(removed.Res, removed.Count);
     }
     
-    public Map<K, V> RemoveRange(params K[] items)
-        => RemoveRange((IEnumerable<K>) items);
+    /// <summary>
+    /// Remove multiple keys from the map
+    /// </summary>
+    /// <param name="keys">Keys to remove</param>
+    /// <returns>New map with keys removed</returns>
+    [Pure]
+    public Map<K, V> RemoveRange(params K[] keys)
+        => RemoveRange((IEnumerable<K>) keys);
 
     #endregion
     
-    public Map<K, V> SetItem(K key, V val) => SetItem((key, val));
+    #region SetItem
+    
+    /// <summary>
+    /// Set an item in the map
+    /// </summary>
+    /// <param name="key">Key to set</param>
+    /// <param name="value">Value to set to</param>
+    /// <returns>New map with updated value</returns>
+    [Pure]
+    public Map<K, V> SetItem(K key, V value) => SetItem((key, value));
 
-    public Map<K, V> SetItem(KeyValuePair<K, V> kv) => SetItem(ToValueTuple(kv));
+    /// <summary>
+    /// Set an item in the map
+    /// </summary>
+    /// <param name="pair">Pair to set</param>
+    /// <returns>New map with updated value</returns>
+    [Pure]
+    public Map<K, V> SetItem((K Key, V Value) pair) {
+        (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValueComparer, pair);
+            
+        return Wrap(newRoot, replaced ? Count : Count + 1);
+    }
+    
+    /// <summary>
+    /// Set an item in the map
+    /// </summary>
+    /// <param name="pair">Pair to set</param>
+    /// <returns>New map with updated value</returns>
+    [Pure]
+    public Map<K, V> SetItem(KeyValuePair<K, V> pair) => SetItem(ToValueTuple(pair));
 
-    public Map<K, V> SetItem(Tuple<K, V> tup) => SetItem(ToValueTuple(tup));
+    /// <summary>
+    /// Set an item in the map
+    /// </summary>
+    /// <param name="pair">Pair to set</param>
+    /// <returns>New map with updated value</returns>
+    [Pure]
+    public Map<K, V> SetItem(Tuple<K, V> pair) => SetItem(ToValueTuple(pair));
 
+    /// <summary>
+    /// Set multiple items in the map
+    /// </summary>
+    /// <param name="items">Items to set</param>
+    /// <returns>New, updated map</returns>
+    [Pure]
     public Map<K, V> SetItems(params (K Key, V Value)[] items)
         => SetItems((IEnumerable<(K Key, V Value)>) items);
 
+    /// <summary>
+    /// Set multiple items in the map
+    /// </summary>
+    /// <param name="items">Items to set</param>
+    /// <returns>New, updated map</returns>
+    [Pure]
     public Map<K, V> SetItems(params KeyValuePair<K, V>[] items)
         => SetItems(items.Map(ToValueTuple));
+    
+    /// <summary>
+    /// Set multiple items in the map
+    /// </summary>
+    /// <param name="items">Items to set</param>
+    /// <returns>New, updated map</returns>
+    [Pure]
+    public Map<K, V> SetItems(params Tuple<K, V>[] items)
+        => SetItems(items.Map(ToValueTuple));
+    
+    /// <summary>
+    /// Set multiple items in the map
+    /// </summary>
+    /// <param name="items">Items to set</param>
+    /// <returns>New, updated map</returns>
+    [Pure]
+    public Map<K, V> SetItems(IEnumerable<(K Key, V Value)> items)
+        => Append(items, true, false);
 
+    /// <summary>
+    /// Set multiple items in the map
+    /// </summary>
+    /// <param name="items">Items to set</param>
+    /// <returns>New, updated map</returns>
+    [Pure]
     public Map<K, V> SetItems(IEnumerable<KeyValuePair<K, V>> items)
         => SetItems(items.Map(ToValueTuple));
 
-    public Map<K, V> SetItems(Tuple<K, V>[] items)
-        => SetItems(items.Map(ToValueTuple));
-
+    /// <summary>
+    /// Set multiple items in the map
+    /// </summary>
+    /// <param name="items">Items to set</param>
+    /// <returns>New, updated map</returns>
+    [Pure]
     public Map<K, V> SetItems(IEnumerable<Tuple<K, V>> items)
         => SetItems(items.Map(ToValueTuple));
+    
+    #endregion
+    
+    /// <summary>
+    /// Clear the map, but keep the comparers
+    /// </summary>
+    /// <returns>Empty map with comparers</returns>
+    [Pure]
+    public Map<K, V> Clear()
+        => _root.IsEmpty
+            ? this
+            : Empty.WithComparers(KeyComparer, ValueComparer);
+
+    /// <summary>
+    /// Lookup the value for a key
+    /// </summary>
+    /// <param name="key">Key to lookup</param>
+    /// <returns>Value associated with key</returns>
+    [Pure]
+    public Maybe<V> Get(K key) 
+        => _root.Get(KeyComparer, key);
 }
