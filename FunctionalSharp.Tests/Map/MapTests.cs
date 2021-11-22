@@ -114,30 +114,30 @@ namespace FunctionalSharp.Tests.Map {
         }
         
         [Property]
-        public void AddRange_ExistingKeySameValue_Same(int key, bool val) {
+        public void Append_ExistingKeySameValue_Same(int key, bool val) {
             var map = Map<int, bool>();
             map = map.Append(key, val);
         
-            Assert.Equal(map, map.AddRange((key, val)));
+            Assert.Equal(map, map.Append((key, val)));
         }
 
         [Property]
-        public void AddRange_ExistingKeyDiffValue_Throws(int key, bool val) {
+        public void Append_ExistingKeyDiffValue_Throws(int key, bool val) {
             var map = Map<int, bool>();
             map = map.Append(key, val);
         
-            Assert.Throws<ArgumentException>(() => map.AddRange((key, !val)));
+            Assert.Throws<ArgumentException>(() => map.Append((key, !val)));
         }
         
         [Fact]
-        public void AddRange_NullKey_Throws() {
+        public void Append_NullKey_Throws() {
             Assert.Throws<ArgumentNullException>(
-                () => Map<string, bool>().AddRange((null!, default)));
+                () => Map<string, bool>().Append((null!, default)));
         }
 
         [Fact]
         [SuppressMessage("ReSharper", "xUnit2004")]
-        public void AddRange_Duplicates_Ignores() {
+        public void Append_Duplicates_Ignores() {
             var map = Map<int, bool>((0, true), (0, true));
 
             Assert.Single(map);

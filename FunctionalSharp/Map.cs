@@ -353,18 +353,6 @@ public sealed partial class Map<K, V> where K : notnull {
     public static Map<K, V> operator +(Map<K, V> lhs, Map<K, V> rhs)
         => lhs.Append(rhs);
 
-    public bool TryGetValue(K key, [MaybeNullWhen(false)] out V val) {
-        if (key is null) throw new ArgumentNullException(nameof(key));
-
-        return _root.TryGetValue(KeyComparer, key, out val);
-    }
-
-    public bool TryGetKey(K checkKey, out K realKey) {
-        if (checkKey is null) throw new ArgumentNullException(nameof(checkKey));
-
-        return _root.TryGetKey(KeyComparer, checkKey, out realKey);
-    }
-
     public Map<K, V> WithComparers(IComparer<K>? keyComparer = null, IEqualityComparer<V>? valueComparer = null) {
         keyComparer ??= Comparer<K>.Default;
         valueComparer ??= EqualityComparer<V>.Default;
@@ -390,9 +378,9 @@ public sealed partial class Map<K, V> where K : notnull {
             bool replaced = false;
             bool mutated;
             if (overwrite)
-                (newRes, replaced, mutated) = acc.Root.Set(KeyComparer, ValueComparer, item);
+                (newRes, replaced, mutated) = acc.Root.Set(KeyComparer, ValueComparer, item.Key, item.Value);
             else
-                (newRes, mutated) = acc.Root.Add(KeyComparer, ValueComparer, item);
+                (newRes, mutated) = acc.Root.Add(KeyComparer, ValueComparer, item.Key, item.Value);
 
             return mutated ? (newRes, replaced ? acc.Count : acc.Count + 1) : (acc.Root, acc.Count);
         });

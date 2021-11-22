@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 
 namespace FunctionalSharp; 
@@ -28,57 +29,46 @@ public sealed partial class Map<K, V> where K : notnull {
         => _root.ContainsValue(ValueComparer, value);
     
     /// <summary>
-    /// See if map contains a specific key and value
-    /// </summary>
-    /// <param name="pair">Pair to look for</param>
-    /// <returns>Whether or not map contains this pair</returns>
-    [Pure]
-    public bool Contains((K Key, V Value) pair)
-        => _root.Contains(KeyComparer, ValueComparer, pair);
-    
-    /// <summary>
-    /// See if map contains a <see cref="KeyValuePair{TKey,TValue}"/>
-    /// </summary>
-    /// <param name="kv"><see cref="KeyValuePair{TKey,TValue}"/> to search for</param>
-    /// <returns>Whether map contains this <see cref="KeyValuePair{TKey,TValue}"/></returns>
-    [Pure]
-    public bool Contains(KeyValuePair<K, V> kv)
-        => Contains(ToValueTuple(kv));
-    
-    /// <summary>
-    /// See if map contains a specific key and value
-    /// </summary>
-    /// <param name="tup">Pair to look for</param>
-    /// <returns>Whether or not map contains this pair</returns>
-    [Pure]
-    public bool Contains(Tuple<K, V> tup)
-        => Contains(ToValueTuple(tup));
-    
-    /// <summary>
     /// See if the map contains a specific key and value
     /// </summary>
     /// <param name="key">Key to look for</param>
     /// <param name="value">Value to look for</param>
     /// <returns>Whether or not map contains this key and value</returns>
     [Pure]
-    public bool Contains(K key, V value) => Contains((key, value));
+    public bool Contains(K key, V value) 
+        => _root.Contains(KeyComparer, ValueComparer, key, value);
+
+    /// <summary>
+    /// See if map contains a specific key and value
+    /// </summary>
+    /// <param name="pair">Pair to look for</param>
+    /// <returns>Whether or not map contains this pair</returns>
+    [Pure]
+    public bool Contains((K Key, V Value) pair)
+        => Contains(pair.Key, pair.Value);
+    
+    /// <summary>
+    /// See if map contains a <see cref="KeyValuePair{TKey,TValue}"/>
+    /// </summary>
+    /// <param name="pair"><see cref="KeyValuePair{TKey,TValue}"/> to search for</param>
+    /// <returns>Whether map contains this <see cref="KeyValuePair{TKey,TValue}"/></returns>
+    [Pure]
+    public bool Contains(KeyValuePair<K, V> pair)
+        => Contains(pair.Key, pair.Value);
+    
+    /// <summary>
+    /// See if map contains a specific key and value
+    /// </summary>
+    /// <param name="pair">Pair to look for</param>
+    /// <returns>Whether or not map contains this pair</returns>
+    [Pure]
+    public bool Contains(Tuple<K, V> pair)
+        => Contains(pair.Item1, pair.Item2);
 
     #endregion
 
     #region Append
 
-    /// <summary>
-    /// Append a pair to the map
-    /// </summary>
-    /// <param name="pair">Pair to add</param>
-    /// <returns>New map with pair added</returns>
-    [Pure]
-    public Map<K, V> Append((K Key, V Value) pair) {
-        (Node res, _) = _root.Add(KeyComparer, ValueComparer, pair);
-
-        return Wrap(res, Count + 1);
-    }
-    
     /// <summary>
     /// Append a <paramref name="key"/> and associated <paramref name="value"/> to the map
     /// </summary>
@@ -86,23 +76,38 @@ public sealed partial class Map<K, V> where K : notnull {
     /// <param name="value">Value to add</param>
     /// <returns>New map with key and value added</returns>
     [Pure]
-    public Map<K, V> Append(K key, V value) => Append((key, value));
+    public Map<K, V> Append(K key, V value) {
+        (Node res, _) = _root.Add(KeyComparer, ValueComparer, key, value);
+
+        return Wrap(res, Count + 1);
+    }
+    
+    /// <summary>
+    /// Append a pair to the map
+    /// </summary>
+    /// <param name="pair">Pair to add</param>
+    /// <returns>New map with pair added</returns>
+    [Pure]
+    public Map<K, V> Append((K Key, V Value) pair) 
+        => Append(pair.Key, pair.Value);
 
     /// <summary>
     /// Append a pair to the map
     /// </summary>
-    /// <param name="kv">Pair to add</param>
+    /// <param name="pair">Pair to add</param>
     /// <returns>New map with pair added</returns>
     [Pure]
-    public Map<K, V> Append(KeyValuePair<K, V> kv) => Append(ToValueTuple(kv));
+    public Map<K, V> Append(KeyValuePair<K, V> pair) 
+        => Append(pair.Key, pair.Value);
 
     /// <summary>
     /// Append a pair to the map
     /// </summary>
-    /// <param name="tup">Pair to add</param>
+    /// <param name="pair">Pair to add</param>
     /// <returns>New map with pair added</returns>
     [Pure]
-    public Map<K, V> Append(Tuple<K, V> tup) => Append(ToValueTuple(tup));
+    public Map<K, V> Append(Tuple<K, V> pair) 
+        => Append(pair.Item1, pair.Item2);
     
     /// <summary>
     /// Append an enumerable of pairs to the map
@@ -220,7 +225,7 @@ public sealed partial class Map<K, V> where K : notnull {
     #endregion
     
     #region SetItem
-    
+
     /// <summary>
     /// Set an item in the map
     /// </summary>
@@ -228,7 +233,11 @@ public sealed partial class Map<K, V> where K : notnull {
     /// <param name="value">Value to set to</param>
     /// <returns>New map with updated value</returns>
     [Pure]
-    public Map<K, V> SetItem(K key, V value) => SetItem((key, value));
+    public Map<K, V> SetItem(K key, V value) {
+        (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValueComparer, key, value);
+        
+        return Wrap(newRoot, replaced ? Count : Count + 1);
+    }
 
     /// <summary>
     /// Set an item in the map
@@ -236,11 +245,8 @@ public sealed partial class Map<K, V> where K : notnull {
     /// <param name="pair">Pair to set</param>
     /// <returns>New map with updated value</returns>
     [Pure]
-    public Map<K, V> SetItem((K Key, V Value) pair) {
-        (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValueComparer, pair);
-            
-        return Wrap(newRoot, replaced ? Count : Count + 1);
-    }
+    public Map<K, V> SetItem((K Key, V Value) pair)
+        => SetItem(pair.Key, pair.Value);
     
     /// <summary>
     /// Set an item in the map
@@ -248,7 +254,8 @@ public sealed partial class Map<K, V> where K : notnull {
     /// <param name="pair">Pair to set</param>
     /// <returns>New map with updated value</returns>
     [Pure]
-    public Map<K, V> SetItem(KeyValuePair<K, V> pair) => SetItem(ToValueTuple(pair));
+    public Map<K, V> SetItem(KeyValuePair<K, V> pair) 
+        => SetItem(pair.Key, pair.Value);
 
     /// <summary>
     /// Set an item in the map
@@ -256,7 +263,8 @@ public sealed partial class Map<K, V> where K : notnull {
     /// <param name="pair">Pair to set</param>
     /// <returns>New map with updated value</returns>
     [Pure]
-    public Map<K, V> SetItem(Tuple<K, V> pair) => SetItem(ToValueTuple(pair));
+    public Map<K, V> SetItem(Tuple<K, V> pair) 
+        => SetItem(pair.Item1, pair.Item2);
 
     /// <summary>
     /// Set multiple items in the map
@@ -332,4 +340,25 @@ public sealed partial class Map<K, V> where K : notnull {
     [Pure]
     public Maybe<V> Get(K key) 
         => _root.Get(KeyComparer, key);
+    
+    /// <summary>
+    /// Equivalent to Dictionary.TryGetValue.
+    /// </summary>
+    /// <param name="key">Key to try and get value from</param>
+    /// <param name="value">Returned value</param>
+    /// <returns>Whether value was found</returns>
+    [Pure]
+    public bool TryGetValue(K key, [MaybeNullWhen(false)] out V value) 
+        => _root.TryGetValue(KeyComparer, key, out value);
+
+    /// <summary>
+    /// Whether this map contains a particular key
+    /// </summary>
+    /// <param name="equalKey">Key to search for</param>
+    /// <param name="actualKey">The matching key located in the dictionary if found, or <paramref name="equalKey"/>
+    /// if no match is found.</param>
+    /// <returns>Whether <paramref name="equalKey"/> was found</returns>
+    [Pure]
+    public bool TryGetKey(K equalKey, out K actualKey) 
+        => _root.TryGetKey(KeyComparer, equalKey, out actualKey);
 }
