@@ -138,13 +138,13 @@ public readonly partial struct Maybe<T> {
         => Match(() => throw new InvalidOperationException(), t => t);
         
     /// <summary>
-    /// Return wrapped value of Maybe; if Nothing, use <paramref name="val"/>
+    /// Return wrapped value of Maybe; if Nothing, use <paramref name="value"/>
     /// </summary>
     [Pure]
-    public T IfNothing(T val) {
-        if (val is null) throw new ArgumentNullException(nameof(val));
+    public T IfNothing(T value) {
+        if (value is null) throw new ArgumentNullException(nameof(value));
 
-        return IsJust ? _value! : val;
+        return IsJust ? _value! : value;
     }
 
     /// <summary>
