@@ -1,50 +1,49 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace FunctionalSharp {
-    public sealed partial class Map<K, V> where K : notnull {
-        #region ICollection Methods
+namespace FunctionalSharp; 
 
-        void ICollection.CopyTo(Array array, int index)
-            => _root.CopyTo(array, index, Count);
+public sealed partial class Map<K, V> where K : notnull {
+    #region ICollection Methods
 
-        #endregion
+    void ICollection.CopyTo(Array array, int index)
+        => _root.CopyTo(array, index, Count);
 
-        #region ICollection<KeyValuePair<K, V>> Properties
+    #endregion
 
-        bool ICollection<KeyValuePair<K, V>>.IsReadOnly => true;
+    #region ICollection<KeyValuePair<K, V>> Properties
 
-        #endregion
+    bool ICollection<KeyValuePair<K, V>>.IsReadOnly => true;
 
-        #region ICollection<KeyValuePair<K, V>> Methods
+    #endregion
 
-        void ICollection<KeyValuePair<K, V>>.Add(KeyValuePair<K, V> item) => throw new NotSupportedException();
+    #region ICollection<KeyValuePair<K, V>> Methods
 
-        void ICollection<KeyValuePair<K, V>>.Clear() => throw new NotSupportedException();
+    void ICollection<KeyValuePair<K, V>>.Add(KeyValuePair<K, V> item) => throw new NotSupportedException();
 
-        bool ICollection<KeyValuePair<K, V>>.Remove(KeyValuePair<K, V> item)
-            => throw new NotSupportedException();
+    void ICollection<KeyValuePair<K, V>>.Clear() => throw new NotSupportedException();
 
-        void ICollection<KeyValuePair<K, V>>.CopyTo(KeyValuePair<K, V>[] array, int index) {
-            if (array is null) throw new ArgumentNullException(nameof(array));
-            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
-            if (array.Length < index + Count) throw new ArgumentOutOfRangeException(nameof(index));
+    bool ICollection<KeyValuePair<K, V>>.Remove(KeyValuePair<K, V> item)
+        => throw new NotSupportedException();
 
-            foreach ((K k, V v) in this)
-                array[index++] = new(k, v);
-        }
+    void ICollection<KeyValuePair<K, V>>.CopyTo(KeyValuePair<K, V>[] array, int index) {
+        if (array is null) throw new ArgumentNullException(nameof(array));
+        if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+        if (array.Length < index + Count) throw new ArgumentOutOfRangeException(nameof(index));
 
-        #endregion
-
-        #region ICollection Properties
-
-        bool ICollection.IsSynchronized => true;
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        object ICollection.SyncRoot => this;
-
-        #endregion
+        foreach ((K k, V v) in this)
+            array[index++] = new(k, v);
     }
+
+    #endregion
+
+    #region ICollection Properties
+
+    bool ICollection.IsSynchronized => true;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    object ICollection.SyncRoot => this;
+
+    #endregion
 }

@@ -180,44 +180,44 @@ namespace FunctionalSharp.Tests.Map {
             var map = Map<string, string>();
             Assert.Empty(map);
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
-            Assert.Same(EqualityComparer<string>.Default, map.ValComparer);
+            Assert.Same(EqualityComparer<string>.Default, map.ValueComparer);
 
             map = MapWithComparers<string, string>(keyComparer: keyComparer);
             Assert.Empty(map);
             Assert.Same(keyComparer, map.KeyComparer);
-            Assert.Same(EqualityComparer<string>.Default, map.ValComparer);
+            Assert.Same(EqualityComparer<string>.Default, map.ValueComparer);
 
             map = MapWithComparers<string, string>(valComparer: valComparer);
             Assert.Empty(map);
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
-            Assert.Same(valComparer, map.ValComparer);
+            Assert.Same(valComparer, map.ValueComparer);
             
             map = MapWithComparers(keyComparer, valComparer);
             Assert.Empty(map);
             Assert.Same(keyComparer, map.KeyComparer);
-            Assert.Same(valComparer, map.ValComparer);
+            Assert.Same(valComparer, map.ValueComparer);
 
             (string, string)[] pairs = { ("a", "b") };
             
             map = Map<string, string>(pairs);
             Assert.Single(map);
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
-            Assert.Same(EqualityComparer<string>.Default, map.ValComparer);
+            Assert.Same(EqualityComparer<string>.Default, map.ValueComparer);
             
             map = MapWithComparers(pairs, keyComparer: keyComparer);
             Assert.Single(map);
             Assert.Same(keyComparer, map.KeyComparer);
-            Assert.Same(EqualityComparer<string>.Default, map.ValComparer);
+            Assert.Same(EqualityComparer<string>.Default, map.ValueComparer);
             
             map = MapWithComparers(pairs, valComparer: valComparer);
             Assert.Single(map);
             Assert.Same(Comparer<string>.Default, map.KeyComparer);
-            Assert.Same(valComparer, map.ValComparer);
+            Assert.Same(valComparer, map.ValueComparer);
             
             map = MapWithComparers(pairs, keyComparer, valComparer);
             Assert.Single(map);
             Assert.Same(keyComparer, map.KeyComparer);
-            Assert.Same(valComparer, map.ValComparer);
+            Assert.Same(valComparer, map.ValueComparer);
         }
         
         [Fact]

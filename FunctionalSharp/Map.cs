@@ -85,7 +85,7 @@ namespace FunctionalSharp {
         public int Count { get; }
         public bool IsEmpty => Count == 0;
         public IComparer<K> KeyComparer { get; init; } = Comparer<K>.Default;
-        public IEqualityComparer<V> ValComparer { get; init; } = EqualityComparer<V>.Default;
+        public IEqualityComparer<V> ValueComparer { get; init; } = EqualityComparer<V>.Default;
         public static Map<K, V> Empty => new();
 
         #endregion
@@ -131,7 +131,7 @@ namespace FunctionalSharp {
         public Map<K, V> Clear()
             => _root.IsEmpty
                 ? this
-                : Empty.WithComparers(KeyComparer, ValComparer);
+                : Empty.WithComparers(KeyComparer, ValueComparer);
 
         public Maybe<V> Get(K key) {
             if (key is null) throw new ArgumentNullException(nameof(key));
@@ -168,7 +168,7 @@ namespace FunctionalSharp {
         public Map<K, V> SetItem((K Key, V Value) pair) {
             if (pair.Key is null) throw new ArgumentNullException($"{nameof(pair)}.{nameof(pair.Key)}");
 
-            (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValComparer, pair);
+            (Node newRoot, bool replaced, _) = _root.Set(KeyComparer, ValueComparer, pair);
             
             return Wrap(newRoot, replaced ? Count : Count + 1);
         }
@@ -181,16 +181,16 @@ namespace FunctionalSharp {
             valComparer ??= EqualityComparer<V>.Default;
 
             if (keyComparer == KeyComparer) //structure doesn't depend on valComparer, so just one new node
-                return valComparer == ValComparer
+                return valComparer == ValueComparer
                     ? this
-                    : new(_root, Count) { KeyComparer = KeyComparer, ValComparer = valComparer };
+                    : new(_root, Count) { KeyComparer = KeyComparer, ValueComparer = valComparer };
 
-            return new Map<K, V>(Node.EmptyNode, 0) { KeyComparer = keyComparer, ValComparer = valComparer }
+            return new Map<K, V>(Node.EmptyNode, 0) { KeyComparer = keyComparer, ValueComparer = valComparer }
                 .AddRange(this, false, true);
         }
 
         public Map<K, V> Add((K Key, V Value) pair) {
-            (Node res, _) = _root.Add(KeyComparer, ValComparer, pair);
+            (Node res, _) = _root.Add(KeyComparer, ValueComparer, pair);
 
             return Wrap(res, Count + 1);
         }
@@ -199,9 +199,9 @@ namespace FunctionalSharp {
             => AddRange(items, false, false);
 
         public bool Contains((K Key, V Value) pair)
-            => _root.Contains(KeyComparer, ValComparer, pair);
+            => _root.Contains(KeyComparer, ValueComparer, pair);
 
-        public bool ContainsVal(V val) => _root.ContainsVal(ValComparer, val);
+        public bool ContainsVal(V val) => _root.ContainsVal(ValueComparer, val);
 
         //TODO: avoidMap
         // ReSharper disable once UnusedParameter.Local
@@ -216,9 +216,9 @@ namespace FunctionalSharp {
                 bool replaced = false;
                 bool mutated;
                 if (overwrite)
-                    (newRes, replaced, mutated) = acc.Root.Set(KeyComparer, ValComparer, item);
+                    (newRes, replaced, mutated) = acc.Root.Set(KeyComparer, ValueComparer, item);
                 else
-                    (newRes, mutated) = acc.Root.Add(KeyComparer, ValComparer, item);
+                    (newRes, mutated) = acc.Root.Add(KeyComparer, ValueComparer, item);
 
                 return mutated ? (newRes, replaced ? acc.Count : acc.Count + 1) : (acc.Root, acc.Count);
             });
@@ -230,7 +230,7 @@ namespace FunctionalSharp {
             if (_root != root)
                 return root.IsEmpty 
                     ? Clear() 
-                    : new(root, adjustedCount) { KeyComparer = KeyComparer, ValComparer = ValComparer };
+                    : new(root, adjustedCount) { KeyComparer = KeyComparer, ValueComparer = ValueComparer };
 
             return this;
         };

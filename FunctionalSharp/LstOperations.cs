@@ -75,7 +75,7 @@ public readonly partial struct Lst<T> {
     
     #endregion
 
-    #region Add
+    #region Append
 
     public Lst<T> Append(T item) {
         if (_count == 0) return Of(item);
