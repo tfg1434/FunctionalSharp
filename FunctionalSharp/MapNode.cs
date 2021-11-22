@@ -135,7 +135,7 @@ public sealed partial class Map<K, V> where K : notnull {
             Debug.Assert(Left is not null && Right is not null);
 
             if (_frozen)
-                return new((_key, _value), left ?? Left, right ?? Right);
+                return new(_key, _value, left ?? Left, right ?? Right);
 
             if (left is not null)
                 Left = left;
