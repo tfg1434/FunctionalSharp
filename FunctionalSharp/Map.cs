@@ -342,17 +342,48 @@ public sealed partial class Map<K, V> where K : notnull {
 
     #region Properties
 
+    /// <summary>
+    /// Number of elements in this map
+    /// </summary>
+    [Pure]
     public int Count { get; }
+    
+    /// <summary>
+    /// Whether this map is empty
+    /// </summary>
+    [Pure]
     public bool IsEmpty => Count == 0;
+    
+    /// <summary>
+    /// The key comparer used by this map
+    /// </summary>
+    [Pure]
     public IComparer<K> KeyComparer { get; init; } = Comparer<K>.Default;
+    
+    /// <summary>
+    /// The value comparer used by this map
+    /// </summary>
+    [Pure]
     public IEqualityComparer<V> ValueComparer { get; init; } = EqualityComparer<V>.Default;
+    
+    /// <summary>
+    /// The empty Map with default comparers.
+    /// </summary>
+    [Pure]
     public static Map<K, V> Empty => new();
 
     #endregion
 
+    [Pure]
     public static Map<K, V> operator +(Map<K, V> lhs, Map<K, V> rhs)
         => lhs.Append(rhs);
 
+    /// <summary>
+    /// Give this map custom comparers
+    /// </summary>
+    /// <param name="keyComparer">Key comparer to use. If null, uses <see cref="Comparer{T}"/></param>
+    /// <param name="valueComparer">Value comparer to use. If null, uses <see cref="EqualityComparer{T}"/></param>
+    /// <returns>New map with custom comparers</returns>
     public Map<K, V> WithComparers(IComparer<K>? keyComparer = null, IEqualityComparer<V>? valueComparer = null) {
         keyComparer ??= Comparer<K>.Default;
         valueComparer ??= EqualityComparer<V>.Default;
