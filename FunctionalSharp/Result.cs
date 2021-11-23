@@ -3,7 +3,7 @@
 namespace FunctionalSharp;
 
 /// <summary>
-/// Semantic version of Either&lt;Error, A&gt;
+/// Semantic version of Either&lt;Error, T&gt;
 /// </summary>
 //TODO: Equality, ForEach for all monads
 public readonly struct Result<T> {
@@ -70,7 +70,7 @@ public readonly struct Result<T> {
         => IsSucc ? succ(_value!) : fail(_error!);
 
     /// <summary>
-    /// Side-effect Match
+    /// Side-effect <see cref="Match{R}"/>
     /// </summary>
     /// <param name="fail">Fail Action</param>
     /// <param name="succ">Success Action</param>
