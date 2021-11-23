@@ -92,13 +92,16 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
     }
 
     [Pure]
-    public static Lst<T> operator +(Lst<T> lhs, Lst<T> rhs) => lhs.Append(rhs);
+    public static Lst<T> operator +(Lst<T> lhs, Lst<T> rhs) 
+        => lhs.Append(rhs);
 
     [Pure]
-    public static Lst<T> operator +(Lst<T> lhs, T rhs) => lhs.Append(rhs);
+    public static Lst<T> operator +(Lst<T> lhs, T rhs) 
+        => lhs.Append(rhs);
 
     [Pure]
-    public static Lst<T> operator +(T lhs, Lst<T> rhs) => rhs.Prepend(lhs);
+    public static Lst<T> operator +(T lhs, Lst<T> rhs) 
+        => rhs.Prepend(lhs);
 
     private bool IsEmpty => Count == 0;
     

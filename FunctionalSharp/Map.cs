@@ -373,11 +373,18 @@ public sealed partial class Map<K, V> where K : notnull {
     public static Map<K, V> Empty => new();
 
     #endregion
-
-    //TODO: See Lst concats
+    
     [Pure]
     public static Map<K, V> operator +(Map<K, V> lhs, Map<K, V> rhs)
         => lhs.Append(rhs);
+
+    [Pure]
+    public static Map<K, V> operator +(Map<K, V> lhs, (K Key, V Value) rhs)
+        => lhs.Append(rhs);
+
+    [Pure]
+    public static Map<K, V> operator +((K Key, V Value) lhs, Map<K, V> rhs)
+        => throw new NotImplementedException();//rhs.Prepend(lhs);
 
     /// <summary>
     /// Give this map custom comparers
@@ -419,7 +426,7 @@ public sealed partial class Map<K, V> where K : notnull {
 
         return Wrap(res.Root, res.Count);
     }
-        
+
     private Func<Node, int, Map<K, V>> Wrap => (root, adjustedCount) => {
         if (_root != root)
             return root.IsEmpty 

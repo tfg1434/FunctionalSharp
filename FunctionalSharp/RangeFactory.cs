@@ -26,7 +26,6 @@
 //             //from, second, to
 //             (true, true) => Ctor(fromU, parse(to.Value), subtract(parse(second.Value), fromU)),
 //             //from, second
-//             //TODO: why cant i use null instead of default
 //             (true, false) => Ctor(fromU, default, subtract(parse(second.Value), fromU)),
 //             //from, to
 //             (false, true) => Ctor(fromU, parse(to.Value), one),

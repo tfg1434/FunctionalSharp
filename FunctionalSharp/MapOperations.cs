@@ -321,7 +321,7 @@ public sealed partial class Map<K, V> where K : notnull {
         => SetItems(items.Map(ToValueTuple));
     
     #endregion
-    
+
     /// <summary>
     /// Clear the map, but keep the comparers
     /// </summary>
