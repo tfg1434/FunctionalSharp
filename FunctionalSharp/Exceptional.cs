@@ -61,24 +61,42 @@ public readonly struct Exceptional<T> {
 }
 
 public static class Exceptional {
-    //functor
+    /// <summary>
+    /// Functor Map
+    /// </summary>
+    [Pure]
     public static Exceptional<R> Map<T, R>(this Exceptional<T> self, Func<T, R> f)
         => self.Match(
             ex => new Exceptional<R>(ex),
             r => f(r));
 
+    /// <summary>
+    /// Functor BiMap
+    /// </summary>
+    [Pure]
     public static Exceptional<R> BiMap<T, R>(this Exceptional<T> self, Func<Exception, Exception> ex, 
         Func<T, R> succ)
         => self.Match<Exceptional<R>>(l => ex(l), r => succ(r));
 
+    /// <summary>
+    /// Side-effecting Map
+    /// </summary>
+    [Pure]
     public static Exceptional<Unit> ForEach<T>(this Exceptional<T> self, Action<T> act)
         => Map(self, act.ToFunc());
 
+    /// <summary>
+    /// Monadic Bind
+    /// </summary>
+    [Pure]
     public static Exceptional<R> Bind<T, R>(this Exceptional<T> self, Func<T, Exceptional<R>> f)
         => self.Match(
             ex => new(ex), f);
 
-    //applicative
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Exceptional<R> Apply<T, R>(this Exceptional<Func<T, R>> self, Exceptional<T> arg)
         => self.Match(
             ex => ex,
@@ -86,43 +104,73 @@ public static class Exceptional {
                 ex => ex,
                 t => Exceptional(func(t))));
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Exceptional<Func<T2, R>> Apply<T1, T2, R>(this Exceptional<Func<T1, T2, R>> self,
         Exceptional<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Exceptional<Func<T2, T3, R>> Apply<T1, T2, T3, R>(this Exceptional<Func<T1, T2, T3, R>> self,
         Exceptional<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Exceptional<Func<T2, T3, T4, R>> Apply<T1, T2, T3, T4, R>(
         this Exceptional<Func<T1, T2, T3, T4, R>> self, Exceptional<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Exceptional<Func<T2, T3, T4, T5, R>> Apply<T1, T2, T3, T4, T5, R>(
         this Exceptional<Func<T1, T2, T3, T4, T5, R>> self, Exceptional<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Exceptional<Func<T2, T3, T4, T5, T6, R>> Apply<T1, T2, T3, T4, T5, T6, R>(
         this Exceptional<Func<T1, T2, T3, T4, T5, T6, R>> self, Exceptional<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Exceptional<Func<T2, T3, T4, T5, T6, T7, R>> Apply<T1, T2, T3, T4, T5, T6, T7, R>(
         this Exceptional<Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Exceptional<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
-    //QOL
+    /// <summary>
+    /// Convert an <see cref="Exceptional{T}"/> to a <see cref="Maybe{T}"/> 
+    /// </summary>
+    [Pure]
     public static Maybe<T> ToMaybe<T>(this Exceptional<T> self)
         => self.Match(_ => Nothing, Just);
 
-    //query syntax
+    /// <summary>
+    /// Functor Map
+    /// </summary>
+    [Pure]
     public static Exceptional<R> Select<T, R>(this Exceptional<T> self, Func<T, R> f)
         => self.Map(f);
 
+    /// <summary>
+    /// Monadic bind with a projection function
+    /// </summary>
+    [Pure]
     public static Exceptional<RR> SelectMany<T, R, RR>(this Exceptional<T> self, Func<T, Exceptional<R>> bind,
-        Func<T, R, RR> project)
-        => self.Match(
-            ex => new(ex),
-            t => bind(t).Match(
-                ex => new Exceptional<RR>(ex),
-                r => project(t, r)));
+        Func<T, R, RR> proj)
+        => self.Bind(t => bind(t).Map(r => proj(t, r)));
 }

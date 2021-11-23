@@ -78,6 +78,9 @@ public readonly struct Result<T> {
     public Unit Match(Action<Error> fail, Action<T> succ)
         => Match(fail.ToFunc(), succ.ToFunc());
     
+    /// <summary>
+    /// Convert an <see cref="Exceptional{T}"/> to a <see cref="Maybe{T}"/> 
+    /// </summary>
     [Pure]
     public Maybe<T> ToMaybe()
         => Match(_ => Nothing, Just);
@@ -87,6 +90,7 @@ public readonly struct Result<T> {
     /// </summary>
     /// <param name="f">Map function</param>
     /// <typeparam name="R">Resulting wrapped type</typeparam>
+    [Pure]
     public Result<R> Map<R>(Func<T, R> f)
         => Match(
             fail => new Result<R>(fail),
@@ -96,6 +100,7 @@ public readonly struct Result<T> {
     /// Side-effect functor Map
     /// </summary>
     /// <param name="f">Action function</param>
+    [Pure]
     public Result<Unit> ForEach(Action<T> f)
         => Map(f.ToFunc());
 
@@ -104,6 +109,7 @@ public readonly struct Result<T> {
     /// </summary>
     /// <param name="f">Bind function</param>
     /// <typeparam name="R">Bind return wrapped type</typeparam>
+    [Pure]
     public Result<R> Bind<R>(Func<T, Result<R>> f)
         => Match(fail => new(fail), f);
     
@@ -112,6 +118,7 @@ public readonly struct Result<T> {
     /// </summary>
     /// <param name="f">Map function</param>
     /// <typeparam name="R">Resulting wrapped type</typeparam>
+    [Pure]
     public Result<R> Select<R>(Func<T, R> f)
         => Map(f);
 
@@ -122,13 +129,11 @@ public readonly struct Result<T> {
     /// <param name="proj">Projection</param>
     /// <typeparam name="R">Bind return wrapped type</typeparam>
     /// <typeparam name="PR">Project return type</typeparam>
+    [Pure]
     public Result<PR> SelectMany<R, PR>(Func<T, Result<R>> bind, Func<T, R, PR> proj)
-        => Match(
-            ex => new(ex),
-            t => bind(t).Match(
-                ex => new Result<PR>(ex),
-                r => proj(t, r)));
+        => Bind(t => bind(t).Map(r => proj(t, r)));
     
+    [Pure]
     public override string ToString()
         => Match(
             fail => $"Error({fail.Message})", 
@@ -144,6 +149,10 @@ public readonly struct Result<T> {
 }
 
 public static class ResultExt {
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Result<R> Apply<T, R>(this Result<Func<T, R>> self, Result<T> arg)
         => self.Match(
             fail => fail,
@@ -151,24 +160,48 @@ public static class ResultExt {
                 fail => fail,
                 t => f(t)));
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Result<Func<T2, R>> Apply<T1, T2, R>(this Result<Func<T1, T2, R>> self, Result<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Result<Func<T2, T3, R>> Apply<T1, T2, T3, R>(this Result<Func<T1, T2, T3, R>> self, Result<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Result<Func<T2, T3, T4, R>> Apply<T1, T2, T3, T4, R>(this Result<Func<T1, T2, T3, T4, R>> self, 
         Result<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Result<Func<T2, T3, T4, T5, R>> Apply<T1, T2, T3, T4, T5, R>(
         this Result<Func<T1, T2, T3, T4, T5, R>> self, Result<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Result<Func<T2, T3, T4, T5, T6, R>> Apply<T1, T2, T3, T4, T5, T6, R>(
         this Result<Func<T1, T2, T3, T4, T5, T6, R>> self, Result<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
 
+    /// <summary>
+    /// Applicative Apply. Applies if both are in Success state
+    /// </summary>
+    [Pure]
     public static Result<Func<T2, T3, T4, T5, T6, T7, R>> Apply<T1, T2, T3, T4, T5, T6, T7, R>(
         this Result<Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Result<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
