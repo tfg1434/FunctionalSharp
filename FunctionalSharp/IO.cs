@@ -145,7 +145,7 @@ public readonly struct IO<E, T> where E : struct {
     /// <summary>
     /// Use <paramref name="f"/> if the IO monad is in a fail state
     /// </summary>
-    /// <param name="f">Alternative lazy fail value taking an environment</param>
+    /// <param name="f">Alternative lazy fail value taking an error</param>
     /// <returns>Lazy IO monad with alternative fail value</returns>
     [Pure]
     public IO<E, T> IfFail(Func<Error, T> f) {
