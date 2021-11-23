@@ -152,6 +152,13 @@ public readonly partial struct Lst<T> {
     
     #region Remove
 
+    /// <summary>
+    /// Remove an item from the list
+    /// </summary>
+    /// <param name="item">Item to remove</param>
+    /// <param name="comparer">Comparer to use. If null, uses <see cref="EqualityComparer{T}"/></param>
+    /// <returns></returns>
+    [Pure]
     public Lst<T> Remove(T item, IEqualityComparer<T>? comparer = null) {
         comparer ??= EqualityComparer<T>.Default;
 
@@ -172,8 +179,21 @@ public readonly partial struct Lst<T> {
         return this;
     }
     
-    public Lst<T> RemoveAt(int index) => RemoveAtRet(index).List;
+    /// <summary>
+    /// Remove an item from the list at a specific index
+    /// </summary>
+    /// <param name="index">Index to remove at</param>
+    /// <returns>New list with index removed</returns>
+    [Pure]
+    public Lst<T> RemoveAt(int index) 
+        => RemoveAtRet(index).List;
 
+    /// <summary>
+    /// Remove an item from the list at a specific index and return it
+    /// </summary>
+    /// <param name="index">Index to remove at</param>
+    /// <returns>New list with index removed and removed item</returns>
+    [Pure]
     public (Lst<T> List, T Removed) RemoveAtRet(int index) {
         if (index < 0 || index >= _count) throw new ArgumentOutOfRangeException(nameof(index));
         
@@ -189,9 +209,15 @@ public readonly partial struct Lst<T> {
         return (new(newHead, _count - 1), curr.Value);
     }
 
+    /// <summary>
+    /// Remove all items from the list that match a predicate
+    /// </summary>
+    /// <param name="pred">Predicate to remove with</param>
+    /// <returns>New list with items removed</returns>
+    [Pure]
     public Lst<T> RemoveAll(Func<T, bool> pred) {
         //remove prefix as it doesn't require copying
-        var noPrefix = this.SkipWhile(pred);
+        var noPrefix = SkipWhile(pred);
 
         if (noPrefix._count == 0) return Empty;
         
@@ -223,6 +249,12 @@ public readonly partial struct Lst<T> {
     
     #region Skip
 
+    /// <summary>
+    /// Skip the first <paramref name="count"/> items
+    /// </summary>
+    /// <param name="count">Number of items to skip</param>
+    /// <returns>New list with items skipped</returns>
+    [Pure]
     public Lst<T> Skip(int count) {
         if (count > _count) return Empty;
 
@@ -237,6 +269,12 @@ public readonly partial struct Lst<T> {
         return new(curr, _count - skipped);
     }
 
+    /// <summary>
+    /// Skip the first items that match a predicate
+    /// </summary>
+    /// <param name="pred">Predicate to use</param>
+    /// <returns>New list with items skipped</returns>
+    [Pure]
     public Lst<T> SkipWhile(Func<T, bool> pred) {
         Node? newHead = _head;
         int count = 0;
@@ -249,6 +287,12 @@ public readonly partial struct Lst<T> {
         return new(newHead, _count - count);
     }
     
+    /// <summary>
+    /// Skip the first items that match a ternary predicate
+    /// </summary>
+    /// <param name="pred">Predicate to use</param>
+    /// <returns>New list with items skipped</returns>
+    [Pure]
     public Lst<T> SkipWhile(Func<T, int, bool> pred) {
         Node? newHead = _head;
         int index = 0;
@@ -265,6 +309,14 @@ public readonly partial struct Lst<T> {
     
     #endregion
 
+    /// <summary>
+    /// Slice the list
+    /// </summary>
+    /// <param name="index">Index to start slicing from</param>
+    /// <param name="count">Number of items to slice</param>
+    /// <returns>Sliced section of list</returns>
+    /// <exception cref="ArgumentOutOfRangeException">If index or count is out of range</exception>
+    [Pure]
     public Lst<T> Slice(int index, int count) {
         if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
         if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
