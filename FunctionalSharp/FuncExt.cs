@@ -7,12 +7,6 @@ namespace FunctionalSharp;
 /// </summary>
 public static class FuncExt {
     /// <summary>
-    /// Identity function
-    /// </summary>
-    [Pure]
-    public static Func<T, T> Ident<T>() => x => x;
-    
-    /// <summary>
     /// Convert a Unit-taking binary function to a nullary function
     /// </summary>
     [Pure]

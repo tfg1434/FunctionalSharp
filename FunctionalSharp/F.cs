@@ -9,6 +9,12 @@ public static partial class F {
     /// <returns>Unit</returns>
     [Pure]
     public static Unit Unit() => default;
+    
+    /// <summary>
+    /// Identity function
+    /// </summary>
+    [Pure]
+    public static Func<T, T> Ident<T>() => x => x;
 
     /// <summary>
     /// Using HOF
