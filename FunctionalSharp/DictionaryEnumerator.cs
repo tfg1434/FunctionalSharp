@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace FunctionalSharp {
-    class DictionaryEnumerator<K, V> : IDictionaryEnumerator where K : notnull {
-        private readonly IEnumerator<(K Key, V Value)> inner;
+namespace FunctionalSharp; 
 
-        internal DictionaryEnumerator(IEnumerator<(K Key, V Value)> inner) {
-            if (inner is null) throw new ArgumentNullException(nameof(inner));
+class DictionaryEnumerator<K, V> : IDictionaryEnumerator where K : notnull {
+    private readonly IEnumerator<(K Key, V Value)> _inner;
 
-            this.inner = inner;
-        }
+    internal DictionaryEnumerator(IEnumerator<(K Key, V Value)> inner) 
+        => _inner = inner;
 
-        public object Current => Entry;
-        public DictionaryEntry Entry => new(inner.Current.Key, inner.Current.Value);
-        public object Key => inner.Current.Key;
-        public object? Value => inner.Current.Value;
+    public object Current => Entry;
+    public DictionaryEntry Entry => new(_inner.Current.Key, _inner.Current.Value);
+    public object Key => _inner.Current.Key;
+    public object? Value => _inner.Current.Value;
 
-        public bool MoveNext() => inner.MoveNext();
+    public bool MoveNext() => _inner.MoveNext();
 
-        public void Reset() => inner.Reset();
-    }
+    public void Reset() => _inner.Reset();
 }
