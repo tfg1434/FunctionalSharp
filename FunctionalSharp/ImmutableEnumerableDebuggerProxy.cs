@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
 
-namespace FunctionalSharp {
-    //only use with immutable enumerables since it caches
-    //enumerable into an array for display
-    class ImmutableEnumerableDebuggerProxy<T> {
-        private readonly IEnumerable<T> _enumerable;
-        private T[]? _cachedContents;
+namespace FunctionalSharp; 
 
-        public ImmutableEnumerableDebuggerProxy(IEnumerable<T> enumerable)
-            => _enumerable = enumerable;
+/// <summary>
+/// Only use with immutable enumerables, because it caches the contents of enumeration
+/// </summary>
+/// <typeparam name="T"></typeparam>
+class ImmutableEnumerableDebuggerProxy<T> {
+    private readonly IEnumerable<T> _enumerable;
+    private T[]? _cachedContents;
 
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public T[] Contents => _cachedContents ??= _enumerable.ToArray();
-    }
+    public ImmutableEnumerableDebuggerProxy(IEnumerable<T> enumerable)
+        => _enumerable = enumerable;
 
-    sealed class ImmutableMapDebuggerProxy<K, V> : ImmutableEnumerableDebuggerProxy<(K Key, V Value)> 
-        where K : notnull {
+    [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+    public T[] Contents => _cachedContents ??= _enumerable.ToArray();
+}
 
-        public ImmutableMapDebuggerProxy(IEnumerable<(K Key, V Value)> map) : base(map) { }
-    }
+sealed class ImmutableMapDebuggerProxy<K, V> : ImmutableEnumerableDebuggerProxy<(K Key, V Value)> 
+    where K : notnull {
+
+    public ImmutableMapDebuggerProxy(IEnumerable<(K Key, V Value)> map) : base(map) { }
 }
