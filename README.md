@@ -63,10 +63,26 @@ including custom comparers for the AVL tree, `Get()`, `Lookup()`, etc. Heck, you
 `Lst` includes common functional operations like pattern matching head and tail, prepending, slices, etc.
 
 ## Range
-`Range` is extremely similar to [Haskell's ranges](https://riptutorial.com/haskell/example/9516/ranges). Try one out with 
-`Range()` function, but **make sure to use named arguments**. The `from`, `second`, and `to` arguments come from Haskell -- 
-`[from,second..to]`.
+`Range` is a port of [Haskell's ranges](https://riptutorial.com/haskell/example/9516/ranges). Try one out with 
+`Range()` function, but **make sure to use named arguments because some args are optional**. The `from`, `second`, 
+and `to` arguments come from Haskell -- `[from,second..to]`.
 
 Because it uses iterators, `Range` supports infinite ranges, `char` ranges, etc.
+
+## IO
+`IO` is a monad that lets you interact with real world IO, or any side-effecting computations. Importantly, it lets
+you do this while keeping your code pure and exceptions compartmentalized. Additionally, `IO` also contains a type
+paramater that allows you to pass in your own typeclass (custom environments).
+
+`IO` is very similar to [Haskell's `IO` monad](https://www.haskell.org/tutorial/io.html). Essentially, `IO<string>` 
+is a wrapper that will perform some action to get a string when invoked. Because it is a monad, you can also chain 
+these computations and lift pure functions.
+
+In order to print a file to the console, let's first import the runtimes for File and Console.
+`File` and `Console` are static classes that emulate the .NET BCL. However, they return `IO` monads instead of the real types.
+```cs
+using static FunctionalSharp.Wrappers.File<FunctionalSharp.Wrappers.LiveRuntime>;
+using static FunctionalSharp.Wrappers.Console<FunctionalSharp.Wrappers.LiveRuntime>;
+```
 
 
