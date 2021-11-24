@@ -57,5 +57,16 @@ AVL tree for `O(log n)` search, insert, and delete.
 You can easily construct a map by using the `Map()` factory function or using `.ToMap()`. All common operations are defined
 including custom comparers for the AVL tree, `Get()`, `Lookup()`, etc. Heck, you can even concat two maps with `+` 😉.
 
+## Lst
+`Lst` is an implementation of the functional immutable singly linked list. You can easily construct one with `List()` or `ToLst()`.
+
+`Lst` includes common functional operations like pattern matching head and tail, prepending, slices, etc.
+
+## Range
+`Range` is extremely similar to [Haskell's ranges](https://riptutorial.com/haskell/example/9516/ranges). Try one out with 
+`Range()` function, but **make sure to use named arguments**. The `from`, `second`, and `to` arguments come from Haskell -- 
+`[from,second..to]`.
+
+Because it uses iterators, `Range` supports infinite ranges, `char` ranges, etc.
 
 
