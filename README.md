@@ -27,7 +27,7 @@ XML docs are provided for most functions.
 If these are insufficient, you can always look at the source code; I've tried my best to make the code as pretty as 
 possible.
 
-Usage examples and information about key types are provided in [Examples](#setup)
+Usage examples and information about key types are provided in [Examples](#examples)
 
 
 
