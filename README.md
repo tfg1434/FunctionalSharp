@@ -50,3 +50,12 @@ to a `Unit`-returning `Func` by using `.ToFunc()`.
 
 In fact, there have even been discussions about adding [`Unit`-like functionality to C#](https://github.com/dotnet/csharplang/blob/2802e29f4c539faa058855f54b5653daa9c087b2/meetings/2021/LDM-2021-10-25.md#delegate-type-argument-improvements).
 
+## Map
+`Map` is an immutable dictionary implementation, similar to `ImmutableSortedDictionary`. Under the hood, `Map` uses an 
+AVL tree for `O(log n)` search, insert, and delete.
+
+You can easily construct a map by using the `Map()` factory function or using `.ToMap()`. All common operations are defined
+including custom comparers for the AVL tree, `Get()`, `Lookup()`, etc. Heck, you can even concat two maps with `+` 😉.
+
+
+
