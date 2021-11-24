@@ -31,15 +31,22 @@ global using FunctionalSharp;
 global using static FunctionalSharp.F;
 global using Unit = System.ValueTuple;
 ```
-into a file for each project you want to use this lib in.
+into a file for each **project** you want to use this lib in.
 
 ## Documentation
 XML docs are provided for most functions. 
 If these are insufficient, you can always look at the source code; I've tried my best to make the code as pretty as 
 possible.
 
-Usage examples and information about key types are provided in [Examples](#examples)
+Usage examples and information about key types are provided in [Types](#types)
 
+## Types
+## Unit
+`Unit` is defined as `using Unit = System.ValueTuple;`. To return `Unit` from a method, simply use `return Unit()`.
 
+`Unit` is advantageous over `void` because `void` cannot be used like a real type. Using `Unit` in place of `void` lets 
+you do things like interop between `Func` and `Action`, or make Linq queries easier. You can easily convert an `Action`
+to a `Unit`-returning `Func` by using `.ToFunc()`.
 
+In fact, there have even been discussions about adding [`Unit`-like functionality to C#](https://github.com/dotnet/csharplang/blob/2802e29f4c539faa058855f54b5653daa9c087b2/meetings/2021/LDM-2021-10-25.md#delegate-type-argument-improvements).
 
