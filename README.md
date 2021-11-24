@@ -1,7 +1,18 @@
-# A lightweight functional programming library
+<p align="center">
+  
+  <img src="FunctionalSharp.png" style="height: 250px;">
+  
+</p>
 
-![example workflow](https://github.com/torontofangirl/FunctionalSharp/actions/workflows/tests.yml/badge.svg)
+<h1 align="center">FunctionalSharp</h1>
+<p align="center">Functional types and patterns for C#</p>
 
+<p align="center">
+  
+  <img src="https://github.com/torontofangirl/FunctionalSharp/actions/workflows/tests.yml/badge.svg">
+  
+</p>
+  
 | FunctionalSharp | Vanilla |
 | :-------------: | :-----: |
 | <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704205226557440/Untitled_2.jpeg" alt="functional pic"> | <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704205700521984/Untitled_3.jpeg" alt="low level pic"> |
