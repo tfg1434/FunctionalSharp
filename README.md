@@ -85,4 +85,39 @@ using static FunctionalSharp.Wrappers.File<FunctionalSharp.Wrappers.LiveRuntime>
 using static FunctionalSharp.Wrappers.Console<FunctionalSharp.Wrappers.LiveRuntime>;
 ```
 
+Next, we need to define the `IO`-returning function. The signature returns `Unit` because we are reading the file,
+printing the contents, then throwing the contents away.
+```cs
+static IO<LiveRuntime, Unit> PrintFile(string path)
+```
 
+Then, let's read the file and print it out. We accomplish this with a Linq query (`ReadAllText` and `WriteAllText` return IO
+monads).
+```cs
+from txt in ReadAllText(path)
+from _ in WriteLine(txt)
+select Unit();
+```
+
+Finally, let's run the method <br>
+Note: In this case we are tossing the result of the operation
+```cs
+PrintFile("myfile.txt").Run(new LiveRuntime());
+```
+
+If we wanted to do an in-between operation with a pure method, we can simply add another `let` clause to our query
+or lift a pure function
+```
+static IO<LiveRuntime, Unit> PrintFile(string path)
+    => from txt in ReadAllText(path)
+       let newTxt = txt.Replace("\r\n", "\n")
+       from _ in WriteLine(newTxt)
+       select Unit();
+       
+static IO<LiveRuntime, Unit> PrintFile(string path)
+    => from txt in ReadAllText(path)
+       //we use IOSucc to lift because .Replace is pure
+       from newTxt in IOSucc<LiveRuntime, string>(txt.Replace("\r\n", "\n"))
+       from _ in WriteLine(newTxt)
+       select Unit();
+```
