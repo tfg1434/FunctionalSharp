@@ -107,7 +107,7 @@ namespace FunctionalSharp.Tests.Map {
             Assert.Throws<ArgumentException>(() => map.Append(key, !val));
         }
 
-        [Fact]
+        [Fact(Skip = "NRTs")]
         public void Add_NullKey_Throws() {
             Assert.Throws<ArgumentNullException>(
                 () => Map<string, bool>().Append((string) null!, default));
@@ -129,7 +129,7 @@ namespace FunctionalSharp.Tests.Map {
             Assert.Throws<ArgumentException>(() => map.Append((key, !val)));
         }
         
-        [Fact]
+        [Fact(Skip = "NRTs")]
         public void Append_NullKey_Throws() {
             Assert.Throws<ArgumentNullException>(
                 () => Map<string, bool>().Append((null!, default)));
@@ -152,7 +152,7 @@ namespace FunctionalSharp.Tests.Map {
             Assert.Equal(key, map.Keys.Single());
         }
 
-        [Fact]
+        [Fact(Skip = "NRTs")]
         public void SetItems_NullKey_Throws() {
             Assert.Throws<ArgumentNullException>(
                 () => Map<string, bool>().SetItems((null!, default)));

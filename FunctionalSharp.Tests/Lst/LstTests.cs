@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using FsCheck.Xunit;
-using System.Collections.Generic;
-using Xunit;
-using static FunctionalSharp.F;
+﻿using System.Collections.Generic;
 
 namespace FunctionalSharp.Tests.Lst; 
 
@@ -18,7 +13,7 @@ public class LstTests {
     [Fact]
     public void Head_Returns_FirstElement() {
         Assert.Equal(1, List(1, 2, 3).Head());
-        Assert.Throws<InvalidOperationException>(() => Lst<int>.Empty.Head);
+        Assert.Throws<InvalidOperationException>(() => Lst<int>.Empty.Head());
         
         Assert.Equal(Just(1), List(1, 2, 3).HeadSafe);
         Assert.Equal(Nothing, Lst<int>.Empty.HeadSafe);
