@@ -12,7 +12,6 @@ public sealed partial class Map<K, V> : IEquatable<Map<K, V>> where K : notnull 
     /// </summary>
     /// <param name="other">Map to equate to</param>
     /// <returns>Whether the two maps are equal</returns>
-    [Pure]
     public bool Equals(Map<K, V>? other) {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -39,7 +38,6 @@ public sealed partial class Map<K, V> : IEquatable<Map<K, V>> where K : notnull 
     /// </summary>
     /// <returns></returns>
     /// <remarks>Uses FNV1A 32-bit hash. Includes comparers in hash</remarks>
-    [Pure]
     public override int GetHashCode() {
         if (_hashCode != default) return _hashCode;
 
@@ -70,8 +68,7 @@ public sealed partial class Map<K, V> : IEquatable<Map<K, V>> where K : notnull 
     [Pure]
     public static bool operator !=(Map<K, V> self, Map<K, V> other)
         => !(self == other);
-
-    [Pure]
+    
     public override bool Equals(object? obj)
         => Equals(obj as Map<K, V>);
 }

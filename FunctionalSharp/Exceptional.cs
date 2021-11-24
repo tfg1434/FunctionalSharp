@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace FunctionalSharp; 
 
@@ -60,6 +61,45 @@ public readonly struct Exceptional<T> : IEquatable<Exceptional<T>> {
     public Unit Match(Action<Exception> ex, Action<T> succ)
         => Match(ex.ToFunc(), succ.ToFunc());
 
+    /// <summary>
+    /// Convert to <see cref="IEnumerable{T}"/> if in Success state
+    /// </summary>
+    [Pure]
+    public IEnumerable<T> AsEnumerable() {
+        if (_isSucc) yield return _value!;
+    }
+    
+    /// <summary>
+    /// Convert an <see cref="Exceptional{T}"/> to a <see cref="Maybe{T}"/> 
+    /// </summary>
+    [Pure]
+    public Maybe<T> ToMaybe()
+        => Match(_ => Nothing, Just);
+    
+    #region Equality
+    
+    public bool Equals(Exceptional<T> other)
+        => _isSucc && other._isSucc && EqualityComparer<T>.Default.Equals(_value, other._value) ||
+           !_isSucc && !other._isSucc && EqualityComparer<Exception>.Default.Equals(_ex, other._ex);
+
+    public override bool Equals(object? obj)
+        => obj is Exceptional<T> other && Equals(other);
+
+    public override int GetHashCode()
+        => _isSucc
+            ? _value!.GetHashCode()
+            : _ex!.GetHashCode();
+    
+    [Pure]
+    public static bool operator ==(Exceptional<T> self, Exceptional<T> other) 
+        => self.Equals(other);
+
+    [Pure]
+    public static bool operator !=(Exceptional<T> self, Exceptional<T> other)
+        => !(self == other);
+
+    #endregion
+    
     [Pure]
     public override string ToString()
         => Match(

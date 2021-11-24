@@ -160,9 +160,11 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
     public bool Equals(Lst<T> other) 
         => SequenceEqual(other);
 
+    [Pure]
     public static bool operator ==(Lst<T> self, Lst<T> other)
         => self.Equals(other);
 
+    [Pure]
     public static bool operator !=(Lst<T> self, Lst<T> other)
         => !(self == other);
 

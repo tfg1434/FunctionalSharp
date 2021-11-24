@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace FunctionalSharp;
 
@@ -8,11 +9,7 @@ namespace FunctionalSharp;
 public readonly struct Result<T> : IEquatable<Result<T>> {
     private readonly Error? _error;
     private readonly T? _value;
-
     private readonly bool _isSucc;
-    // public bool IsFail => !IsSucc;
-    // internal Error? Error => _error;
-    // internal T? Value => _value;
 
     /// <summary>
     /// Fail ctor
@@ -77,7 +74,15 @@ public readonly struct Result<T> : IEquatable<Result<T>> {
         => Match(fail.ToFunc(), succ.ToFunc());
     
     /// <summary>
-    /// Convert an <see cref="Exceptional{T}"/> to a <see cref="Maybe{T}"/> 
+    /// Convert to <see cref="IEnumerable{T}"/> if in Success state
+    /// </summary>
+    [Pure]
+    public IEnumerable<T> AsEnumerable() {
+        if (_isSucc) yield return _value!;
+    }
+    
+    /// <summary>
+    /// Convert a <see cref="Result{T}"/> to a <see cref="Maybe{T}"/> 
     /// </summary>
     [Pure]
     public Maybe<T> ToMaybe()
@@ -129,6 +134,30 @@ public readonly struct Result<T> : IEquatable<Result<T>> {
     [Pure]
     public Result<PR> SelectMany<R, PR>(Func<T, Result<R>> bind, Func<T, R, PR> proj)
         => Bind(t => bind(t).Map(r => proj(t, r)));
+
+    #region Equality
+    
+    public bool Equals(Result<T> other)
+        => _isSucc && other._isSucc && EqualityComparer<T>.Default.Equals(_value, other._value) ||
+           !_isSucc && !other._isSucc && EqualityComparer<Error>.Default.Equals(_error, other._error);
+
+    public override bool Equals(object? obj)
+        => obj is Result<T> other && Equals(other);
+
+    public override int GetHashCode()
+        => _isSucc
+            ? _value!.GetHashCode()
+            : _error!.GetHashCode();
+    
+    [Pure]
+    public static bool operator ==(Result<T> self, Result<T> other) 
+        => self.Equals(other);
+
+    [Pure]
+    public static bool operator !=(Result<T> self, Result<T> other)
+        => !(self == other);
+
+    #endregion
     
     [Pure]
     public override string ToString()

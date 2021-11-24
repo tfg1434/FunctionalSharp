@@ -74,6 +74,37 @@ public readonly struct Either<L, R> : IEquatable<Either<L, R>> {
     public IEnumerable<R> AsEnumerable() {
         if (_isRight) yield return _right!;
     }
+    
+    /// <summary>
+    /// Convert an <see cref="Either{L,R}"/> to a <see cref="Maybe{T}"/> 
+    /// </summary>
+    [Pure]
+    public Maybe<R> ToMaybe()
+        => Match(_ => Nothing, Just);
+    
+    #region Equality
+    
+    public bool Equals(Either<L, R> other)
+        => _isRight && other._isRight && EqualityComparer<R>.Default.Equals(_right, other._right) ||
+           !_isRight && !other._isRight && EqualityComparer<L>.Default.Equals(_left, other._left);
+
+    public override bool Equals(object? obj)
+        => obj is Either<L, R> other && Equals(other);
+
+    public override int GetHashCode()
+        => _isRight
+            ? _left!.GetHashCode()
+            : _right!.GetHashCode();
+    
+    [Pure]
+    public static bool operator ==(Either<L, R> self, Either<L, R> other) 
+        => self.Equals(other);
+
+    [Pure]
+    public static bool operator !=(Either<L, R> self, Either<L, R> other)
+        => !(self == other);
+
+    #endregion
 
     [Pure]
     public override string ToString() 
