@@ -5,10 +5,14 @@ namespace FunctionalSharp;
 /// <summary>
 /// Semantic version of Either&lt;Error, T&gt;
 /// </summary>
-//TODO: Equality, ForEach for all monads
-public readonly struct Result<T> {
+public readonly struct Result<T> : IEquatable<Result<T>> {
     private readonly Error? _error;
     private readonly T? _value;
+
+    private readonly bool _isSucc;
+    // public bool IsFail => !IsSucc;
+    // internal Error? Error => _error;
+    // internal T? Value => _value;
 
     /// <summary>
     /// Fail ctor
@@ -18,7 +22,7 @@ public readonly struct Result<T> {
     public Result(Error error) {
         _error = error;
         _value = default;
-        IsSucc = false;
+        _isSucc = false;
     }
     
     /// <summary>
@@ -29,7 +33,7 @@ public readonly struct Result<T> {
     public Result(T value) {
         _error = default;
         _value = value;
-        IsSucc = true;
+        _isSucc = true;
     }
     
     /// <summary>
@@ -54,11 +58,6 @@ public readonly struct Result<T> {
     [Pure]
     public static implicit operator Result<T>(T t) => new(t);
 
-    public bool IsSucc { get; }
-    public bool IsFail => !IsSucc;
-    internal Error? Error => _error;
-    internal T? Value => _value;
-    
     /// <summary>
     /// Match
     /// </summary>
@@ -67,14 +66,13 @@ public readonly struct Result<T> {
     /// <typeparam name="R">Return type</typeparam>
     [Pure]
     public R Match<R>(Func<Error, R> fail, Func<T, R> succ)
-        => IsSucc ? succ(_value!) : fail(_error!);
+        => _isSucc ? succ(_value!) : fail(_error!);
 
     /// <summary>
     /// Side-effect <see cref="Match{R}"/>
     /// </summary>
     /// <param name="fail">Fail Action</param>
     /// <param name="succ">Success Action</param>
-    [Pure]
     public Unit Match(Action<Error> fail, Action<T> succ)
         => Match(fail.ToFunc(), succ.ToFunc());
     
@@ -100,7 +98,6 @@ public readonly struct Result<T> {
     /// Side-effect functor Map
     /// </summary>
     /// <param name="f">Action function</param>
-    [Pure]
     public Result<Unit> ForEach(Action<T> f)
         => Map(f.ToFunc());
 
@@ -140,8 +137,8 @@ public readonly struct Result<T> {
             succ => $"Succ({succ})");
     
     internal Result<R> Cast<R>()
-        => IsSucc
-            ? F.Cast<R>(Value!)
+        => _isSucc
+            ? F.Cast<R>(_value!)
                 .Map(Result<R>.Of)
                 .IfNothing(() => new(new Error(
                     $"Can't cast success value of type {nameof(T)} to {nameof(R)}")))

@@ -314,7 +314,6 @@ public readonly partial struct Maybe<T> {
     /// <param name="nothing">Action to run if in Nothing state</param>
     /// <param name="just">Action to run if in Just state</param>
     /// <returns>Unit</returns>
-    [Pure]
     public Unit Match(Action nothing, Action<T> just)
         => Match(nothing.ToFunc(), just.ToFunc());
 

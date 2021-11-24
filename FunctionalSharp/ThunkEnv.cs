@@ -104,9 +104,9 @@ public class Thunk<E, T> {
                 Thunk.NotEvaluated => Thunk<E, R>.Of(env => {
                     Result<T> res = Eval(env);
 
-                    if (res.IsSucc) return f(res.Value!);
-
-                    return res.Cast<R>();
+                    return res.Match(
+                        _ => res.Cast<R>(),
+                        t => f(t));
                 }),
                 Thunk.Cancelled => Thunk<E, R>.OfCancelled(),
                 Thunk.Fail => Thunk<E, R>.OfFail(_error!),
@@ -133,9 +133,9 @@ public class Thunk<E, T> {
                 Thunk.NotEvaluated => Thunk<E, R>.Of(env => {
                     Result<T> res = Eval(env);
 
-                    return res.IsSucc
-                        ? new(succ(res.Value!))
-                        : new(fail(res.Error!));
+                    return res.Match(
+                        e => new Result<R>(fail(e)),
+                        t => new(succ(t)));
                 }),
                 Thunk.Cancelled => Thunk<E, R>.OfFail(fail(new CancelledError())),
                 Thunk.Fail => Thunk<E, R>.OfFail(fail(_error!)),
@@ -151,15 +151,15 @@ public class Thunk<E, T> {
             try {
                 Result<T> res = _f!(env);
 
-                if (res.IsFail) {
-                    _error = res.Error;
-                    _state = Thunk.Fail;
-
-                    return res;
-                }
-
-                _value = res.Value;
-                _state = Thunk.Succ;
+                res.Match(
+                    e => {
+                        _error = e;
+                        _state = Thunk.Fail;
+                    },
+                    t => {
+                        _value = t;
+                        _state = Thunk.Succ;
+                    });
 
                 return res;
                 

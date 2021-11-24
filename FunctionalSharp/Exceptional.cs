@@ -13,19 +13,27 @@ public static partial class F {
 /// <summary>
 /// Semantic version of Either&lt;Exception, T&gt;
 /// </summary>
-public readonly struct Exceptional<T> {
+public readonly struct Exceptional<T> : IEquatable<Exceptional<T>> {
     private readonly Exception? _ex;
     private readonly T? _value;
 
     private readonly bool _isSucc;
 
-    internal Exceptional(Exception ex) {
+    /// <summary>
+    /// Exception ctor
+    /// </summary>
+    /// <param name="ex">Left exception</param>
+    public Exceptional(Exception ex) {
         _isSucc = false;
         _ex = ex;
         _value = default;
     }
 
-    internal Exceptional(T value) {
+    /// <summary>
+    /// Success ctor
+    /// </summary>
+    /// <param name="value">Success value</param>
+    public Exceptional(T value) {
         _isSucc = true;
         _value = value;
         _ex = default;
@@ -49,7 +57,6 @@ public readonly struct Exceptional<T> {
     /// <summary>
     /// Side-effecting <see cref="Match{R}"/>
     /// </summary>
-    [Pure]
     public Unit Match(Action<Exception> ex, Action<T> succ)
         => Match(ex.ToFunc(), succ.ToFunc());
 
@@ -81,7 +88,6 @@ public static class Exceptional {
     /// <summary>
     /// Side-effecting Map
     /// </summary>
-    [Pure]
     public static Exceptional<Unit> ForEach<T>(this Exceptional<T> self, Action<T> act)
         => Map(self, act.ToFunc());
 

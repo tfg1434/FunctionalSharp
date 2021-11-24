@@ -23,7 +23,7 @@ public static partial class F {
 /// Either is a discriminated union that can either be Left or Right state. Left represents failure, while Right
 /// represents success
 /// </summary>
-public readonly struct Either<L, R> {
+public readonly struct Either<L, R> : IEquatable<Either<L, R>> {
     private readonly L? _left;
     private readonly R? _right;
 
@@ -132,7 +132,6 @@ public static class EitherExt {
     /// <summary>
     /// Side-effecting Map
     /// </summary>
-    [Pure]
     public static Either<L, Unit> ForEach<L, R>(this Either<L, R> either, Action<R> act)
         => either.Map(act.ToFunc());
 
