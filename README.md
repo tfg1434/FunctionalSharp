@@ -50,6 +50,26 @@ to a `Unit`-returning `Func` by using `.ToFunc()`.
 
 In fact, there have even been discussions about adding [`Unit`-like functionality to C#](https://github.com/dotnet/csharplang/blob/2802e29f4c539faa058855f54b5653daa9c087b2/meetings/2021/LDM-2021-10-25.md#delegate-type-argument-improvements).
 
+## Currying & partial application
+
+**Note: It's a good idea to order your function signatures from most general -> least general. This makes it easy to partially apply arguments**
+```cs
+var greet = (string greeting, string name) => Console.WriteLine($"{greeting}, {name}");
+```
+
+Currying is the process of transforming a function taking multiple arguments into one that takes the arguments one at a time. 
+This makes it easy to reduce code duplication.
+```cs
+var curried = greet.Curry();
+curried("Hi")("Bob"); //same as greet("Hi", "Bob");
+```
+
+Partial application is similar to currying, but you can apply the argument directly
+```cs
+var applied = greet.Apply("Hi");
+applied("Bob"); //same as greet("Hi", "Bob");
+```
+
 ## Maybe
 `Maybe` is a discriminated union type with two possible states: `Just`, and `Nothing`. Instead of returning `null` or throwing
 an exception, consider returning `Maybe` instead. 
@@ -200,3 +220,5 @@ static IO<LiveRuntime, Unit> PrintFile(string path)
        select Unit();
 ```
 
+## Other types
+Documentation for additional types and operations can be found in the source code / xml docs
