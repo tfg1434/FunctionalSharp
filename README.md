@@ -80,10 +80,23 @@ AVL tree for `O(log n)` search, insert, and delete.
 You can easily construct a map by using the `Map()` factory function or using `.ToMap()`. All common operations are defined
 including custom comparers for the AVL tree, `Get()`, `Lookup()`, etc. Heck, you can even concat two maps with `+` 😉.
 
+```cs
+var map = Map(("a", 1), ("b", 2));
+map.Get("b"); //Maybe<int>
+map["a"]; //int
+map.SetItem("a", 4); //Map<string, int>
+```
+
 ## Lst
 `Lst` is an implementation of the functional immutable singly linked list. You can easily construct one with `List()` or `ToLst()`.
 
 `Lst` includes common functional operations like pattern matching head and tail, prepending, slices, etc.
+
+Unlike .NET BCL `List`, `Lst` has structural equality
+```cs
+List(1, 2, 3) == List(1, 2, 3); //true
+List(3, 2) + 1 == List(3) + List(2, 1); //true
+```
 
 ## Error
 `Error` is a record class representing an error that may or may not contain an inner exception. It's similar to `Exception`, 
