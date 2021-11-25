@@ -5,9 +5,26 @@
     <EnablePreviewFeatures>True</EnablePreviewFeatures>
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
+    <PackageId>tfg.FunctionalSharp</PackageId>
+    <Title>FunctionalSharp</Title>
+    <Authors>tfg</Authors>
+    <Description>Lightweight functional programming library for C#. IO monad, Unit, Maybe, Either, immutable collections, and more</Description>
+    <PackageProjectUrl>https://github.com/torontofangirl/FunctionalSharp</PackageProjectUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageTags>monads, csharp, functional-programming, functor, curry, immutable-datastructures, applicative, immutable-collections</PackageTags>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/torontofangirl/FunctionalSharp</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>FunctionalSharp_Square.png</PackageIcon>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\..\Downloads\FunctionalSharp_Square.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <PackageReference Include="System.Runtime.Experimental" Version="6.0.0-preview.7.21377.19" />
     <Compile Remove="Lst\**" />
     <EmbeddedResource Remove="Lst\**" />
