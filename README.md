@@ -1,6 +1,6 @@
 <p align="center">
   
-  <img src="FunctionalSharp.png" style="height: 250px;">
+  <img src="FunctionalSharp.png" style="height: 200px;">
   
 </p>
 
@@ -73,7 +73,6 @@ public static Maybe<V> Get<K, V>(this IDictionary<K, V> map, K key) {
 }
 ```
 
-
 ## Map
 `Map` is an immutable dictionary implementation, similar to `ImmutableSortedDictionary`. Under the hood, `Map` uses an 
 AVL tree for `O(log n)` search, insert, and delete.
@@ -85,6 +84,25 @@ including custom comparers for the AVL tree, `Get()`, `Lookup()`, etc. Heck, you
 `Lst` is an implementation of the functional immutable singly linked list. You can easily construct one with `List()` or `ToLst()`.
 
 `Lst` includes common functional operations like pattern matching head and tail, prepending, slices, etc.
+
+## Either
+[`Either` is the functional way of error handling](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Either.html).<br>
+Instead of throwing exceptions (dishonest methods, disrupt program flow, etc) consider returning `Either` instead. It's a discriminated
+union type with two states: `Left` or `Right`.
+
+`Left` represents an error value, while `Right` represents a success value. `Either` is different from `Maybe` because you can add
+additional information to the fail state.
+
+Example:
+```cs
+public Either<OutOfBoundError, int[]> Slice(int[] arr, int index, int count) {
+    if (index < 0) return new($"{nameof(index)} must be non-negative");
+    if (count < 0) return new($"{nameof(count)} must be non-negative");
+    if (index + count > arr.Length) return new($"({nameof(index)}, {nameof(count)}) must represent a range of indices within the array");
+    
+    ...
+}
+```
 
 ## Range
 `Range` is a port of [Haskell's ranges](https://riptutorial.com/haskell/example/9516/ranges). Try one out with 
