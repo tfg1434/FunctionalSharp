@@ -23,7 +23,7 @@
 | <ul><li>List pattern matching</li><li>Functional style singly linked list</li></ul> | <ul><li>Mutates original collection</li></ul> |
 
 ## Setup
-Install the package from nuget or add a reference to the dll in your project.
+Install `FunctionalSharp` package from [nuget](https://www.nuget.org/packages/tfg.FunctionalSharp/) or add a reference to the [dll](https://github.com/torontofangirl/FunctionalSharp/releases/) in your project.
 
 Then, all you need to do is add 
 ```cs
@@ -32,6 +32,8 @@ global using static FunctionalSharp.F;
 global using Unit = System.ValueTuple;
 ```
 into a file for each **project** you want to use this lib in.
+
+**Note: If you would like to interact with .NET BCL functionality, install the FunctionalSharp.Wrappers library as well**
 
 ## Documentation
 XML docs are provided for most functions and types.
