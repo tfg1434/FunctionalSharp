@@ -57,14 +57,12 @@ public readonly struct Eff<T> {
     /// <summary>
     /// Run the Eff, use memoized value if available
     /// </summary>
-    [Pure]
     public Result<T> Run() 
         => _thunk.Value();
     
     /// <summary>
     /// Re-run the Eff, clearing the memoized value
     /// </summary>
-    [Pure]
     public Result<T> ReRun() 
         => _thunk.ReValue();
 

@@ -1,4 +1,4 @@
-﻿namespace FunctionalSharp.Wrappers.File;
+﻿namespace FunctionalSharp.Wrappers;
 
 public static class File<E> where E : struct, IHasFile<E> {
     // private static IO<E, R> MapEnv<R>(Func<IFileIO, R> f)

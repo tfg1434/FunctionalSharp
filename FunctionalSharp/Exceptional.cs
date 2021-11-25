@@ -17,7 +17,6 @@ public static partial class F {
 public readonly struct Exceptional<T> : IEquatable<Exceptional<T>> {
     private readonly Exception? _ex;
     private readonly T? _value;
-
     private readonly bool _isSucc;
 
     /// <summary>
@@ -76,6 +75,76 @@ public readonly struct Exceptional<T> : IEquatable<Exceptional<T>> {
     public Maybe<T> ToMaybe()
         => Match(_ => Nothing, Just);
     
+    /// <summary>
+    /// Functor Map
+    /// </summary>
+    [Pure]
+    public Exceptional<R> Map<R>(Func<T, R> f)
+        => Match(
+            ex => new Exceptional<R>(ex),
+            t => f(t));
+
+    /// <summary>
+    /// Functor BiMap
+    /// </summary>
+    [Pure]
+    public Exceptional<R> BiMap<R>(Func<Exception, Exception> ex, Func<T, R> succ)
+        => Match<Exceptional<R>>(l => ex(l), r => succ(r));
+
+    /// <summary>
+    /// Side-effecting Map
+    /// </summary>
+    public Exceptional<Unit> ForEach(Action<T> act)
+        => Map(act.ToFunc());
+
+    /// <summary>
+    /// Monadic Bind
+    /// </summary>
+    [Pure]
+    public Exceptional<R> Bind<R>(Func<T, Exceptional<R>> f)
+        => Match(ex => new(ex), f);
+    
+    /// <summary>
+    /// Extract the value from the <see cref="Exceptional{T}"/> with a default value
+    /// </summary>
+    /// <param name="value">Default value</param>
+    [Pure]
+    public T IfFail(in T value)
+        => _isSucc ? _value! : value;
+    
+    /// <summary>
+    /// Extract the value from the <see cref="Exceptional{T}"/> with a lazy default value
+    /// </summary>
+    /// <param name="f">Lazy default value</param>
+    [Pure]
+    public T IfFail(Func<Exception, T> f)
+        => _isSucc ? _value! : f(_ex!);
+
+    /// <summary>
+    /// Perform a side-effecting <see cref="Action"/> if the <see cref="Exceptional{T}"/> is in a Fail state
+    /// </summary>
+    /// <param name="f">Side-effecting <see cref="Action"/></param>
+    /// <returns>Unit</returns>
+    public Unit IfFail(Action<Exception> f) {
+        if (!_isSucc) f(_ex!);
+
+        return Unit();
+    }
+    
+    /// <summary>
+    /// Functor Map
+    /// </summary>
+    [Pure]
+    public Exceptional<R> Select<R>(Func<T, R> f)
+        => Map(f);
+
+    /// <summary>
+    /// Monadic bind with a projection function
+    /// </summary>
+    [Pure]
+    public Exceptional<RR> SelectMany<R, RR>(Func<T, Exceptional<R>> bind, Func<T, R, RR> proj)
+        => Bind(t => bind(t).Map(r => proj(t, r)));
+    
     #region Equality
     
     public bool Equals(Exceptional<T> other)
@@ -108,37 +177,6 @@ public readonly struct Exceptional<T> : IEquatable<Exceptional<T>> {
 }
 
 public static class Exceptional {
-    /// <summary>
-    /// Functor Map
-    /// </summary>
-    [Pure]
-    public static Exceptional<R> Map<T, R>(this Exceptional<T> self, Func<T, R> f)
-        => self.Match(
-            ex => new Exceptional<R>(ex),
-            r => f(r));
-
-    /// <summary>
-    /// Functor BiMap
-    /// </summary>
-    [Pure]
-    public static Exceptional<R> BiMap<T, R>(this Exceptional<T> self, Func<Exception, Exception> ex, 
-        Func<T, R> succ)
-        => self.Match<Exceptional<R>>(l => ex(l), r => succ(r));
-
-    /// <summary>
-    /// Side-effecting Map
-    /// </summary>
-    public static Exceptional<Unit> ForEach<T>(this Exceptional<T> self, Action<T> act)
-        => Map(self, act.ToFunc());
-
-    /// <summary>
-    /// Monadic Bind
-    /// </summary>
-    [Pure]
-    public static Exceptional<R> Bind<T, R>(this Exceptional<T> self, Func<T, Exceptional<R>> f)
-        => self.Match(
-            ex => new(ex), f);
-
     /// <summary>
     /// Applicative Apply. Applies if both are in Success state
     /// </summary>
@@ -197,26 +235,4 @@ public static class Exceptional {
     public static Exceptional<Func<T2, T3, T4, T5, T6, T7, R>> Apply<T1, T2, T3, T4, T5, T6, T7, R>(
         this Exceptional<Func<T1, T2, T3, T4, T5, T6, T7, R>> self, Exceptional<T1> arg)
         => Apply(self.Map(F.CurryFirst), arg);
-
-    /// <summary>
-    /// Convert an <see cref="Exceptional{T}"/> to a <see cref="Maybe{T}"/> 
-    /// </summary>
-    [Pure]
-    public static Maybe<T> ToMaybe<T>(this Exceptional<T> self)
-        => self.Match(_ => Nothing, Just);
-
-    /// <summary>
-    /// Functor Map
-    /// </summary>
-    [Pure]
-    public static Exceptional<R> Select<T, R>(this Exceptional<T> self, Func<T, R> f)
-        => self.Map(f);
-
-    /// <summary>
-    /// Monadic bind with a projection function
-    /// </summary>
-    [Pure]
-    public static Exceptional<RR> SelectMany<T, R, RR>(this Exceptional<T> self, Func<T, Exceptional<R>> bind,
-        Func<T, R, RR> proj)
-        => self.Bind(t => bind(t).Map(r => proj(t, r)));
 }

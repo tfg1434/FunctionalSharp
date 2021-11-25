@@ -1,68 +1,68 @@
-﻿namespace FunctionalSharp.Wrappers.Console; 
+﻿namespace FunctionalSharp.Wrappers; 
 
-public readonly struct ConsoleIO : IConsoleIO {
-    public static readonly IConsoleIO Default = new ConsoleIO();
+public readonly struct LiveConsoleIO : IConsoleIO {
+    public static readonly IConsoleIO Default = new LiveConsoleIO();
 
-    public ConsoleColor BgColour => System.Console.BackgroundColor;
+    public ConsoleColor BgColour => Console.BackgroundColor;
     
-    public ConsoleColor FgColour => System.Console.ForegroundColor;
+    public ConsoleColor FgColour => Console.ForegroundColor;
     
     public Unit Clear() {
-        System.Console.Clear();
+        Console.Clear();
 
         return Unit();
     }
 
     public Maybe<int> Read() {
-        int n = System.Console.Read();
+        int n = Console.Read();
         
         return n == -1 ? Nothing : Just(n);
     }
 
     public ConsoleKeyInfo ReadKey() 
-        => System.Console.ReadKey();
+        => Console.ReadKey();
 
     public Maybe<string> ReadLine()
-        => Jull(System.Console.ReadLine());
+        => Jull(Console.ReadLine());
 
     public Unit ResetColour() {
-        System.Console.ResetColor();
+        Console.ResetColor();
 
         return Unit();
     }
     
     public Unit SetBgColour(ConsoleColor colour) {
-        System.Console.BackgroundColor = colour;
+        Console.BackgroundColor = colour;
 
         return Unit();
     }
     
     public Unit SetFgColour(ConsoleColor colour) {
-        System.Console.ForegroundColor = colour;
+        Console.ForegroundColor = colour;
 
         return Unit();
     }
     
     public Unit Write(string value) {
-        System.Console.Write(value);
+        Console.Write(value);
 
         return Unit();
     }
 
     public Unit Write(char value) {
-        System.Console.Write(value);
+        Console.Write(value);
 
         return Unit();
     }
 
     public Unit WriteLine(string line) {
-        System.Console.WriteLine(line);
+        Console.WriteLine(line);
 
         return Unit();
     }
     
     public Unit WriteLine() {
-        System.Console.WriteLine();
+        Console.WriteLine();
 
         return Unit();
     }

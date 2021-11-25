@@ -1,4 +1,4 @@
-﻿namespace FunctionalSharp.Wrappers.File;
+﻿namespace FunctionalSharp.Wrappers;
 
 public interface IHasFile<E> where E : struct {
     IO<E, IFileIO> FileIO { get; }

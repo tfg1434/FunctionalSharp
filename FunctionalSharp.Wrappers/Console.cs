@@ -1,4 +1,4 @@
-﻿namespace FunctionalSharp.Wrappers.Console;
+﻿namespace FunctionalSharp.Wrappers;
 
 public static class Console<E> where E : struct, IHasConsole<E> {
     public static IO<E, ConsoleColor> BgColour

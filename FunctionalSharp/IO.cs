@@ -66,7 +66,6 @@ public readonly struct IO<E, T> where E : struct {
     /// Run the IO monad, use memoized value if available
     /// </summary>
     /// <param name="env">Environment to run in</param>
-    [Pure]
     public Result<T> Run(E env) 
         => _thunk.Value(env);
 
@@ -74,7 +73,6 @@ public readonly struct IO<E, T> where E : struct {
     /// Re-run the IO monad, clearing the memoized value
     /// </summary>
     /// <param name="env">Environment to run in</param>
-    [Pure]
     public Result<T> ReRun(E env) 
         => _thunk.ReValue(env);
 

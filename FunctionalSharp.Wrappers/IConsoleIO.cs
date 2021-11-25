@@ -1,4 +1,4 @@
-﻿namespace FunctionalSharp.Wrappers.Console;
+﻿namespace FunctionalSharp.Wrappers;
 
 public interface IHasConsole<E> where E : struct {
     IO<E, IConsoleIO> ConsoleIO { get; }
