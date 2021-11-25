@@ -40,6 +40,9 @@ possible.
 
 Usage examples and information about key types are provided in [Types](#types)
 
+## Credit
+This library takes many ideas from [language-ext by Paul Louth](https://github.com/louthy/language-ext). Go check it out!
+
 ## Types
 ## Unit
 `Unit` is defined as `using Unit = System.ValueTuple;`. To return `Unit` from a method, simply use `return Unit()`.
