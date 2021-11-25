@@ -34,7 +34,7 @@ global using Unit = System.ValueTuple;
 into a file for each **project** you want to use this lib in.
 
 ## Documentation
-XML docs are provided for most functions. 
+XML docs are provided for most functions and types.
 If these are insufficient, you can always look at the source code; I've tried my best to make the code as pretty as 
 possible.
 
@@ -49,6 +49,30 @@ you do things like interop between `Func` and `Action`, or make Linq queries eas
 to a `Unit`-returning `Func` by using `.ToFunc()`.
 
 In fact, there have even been discussions about adding [`Unit`-like functionality to C#](https://github.com/dotnet/csharplang/blob/2802e29f4c539faa058855f54b5653daa9c087b2/meetings/2021/LDM-2021-10-25.md#delegate-type-argument-improvements).
+
+## Maybe
+`Maybe` is a discriminated union type with two possible states: `Just`, and `Nothing`. Instead of returning `null` or throwing
+an exception, consider returning `Maybe` instead. 
+
+`Maybe` is advantageous over `null` because the compiler forces you to handle both states. Furthermore, your function signature
+communicates the purpose better, and the method becomes honest.
+
+To create a `Maybe`, you can use `Just()` or `Nothing`.
+```cs
+Maybe<int> a = Just(1);
+Maybe<string> b = Nothing;
+```
+
+Here's an example of making a safe `Get` function for `IDictionary`
+```cs
+public static Maybe<V> Get<K, V>(this IDictionary<K, V> map, K key) {
+    if (map.TryGetValue(key, out T value))
+        return value; //works because of implicit conversions. use Just() if you don't like them
+    
+    return Nothing;
+}
+```
+
 
 ## Map
 `Map` is an immutable dictionary implementation, similar to `ImmutableSortedDictionary`. Under the hood, `Map` uses an 
@@ -107,7 +131,7 @@ PrintFile("myfile.txt").Run(new LiveRuntime());
 
 If we wanted to do an in-between operation with a pure method, we can simply add another `let` clause to our query
 or lift a pure function
-```
+```cs
 static IO<LiveRuntime, Unit> PrintFile(string path)
     => from txt in ReadAllText(path)
        let newTxt = txt.Replace("\r\n", "\n")
@@ -121,3 +145,4 @@ static IO<LiveRuntime, Unit> PrintFile(string path)
        from _ in WriteLine(newTxt)
        select Unit();
 ```
+
