@@ -56,10 +56,10 @@ Lst<int> QuickSort(Lst<int> list) {
     int x = list.Head;
     Lst<int> xs = list.Tail;
     
-    var smaller = () => QuickSort(xs.Where(a => a <= x).ToLst());
-    var bigger = () => QuickSort(xs.Where(a => a > x).ToLst());
+    var smaller = QuickSort(xs.Where(a => a <= x).ToLst());
+    var bigger = QuickSort(xs.Where(a => a > x).ToLst());
 
-    return smaller() + List(x) + bigger();
+    return smaller + List(x) + bigger;
 }
 
 void QuickSort(int[] arr, int start, int end) {
