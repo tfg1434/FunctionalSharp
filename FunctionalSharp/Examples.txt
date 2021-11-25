@@ -53,8 +53,8 @@ Try<double> ParseTemp(string json)
 Lst<int> QuickSort(Lst<int> list) {
     if (list.Count == 0) return Lst<int>.Empty;
 
-    int x = list.Head;
-    Lst<int> xs = list.Tail;
+    int x = list.Head();
+    Lst<int> xs = list.Tail();
     
     var smaller = QuickSort(xs.Where(a => a <= x).ToLst());
     var bigger = QuickSort(xs.Where(a => a > x).ToLst());
