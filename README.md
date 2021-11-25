@@ -85,6 +85,10 @@ including custom comparers for the AVL tree, `Get()`, `Lookup()`, etc. Heck, you
 
 `Lst` includes common functional operations like pattern matching head and tail, prepending, slices, etc.
 
+## Error
+`Error` is a record class representing an error that may or may not contain an inner exception. It's similar to `Exception`, 
+where you can subclass it to make your own more specific errors. Some included errors are found in [Errors.cs](https://github.com/torontofangirl/FunctionalSharp/blob/main/FunctionalSharp/Errors.cs).
+
 ## Either
 [`Either` is the functional way of error handling](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Either.html).<br>
 Instead of throwing exceptions (dishonest methods, disrupt program flow, etc) consider returning `Either` instead. It's a discriminated
@@ -141,7 +145,7 @@ from _ in WriteLine(txt)
 select Unit();
 ```
 
-Finally, let's run the method <br>
+Finally, let's run the method<br>
 Note: In this case we are tossing the result of the operation
 ```cs
 PrintFile("myfile.txt").Run(new LiveRuntime());
