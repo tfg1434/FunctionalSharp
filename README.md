@@ -115,6 +115,25 @@ and `to` arguments come from Haskell -- `[from,second..to]`.
 
 Because it uses iterators, `Range` supports infinite ranges, `char` ranges, etc.
 
+## Try
+`Try` is a delegate representing a lazy computation that could throw an exception. After the computation is run, the 
+result is captured in an `Exceptional`. 
+
+As a monad, we can easily compose it using a Linq expression or repeated calls to `Bind`.
+
+Example of extracting information from a Json string:
+```cs
+Try<double> ParseTemp(string json)
+    => from obj in Parse(json)
+       let weather = CreateWeather(obj)
+       from temp in weather.Map(w => w.Temperature)
+       select temp;
+       
+Try<double> ParseTemp(string json)
+    => Parse(json)
+           .Bind(obj => CreateWeather(obj).Map(w => w.Temperature));
+```
+
 ## IO
 `IO` is a monad that lets you interact with real world IO, or any side-effecting computations. Importantly, it lets
 you do this while keeping your code pure and exceptions compartmentalized. Additionally, `IO` also contains a type
