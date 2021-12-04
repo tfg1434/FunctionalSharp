@@ -102,4 +102,12 @@ public class LstTests {
     public void OpPlus_Equals_Concat(IEnumerable<int> lhs, IEnumerable<int> rhs) {
         Assert.Equal(lhs.Concat(rhs), lhs.ToLst() + rhs.ToLst());
     }
+
+    [Property(Arbitrary = new[] { typeof(ArbitraryIEnumerable) })]
+    public void IndexOf_Equals_Mutable(IEnumerable<bool> enumerable, bool item) {
+        int expected = enumerable.ToList().IndexOf(item);
+        int actual = enumerable.ToLst().IndexOf(item);
+        
+        Assert.Equal(expected, actual);
+    }
 }

@@ -41,7 +41,7 @@ public static partial class F {
 
 [DebuggerDisplay("Count = {Count}")]
 [DebuggerTypeProxy(typeof(ImmutableEnumerableDebuggerProxy<>))]
-public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T>> {
+public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T>>, IList<T> {
     private readonly Node? _head;
     private readonly int _count;
 
@@ -89,6 +89,7 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
             
             return curr!.Value;
         }
+        set => throw new NotSupportedException();
     }
 
     [Pure]
@@ -156,7 +157,7 @@ public readonly partial struct Lst<T> : IReadOnlyCollection<T>, IEquatable<Lst<T
     
     public override bool Equals(object? obj)
         => obj is Lst<T> lst && Equals(lst);
-        
+    
     public bool Equals(Lst<T> other) 
         => SequenceEqual(other);
 

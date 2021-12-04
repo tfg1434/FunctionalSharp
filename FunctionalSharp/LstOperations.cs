@@ -188,6 +188,8 @@ public readonly partial struct Lst<T> {
     public Lst<T> RemoveAt(int index) 
         => RemoveAtRet(index).List;
 
+    void IList<T>.RemoveAt(int index) => throw new NotSupportedException();
+
     /// <summary>
     /// Remove an item from the list at a specific index and return it
     /// </summary>
@@ -309,6 +311,38 @@ public readonly partial struct Lst<T> {
     
     #endregion
 
+    #region IndexOf
+    
+    /// <summary>
+    /// Get the index of an item in the list
+    /// </summary>
+    /// <param name="item">Item to search for</param>
+    /// <param name="comparer">Comparer to use</param>
+    /// <returns>Index of item</returns>
+    [Pure]
+    public int IndexOf(T item, IEqualityComparer<T> comparer) {
+        Node? newHead = _head;
+        int index = -1;
+        
+        while (newHead is not null && !comparer.Equals(newHead.Value, item)) {
+            index++;
+            newHead = newHead.Next;
+        }
+
+        return index;
+    }
+    
+    /// <summary>
+    /// Get the index of an item in the list using default equality comparer
+    /// </summary>
+    /// <param name="item">Item to search for</param>
+    /// <returns>Index of item</returns>
+    [Pure]
+    public int IndexOf(T item) 
+        => IndexOf(item, EqualityComparer<T>.Default);
+    
+    #endregion
+    
     /// <summary>
     /// Slice the list
     /// </summary>
@@ -334,5 +368,9 @@ public readonly partial struct Lst<T> {
 
         return new(head, count);
     }
+
+    void IList<T>.Insert(int index, T item) => throw new NotSupportedException();
+
+
 }
 
