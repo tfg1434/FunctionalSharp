@@ -10,6 +10,34 @@ using static F;
 /// </summary>
 public static class EnumberableExt {
     /// <summary>
+    /// Match the empty and cons states of the enumerable
+    /// </summary>
+    /// <remarks>
+    /// This allocates an array to avoid multiple enumeration. If you are using this like a Maybe type, consider using
+    /// <see cref="Maybe{T}"/> instead.
+    /// </remarks>
+    [Pure]
+    public static R Match<T, R>(this IEnumerable<T> enumerable, Func<R> empty, Func<T, IEnumerable<T>, R> cons) {
+        IEnumerable<T> ts = enumerable as T[] ?? enumerable.ToArray();
+
+        return !ts.Any() ? empty() : cons(ts.First(), ts.Skip(1));
+    }
+    
+    /// <summary>
+    /// Match the empty and non-empty states of the enumerable
+    /// </summary>
+    /// <remarks>
+    /// This allocates an array to avoid multiple enumeration. If you are using this like a Maybe type, consider using
+    /// <see cref="Maybe{T}"/> instead.
+    /// </remarks>
+    [Pure]
+    public static R Match<T, R>(this IEnumerable<T> enumerable, Func<R> empty, Func<IEnumerable<T>, R> nonEmpty) {
+        IEnumerable<T> ts = enumerable as T[] ?? enumerable.ToArray();
+
+        return !ts.Any() ? empty() : nonEmpty(ts);
+    }
+    
+    /// <summary>
     /// Functor Map
     /// </summary>
     [Pure]

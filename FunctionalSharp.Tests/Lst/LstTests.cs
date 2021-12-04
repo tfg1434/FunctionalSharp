@@ -29,9 +29,15 @@ public class LstTests {
     }
     
     [Fact]
-    public void Match_Returns_MatchingValue() {
+    public void Match_Cons_Empty() {
         Assert.Equal(1, List(1, 2, 3).Match(() => 0, (x, _) => x));
         Assert.Equal(0, Lst<int>.Empty.Match(() => 0, (x, _) => x));
+    }
+
+    [Fact]
+    public void Match_List_Empty() {
+        Assert.Equal(List(1, 2, 3), List(1, 2, 3).Match(() => List(0), xs => xs));
+        Assert.Equal(0, Lst<int>.Empty.Match(() => 0, _ => 1));
     }
 
     [Fact]

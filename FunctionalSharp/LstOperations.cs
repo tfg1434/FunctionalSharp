@@ -5,7 +5,7 @@ namespace FunctionalSharp;
 
 public readonly partial struct Lst<T> {
     /// <summary>
-    /// Match the two states of the list
+    /// Match the empty and cons states of the list
     /// </summary>
     /// <param name="empty">Function to run if the list is empty</param>
     /// <param name="cons">Ternary function to run if the list is cons</param>
@@ -14,6 +14,16 @@ public readonly partial struct Lst<T> {
     public R Match<R>(Func<R> empty, Func<T, Lst<T>, R> cons)
         => IsEmpty ? empty() : cons(Head(), Tail());
 
+    /// <summary>
+    /// Match the empty and non-empty states of the list
+    /// </summary>
+    /// <param name="empty">Function to run if the list is empty</param>
+    /// <param name="nonEmpty">Ternary function to run if the list is not empty</param>
+    /// <typeparam name="R">Return type of functions</typeparam>
+    [Pure]
+    public R Match<R>(Func<R> empty, Func<Lst<T>, R> nonEmpty)
+        => IsEmpty ? empty() : nonEmpty(Head()! + Tail());
+    
     /// <summary>
     /// See if a value exists in the list
     /// </summary>
@@ -322,14 +332,17 @@ public readonly partial struct Lst<T> {
     [Pure]
     public int IndexOf(T item, IEqualityComparer<T> comparer) {
         Node? newHead = _head;
-        int index = -1;
+        int index = 0;
         
-        while (newHead is not null && !comparer.Equals(newHead.Value, item)) {
+        while (newHead is not null) {
+            if (comparer.Equals(item, newHead.Value))
+                return index;
+            
             index++;
             newHead = newHead.Next;
         }
 
-        return index;
+        return -1;
     }
     
     /// <summary>
