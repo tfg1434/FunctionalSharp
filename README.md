@@ -9,21 +9,21 @@
 
 <p align="center">
   
-  <img src="https://github.com/torontofangirl/FunctionalSharp/actions/workflows/tests.yml/badge.svg">
+  <img src="https://github.com/tfg1434/FunctionalSharp/actions/workflows/tests.yml/badge.svg">
   
 </p>
   
 | FunctionalSharp | Vanilla |
 | :-------------: | :-----: |
-| <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704205226557440/Untitled_2.jpeg" alt="functional pic"> | <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704205700521984/Untitled_3.jpeg" alt="low level pic"> |
+| <img src="images/Untitled_2.jpeg" alt="functional pic"> | <img src="images/Untitled_3.jpeg" alt="low level pic"> |
 | <ul><li>Flat, monadic composition</li><li>No boilerplate (try/catch, TryParseXXX, ...)</li></ul> | <ul><li>try/catch boilerplate</li><li>Clunky TryParseXXX pattern</li></ul> |
-| <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704204819722240/Untitled_1.jpeg" alt="functional pic"> | <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704205494997042/Untitled.jpeg" alt="low level pic"> |
-| <ul><li>One line</li><li>Infinite ranges</li></ul> | <ul><li>Difficult to read</li></ul> |
-| <img src="https://cdn.discordapp.com/attachments/683800414637785149/913491636858781706/Untitled_7.jpeg" alt="functional pic"> | <img src="https://cdn.discordapp.com/attachments/818274903769481237/911704206208028672/Untitled_5.jpeg" alt="low level pic"> |
+| <img src="images/Untitled_1.jpeg" alt="functional pic"> | <img src="images/Untitled.jpeg" alt="low level pic"> |
+| <ul><li>One line</li><li>Uses infinite ranges (i.e. generators)</li></ul> | <ul><li>Difficult to read</li></ul> |
+| <img src="images/Untitled_7.jpeg" alt="functional pic"> | <img src="images/Untitled_5.jpeg" alt="low level pic"> |
 | <ul><li>List pattern matching</li><li>Functional style singly linked list</li></ul> | <ul><li>Mutates original collection</li></ul> |
 
 ## Setup
-Install `FunctionalSharp` package from [nuget](https://www.nuget.org/packages/tfg.FunctionalSharp/) or add a reference to the [dll](https://github.com/torontofangirl/FunctionalSharp/releases/) in your project.
+Install `FunctionalSharp` package from [nuget](https://www.nuget.org/packages/tfg.FunctionalSharp/) or add a reference to the [dll](https://github.com/tfg1434/FunctionalSharp/releases/) in your project.
 
 Then, all you need to do is add 
 ```cs
@@ -37,13 +37,11 @@ into a file for each **project** you want to use this lib in.
 
 ## Documentation
 XML docs are provided for most functions and types.
-If these are insufficient, you can always look at the source code; I've tried my best to make the code as pretty as 
-possible.
 
 Usage examples and information about key types are provided in [Types](#types)
 
 ## Credit
-This library takes many ideas from [language-ext by Paul Louth](https://github.com/louthy/language-ext). Go check it out!
+This library was inspired by [language-ext by Paul Louth](https://github.com/louthy/language-ext).
 
 ## Types
 ## Unit
@@ -102,8 +100,7 @@ public static Maybe<V> Get<K, V>(this IDictionary<K, V> map, K key) {
 `Map` is an immutable dictionary implementation, similar to `ImmutableSortedDictionary`. Under the hood, `Map` uses an 
 AVL tree for `O(log n)` search, insert, and delete.
 
-You can easily construct a map by using the `Map()` factory function or using `.ToMap()`. All common operations are defined
-including custom comparers for the AVL tree, `Get()`, `Lookup()`, etc. Heck, you can even concat two maps with `+` 😉.
+You can easily construct a map by using the `Map()` factory function or using `.ToMap()`. All common operations are defined including custom comparers for the AVL tree, `Get()`, `Lookup()`, etc.
 
 ```cs
 var map = Map(("a", 1), ("b", 2));
@@ -125,7 +122,7 @@ List(3, 2) + 1 == List(3) + List(2, 1); //true
 
 ## Error
 `Error` is a record class representing an error that may or may not contain an inner exception. It's similar to `Exception`, 
-where you can subclass it to make your own more specific errors. Some included errors are found in [Errors.cs](https://github.com/torontofangirl/FunctionalSharp/blob/main/FunctionalSharp/Errors.cs).
+where you can subclass it to make your own more specific errors. Some included errors are found in [Errors.cs](https://github.com/tfg1434/FunctionalSharp/blob/main/FunctionalSharp/Errors.cs).
 
 ## Either
 [`Either` is the functional way of error handling](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Either.html).<br>

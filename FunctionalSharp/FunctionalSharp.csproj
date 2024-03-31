@@ -9,12 +9,12 @@
     <Title>FunctionalSharp</Title>
     <Authors>tfg</Authors>
     <Description>Lightweight functional programming library for C#. IO monad, Unit, Maybe, Either, immutable collections, and more</Description>
-    <PackageProjectUrl>https://github.com/torontofangirl/FunctionalSharp</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/tfg1434/FunctionalSharp</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageIconUrl></PackageIconUrl>
     <PackageTags>monads, csharp, functional-programming, functor, curry, immutable-datastructures, applicative, immutable-collections</PackageTags>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/torontofangirl/FunctionalSharp</RepositoryUrl>
+    <RepositoryUrl>https://github.com/tfg1434/FunctionalSharp</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>FunctionalSharp_Square.png</PackageIcon>
     <Version>1.0.1</Version>

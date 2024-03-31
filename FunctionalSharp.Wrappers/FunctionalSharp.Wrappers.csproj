@@ -8,8 +8,8 @@
         <PackageId>tfg.FunctionalSharp.Wrappers</PackageId>
         <Description>Wrappers around BCL functionality for FunctionalSharp. Includes things like a live filesystem, etc.</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/torontofangirl/FunctionalSharp/tree/main/FunctionalSharp</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/torontofangirl/FunctionalSharp/tree/main/FunctionalSharp</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/tfg1434/FunctionalSharp/tree/main/FunctionalSharp</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/tfg1434/FunctionalSharp/tree/main/FunctionalSharp</RepositoryUrl>
         <PackageIcon>FunctionalSharp_Square.png</PackageIcon>
         <PackageIconUrl />
         <PackageTags>monads, csharp, functional-programming, functor, curry, immutable-datastructures, applicative, immutable-collections</PackageTags>
